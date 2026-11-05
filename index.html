@@ -1,0 +1,3149 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<title>Band Desenvolvedores</title>
+<meta name="theme-color" content="#C8102E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Band Desenvolvedores">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root{--w:520px;--red:#E4002B;--red-dk:#C8102E;--red-lt:#FDE7EB;
+ --ink:#16181D;--ink2:#5B6169;--ink3:#8E959D;--line:#E6E8EC;--bg:#F2F3F5;
+ --blue:#1266C7;--blue-bg:#E8F1FC;--blue-sel:#1273DE;
+ --teal:#0F7B6C;--teal-bg:#E6F4F1;--ok:#0B7A3B;--ok-bg:#E7F5EC;
+ --wa:#9A6200;--wa-bg:#FFF4E0;--no:#93131F;--no-bg:#FDECEE;
+ --sh:0 1px 2px rgba(22,24,29,.05),0 4px 14px rgba(22,24,29,.06)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+/* A janela do app tem altura fixa. Sem isso o contêiner cresce com a lista,
+   a página inteira passa a rolar e as barras de cima somem junto. */
+html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#2A2D33;
+ overscroll-behavior-y:none}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+ color:var(--ink);font-size:15px;line-height:1.45;touch-action:manipulation}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+#tel{max-width:var(--w);margin:0 auto;height:100vh;height:100dvh;background:var(--bg);
+ position:relative;display:flex;flex-direction:column;overflow:hidden;
+ box-shadow:0 0 0 1px rgba(0,0,0,.25),0 18px 60px rgba(0,0,0,.45)}
+@media(min-width:560px){#tel{height:calc(100dvh - 28px);margin:14px auto;border-radius:22px}}
+
+/* ---------- login ---------- */
+#login{position:absolute;inset:0;z-index:60;display:none;flex-direction:column;
+ background:linear-gradient(165deg,#D0102C 0%,#A50C22 55%,#7E0819 100%);color:#fff;
+ padding:calc(env(safe-area-inset-top) + 28px) 26px calc(env(safe-area-inset-bottom) + 20px);
+ overflow-y:auto}
+#login.on{display:flex}
+#login::before{content:'';position:absolute;inset:0;pointer-events:none;
+ background:radial-gradient(circle at 18% 78%,rgba(255,190,150,.20) 0 9px,transparent 10px),
+ radial-gradient(circle at 74% 88%,rgba(255,190,150,.16) 0 14px,transparent 15px),
+ radial-gradient(circle at 40% 94%,rgba(255,190,150,.13) 0 7px,transparent 8px),
+ radial-gradient(circle at 88% 66%,rgba(255,190,150,.12) 0 5px,transparent 6px)}
+.marca{text-align:center;margin:38px 0 auto;position:relative}
+.marca .pts{display:flex;justify-content:center;gap:5px;margin-bottom:9px}
+.marca .pts i{width:7px;height:7px;border-radius:50%;background:#fff;display:block;opacity:.9}
+.marca .pts i:nth-child(2){opacity:.6}.marca .pts i:nth-child(4){opacity:.45}
+.marca h1{margin:0;font-size:40px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.marca p{margin:5px 0 0;font-size:14px;font-weight:700;letter-spacing:.22em;opacity:.95}
+#login .campos{position:relative;margin-top:auto}
+#login label{display:block;font-size:15px;font-weight:600;margin:0 0 7px}
+#login input{width:100%;background:#fff;border:0;border-radius:11px;padding:15px 16px;
+ font-size:16px;color:var(--ink);margin-bottom:16px;min-height:52px}
+#login .olho{position:absolute;right:12px;top:38px;background:none;padding:8px;color:var(--ink3)}
+#login .senha{position:relative}
+#login .entrar{width:100%;background:#1C1E22;color:#fff;border-radius:11px;padding:16px;
+ font-size:16px;font-weight:700;margin-top:6px;min-height:54px}
+#login .aj{text-align:center;font-size:13px;margin-top:22px;opacity:.92}
+#login .aj b{text-decoration:underline;cursor:pointer}
+#login .ver{text-align:center;font-size:12px;opacity:.75;margin-top:8px}
+#login .err{background:rgba(0,0,0,.28);border-radius:10px;padding:11px 13px;font-size:13.5px;
+ margin-bottom:14px;display:none}
+#login .err.on{display:block}
+
+/* ---------- topo ---------- */
+header{background:#fff;border-bottom:1px solid var(--line);flex:0 0 auto;z-index:13;
+ padding:calc(env(safe-area-inset-top) + 8px) 6px 8px;display:flex;align-items:center;gap:2px}
+header .ic{padding:10px;color:var(--ink);display:flex}
+header h2{flex:1;margin:0 0 0 4px;font-size:20px;font-weight:700;letter-spacing:-.01em}
+header .ic.r{color:var(--ink2)}
+header .ic svg{width:23px;height:23px}
+header .ic.girando svg{animation:gira 1s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+header .ic:disabled{opacity:.6}
+.sino{position:relative}
+.sino b{position:absolute;top:6px;right:6px;background:var(--red);color:#fff;font-size:9px;
+ font-weight:800;border-radius:99px;padding:0 4px;min-width:14px;text-align:center;line-height:14px}
+
+/* ---------- tira de dias ---------- */
+.tira{background:#fff;border-bottom:1px solid var(--line);padding:6px 0 8px;flex:0 0 auto;z-index:11}
+/* ---- faixas de aviso ---- */
+#faixas{flex:0 0 auto;z-index:12}
+.fx{display:flex;align-items:center;gap:11px;padding:10px 12px;cursor:pointer;
+ border-bottom:1px solid rgba(0,0,0,.06)}
+.fx.msg{background:#FDE7EB}
+.fx.and{background:var(--wa-bg)}
+.fx .mini{width:38px;height:38px;border-radius:9px;flex:0 0 auto;overflow:hidden;
+ display:flex;align-items:center;justify-content:center;background:#fff}
+.fx .mini img{width:100%;height:100%;object-fit:cover}
+.fx .mini.ic{color:var(--red)}
+.fx .mini.ic.and{color:var(--wa)}
+.fx .mini svg{width:20px;height:20px}
+.fx .tx{flex:1;min-width:0}
+.fx .tx b{display:block;font-size:13.5px;font-weight:700;line-height:1.3}
+.fx .tx span{display:block;font-size:12.5px;color:var(--ink2);line-height:1.35;
+ overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fx .ver{flex:0 0 auto;font-size:12.5px;font-weight:700;color:var(--red);
+ font-variant-numeric:tabular-nums}
+.fx.and .ver{color:var(--wa)}
+.fx .x{flex:0 0 auto;background:none;border:0;color:var(--ink3);font-size:20px;
+ line-height:1;padding:0 2px}
+.tira .rol{display:flex;gap:2px;overflow-x:auto;overflow-y:hidden;padding:0 10px 2px;
+ scrollbar-width:none;scroll-snap-type:x proximity}
+.tira .rol::-webkit-scrollbar{display:none}
+.tira button{flex:0 0 auto;width:64px;text-align:center;padding:2px 0 0;scroll-snap-align:center;
+ display:flex;flex-direction:column;align-items:center}
+.tira .dw{font-size:12.5px;color:var(--ink2);margin-bottom:5px}
+.tira .bola{width:44px;height:44px;border-radius:50%;background:#F1F2F4;
+ display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;
+ color:var(--ink);flex:0 0 auto}
+.tira button.on .dw{color:var(--ink);font-weight:600}
+.tira button.on .bola{background:var(--blue-sel);color:#fff}
+/* o selo entra no fluxo normal, com recuo negativo, para não ser cortado pela rolagem */
+.tira .cnt{display:block;background:var(--red);color:#fff;font-size:10px;font-weight:700;
+ border-radius:99px;min-width:22px;padding:1px 6px;line-height:15px;margin-top:-8px;
+ position:relative;border:2px solid #fff;box-sizing:content-box}
+.tira .cnt.ok{background:var(--ok)}
+.tira .leg{display:flex;gap:8px;justify-content:center;font-size:12.5px;color:var(--ink2);
+ margin-top:10px;flex-wrap:wrap;padding:0 12px}
+.tira .leg i{font-style:normal}
+.tira .leg .d{color:var(--red)}
+
+/* ---------- busca e alternador ---------- */
+.barra{display:flex;gap:9px;padding:11px 12px;flex:0 0 auto;align-items:center;
+ background:var(--bg);z-index:10;box-shadow:0 6px 10px -8px rgba(22,24,29,.28)}
+.busca{flex:1;position:relative}
+.busca input{width:100%;background:#fff;border:1px solid var(--line);border-radius:11px;
+ padding:12px 12px 12px 40px;font-size:15px;min-height:48px}
+.busca svg{position:absolute;left:12px;top:13px;width:20px;height:20px;color:var(--ink3)}
+.bfil{width:48px;height:48px;background:#fff;border:1px solid var(--line);border-radius:11px;
+ display:flex;align-items:center;justify-content:center;color:var(--ink2);position:relative}
+.bfil.on{color:var(--red);border-color:var(--red)}
+.bfil b{position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;font-size:9.5px;
+ border-radius:99px;padding:1px 5px}
+.seg{display:flex;background:#fff;border:1px solid var(--line);border-radius:11px;padding:3px;height:48px}
+.seg button{width:46px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+ color:var(--ink2)}
+.seg button.on{background:#fff;color:var(--red);box-shadow:var(--sh)}
+.seg svg{width:21px;height:21px}
+
+/* ---------- corpo ---------- */
+/* min-height:0 é o que faz a lista rolar dentro da área e não empurrar a página inteira,
+   mantendo a tira de datas e a busca sempre visíveis */
+/* A folga extra no fim evita que o selo da hospedagem, fixado no canto inferior
+   direito, encoste no último item da lista. */
+main{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;
+ padding:8px 12px calc(env(safe-area-inset-bottom) + 34px);-webkit-overflow-scrolling:touch}
+main.nopad{padding:0}
+#mapa{width:100%;height:100%;min-height:340px;background:#e9edf0}
+.card{background:#fff;border-radius:13px;box-shadow:var(--sh);margin-bottom:11px;
+ border-left:4px solid var(--blue-sel);overflow:hidden}
+.card.done{border-left-color:var(--ok)}
+.card.nao{border-left-color:var(--no)}
+.card .top{display:flex;gap:9px;padding:12px 13px 0;align-items:flex-start}
+.card .tt{flex:1;min-width:0;font-size:14px;font-weight:700;line-height:1.35;
+ word-break:break-word}
+.card .tt .seq{color:var(--ink3);font-weight:700}
+.card .chips{display:flex;flex-direction:column;gap:4px;align-items:stretch;flex:0 0 86px}
+.chip{font-size:11px;font-weight:600;padding:3px 0;border-radius:7px;white-space:nowrap;
+ display:block;text-align:center}
+.chip.pri-a{background:var(--no-bg);color:var(--no)}
+.chip.pri-m{background:var(--wa-bg);color:var(--wa)}
+.chip.pri-b{background:var(--teal-bg);color:var(--teal)}
+.chip.st-p{background:var(--blue-bg);color:var(--blue)}
+.chip.st-a{background:var(--wa-bg);color:var(--wa)}
+/* visita que caiu neste dia por um cancelamento anterior */
+.chip.st-r{background:#FDE7EB;color:var(--red)}
+.card.remarcada{border-left-color:var(--red);background:#FFFBFC}
+/* visita finalizada fica verde, para o dia fechado ser visível de longe */
+.card.done{border-left-color:var(--ok)}
+.card.done .chip.st-o{background:#E7F5EC;color:#0B7A3B}
+.card.done .pg i{background:var(--ok)}
+.chip.st-x{background:#EDEFF2;color:#5B6169}
+.card.canc{border-left-color:#8E959D}
+.card.andando{border-left-color:var(--wa)}
+.card .pe .cron{font-variant-numeric:tabular-nums;color:var(--wa);font-weight:700}
+.chip.st-c{background:var(--ok-bg);color:var(--ok)}
+.chip.st-n{background:var(--no-bg);color:var(--no)}
+.card .hora{font-size:12px;color:var(--ink2);text-align:right;padding:4px 13px 0}
+.card .end{font-size:12.5px;color:var(--ink2);padding:4px 13px 0;line-height:1.45}
+.card .base{display:flex;align-items:center;gap:8px;padding:8px 13px 10px}
+.card .base .nm{flex:1;min-width:0;font-size:12.5px;color:var(--ink2);line-height:1.35;
+ display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.acao{width:38px;height:38px;border-radius:50%;background:var(--red-lt);color:var(--red);
+ display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.acao svg{width:18px;height:18px}
+.card .pe{display:flex;align-items:center;gap:10px;padding:0 13px 12px}
+.card .pe .pg{flex:1;height:6px;border-radius:4px;background:#EDEFF2;overflow:hidden}
+.card .pe .pg i{display:block;height:100%;background:var(--ok)}
+.card .pe span{font-size:12.5px;color:var(--ink2)}
+.vazio{text-align:center;color:var(--ink3);font-size:14px;padding:40px 20px}
+/* ---- visitas feitas ---- */
+.fbusca{display:flex;gap:8px;align-items:stretch}
+.fbt{background:#fff;border:1px solid var(--line);border-radius:11px;padding:0 13px;
+ display:flex;align-items:center;gap:7px;font-size:14px;color:var(--ink2);font-weight:600;
+ flex:0 0 auto;min-height:46px}
+.fbt svg{width:19px;height:19px}
+.fbt.on{border-color:var(--red);color:var(--red);background:#FDE7EB}
+.fnota{font-size:12.5px;color:var(--ink3);padding:0 2px 10px;line-height:1.5}
+.fnota b{color:var(--red);font-weight:700;cursor:pointer}
+.ped{background:#fff;border-radius:14px;box-shadow:var(--sh);margin-bottom:14px;
+ padding:14px 15px;cursor:pointer}
+.ped:active{background:#FCFCFD}
+.ped .ptop{display:flex;align-items:center;justify-content:space-between;gap:8px;
+ margin-bottom:11px}
+.ped .pbadge,.pv .pbadge{display:inline-flex;align-items:center;gap:6px;border-radius:8px;
+ padding:6px 10px;font-size:13px;font-weight:700}
+.ped .pbadge svg,.pv .pbadge svg{width:16px;height:16px}
+.ped .pst,.pv .pst{display:inline-flex;align-items:center;gap:5px;font-size:13px;
+ font-weight:700;flex:0 0 auto}
+.ped .pst svg,.pv .pst svg{width:16px;height:16px}
+.ped .pst.ok,.pv .pst.ok{color:var(--ok)}
+.ped .pst.fila,.pv .pst.fila{color:var(--wa)}
+.ped .plin{display:flex;align-items:flex-start;gap:9px;padding:3px 0;font-size:14.5px;
+ color:var(--ink2);line-height:1.35}
+.ped .plin svg{width:19px;height:19px;flex:0 0 auto;color:var(--ink3);margin-top:1px}
+.ped .plin span{flex:1;min-width:0}
+.ped .plin.forte span{font-weight:700;color:var(--ink);font-size:15px}
+.ped .pbase{display:flex;align-items:center;gap:12px;margin-top:12px;
+ border-top:1px solid var(--line);padding-top:12px}
+.ped .pfoto{width:52px;height:52px;border-radius:10px;object-fit:cover;flex:0 0 auto;
+ background:#EDEFF2}
+.ped .pfoto.vazia{display:flex;align-items:center;justify-content:center;color:var(--ink3)}
+.ped .pfoto.vazia svg{width:22px;height:22px}
+.ped .pmet{flex:1;min-width:0;display:flex;gap:14px}
+.ped .pmet>div{min-width:0}
+.ped .pmet span{display:block;font-size:11.5px;color:var(--ink3)}
+.ped .pmet b{display:block;font-size:13.5px;color:var(--ink);white-space:nowrap;
+ overflow:hidden;text-overflow:ellipsis}
+.ped .pseta{width:44px;height:44px;border-radius:50%;background:#FDE7EB;color:var(--red);
+ flex:0 0 auto;display:flex;align-items:center;justify-content:center}
+.ped .pseta svg{width:21px;height:21px}
+.dlin{display:flex;justify-content:space-between;gap:12px;padding:6px 0;font-size:13.5px;
+ color:var(--ink2);border-bottom:1px solid var(--line)}
+.dlin:last-child{border-bottom:0}
+.dlin b{color:var(--ink);text-align:right;max-width:60%}
+/* ---- plano de visita ---- */
+.pv{background:#fff;border-radius:13px;box-shadow:var(--sh);padding:14px 15px;margin:8px 0 0}
+.pv .pvtopo{display:flex;align-items:center;gap:12px;cursor:pointer}
+.pv .lj{width:44px;height:44px;border-radius:50%;background:#F1F2F4;flex:0 0 auto;
+ display:flex;align-items:center;justify-content:center;color:var(--ink2)}
+.pv .lj svg{width:24px;height:24px}
+.pv .pvtopo .tx{flex:1;min-width:0}
+.pv .pvtopo .tx b{display:block;font-size:15.5px;font-weight:700;line-height:1.3}
+.pv .pvtopo .tx span{display:block;font-size:13px;color:var(--ink2);line-height:1.4;
+ overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pv .ch{flex:0 0 auto;color:var(--red);display:flex}
+.pv .ch svg{width:20px;height:20px}
+.pv .pvsep{border-top:1px solid var(--line);margin:13px 0}
+.pv .pvlin{display:flex;align-items:flex-start;gap:10px}
+.pv .pvlin .nm{flex:1;min-width:0;font-size:15px;font-weight:700;line-height:1.35}
+.pv .pvlin .hr{flex:0 0 auto;display:flex;align-items:center;gap:6px;font-size:15px;
+ color:var(--ink)}
+.pv .pvlin .hr svg{width:17px;height:17px;color:var(--ink2)}
+.pv .pvlin .hr{flex-wrap:wrap;justify-content:flex-end}
+.pv .pvlin .hr .hrlab{font-size:11px;color:var(--ink3);width:100%;text-align:right;
+ font-weight:400;line-height:1.2}
+.pv .pvlin.sub2{margin-top:5px;font-size:12.5px;color:var(--ink2);justify-content:space-between}
+.pv .pvlin .hist{display:flex;align-items:center;gap:6px;color:var(--red);font-weight:600}
+.pv .pvlin .hist{cursor:pointer}
+.pv .pvlin .hist i{background:var(--red);color:#fff;border-radius:99px;font-style:normal;
+ font-size:10.5px;min-width:17px;text-align:center;padding:1px 5px}
+.pv .pvlin .hist svg{width:15px;height:15px}
+.pv .pvlin .hist:active{opacity:.6}
+.pv .pvbt{display:flex;gap:10px;margin-top:14px}
+.pv .pvbt button{flex:1;border-radius:11px;padding:14px 8px;font-size:15.5px;font-weight:700;
+ display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px}
+.pv .pvbt svg{width:19px;height:19px}
+.pv .pvcancel{background:#fff;color:var(--red);border:1.5px solid var(--red)}
+.pv .pvgo{background:var(--red);color:#fff;border:0}
+.pv .pvgo:disabled{opacity:.6}
+.gl2{font-size:11.5px;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;
+ font-weight:700;margin:18px 0 0}
+.pvgps .glin{display:flex;justify-content:space-between;gap:10px;padding:5px 0;font-size:13.5px;
+ color:var(--ink2)}
+.pvgps .glin b{color:var(--ink);font-variant-numeric:tabular-nums}
+/* ---- notificações ---- */
+.nt{display:flex;gap:12px;padding:13px 2px;border-bottom:1px solid var(--line);
+ align-items:flex-start}
+.nt .ic{width:46px;height:46px;border-radius:9px;flex:0 0 auto;display:flex;
+ align-items:center;justify-content:center}
+.nt .ic svg{width:24px;height:24px}
+.nt .ic img{width:100%;height:100%;object-fit:cover;border-radius:9px;display:block}
+.nt .tx{flex:1;min-width:0}
+.nt .tx b{display:block;font-size:15px;font-weight:700;line-height:1.3;margin-bottom:2px}
+.nt .tx span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+ overflow:hidden;font-size:13.5px;color:var(--ink2);line-height:1.45}
+.nt .dt{flex:0 0 auto;font-size:12.5px;color:var(--ink3);padding-top:2px}
+.nt.clic{cursor:pointer}
+.nt.clic:active{background:#F7F8FA}
+.nt .ch{flex:0 0 auto;color:var(--ink3);display:flex;align-items:center;padding-top:2px}
+.nt .ch svg{width:16px;height:16px}
+/* ---- ficha de cliente ---- */
+.cli{background:#fff;border-radius:13px;box-shadow:var(--sh);margin-bottom:11px;padding:13px 14px}
+.cli .ct{display:flex;align-items:center;gap:9px}
+.cli .lj{width:26px;height:26px;flex:0 0 auto;color:var(--ink2);display:flex}
+.cli .lj svg{width:24px;height:24px}
+.cli .nm{flex:1;min-width:0;font-size:15px;font-weight:700;line-height:1.3;
+ overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cli .cod{display:flex;align-items:center;gap:5px;font-size:14px;font-weight:600;
+ color:var(--ink);flex:0 0 auto}
+.cli .cod svg{width:17px;height:17px;color:#E8B10A}
+.cli .sep{border-top:1px dashed var(--line);margin:11px 0}
+.cli .cb{display:flex;align-items:center;gap:9px}
+.cli .ag{flex:1;min-width:0;font-size:13.5px;color:var(--ink2);line-height:1.5}
+
+/* ---------- gaveta ---------- */
+#gav{position:absolute;inset:0;z-index:50;display:none}
+#gav.on{display:block}
+#gav .fundo{position:absolute;inset:0;background:rgba(22,24,29,.45)}
+#gav .painel{position:absolute;top:0;left:0;bottom:0;width:84%;max-width:330px;background:#fff;
+ display:flex;flex-direction:column;overflow:hidden}
+#gav .cabeca{padding:calc(env(safe-area-inset-top) + 18px) 18px 0;flex:0 0 auto}
+#gav .meio{flex:1;min-height:0;overflow-y:auto;padding:0 12px;overscroll-behavior:contain}
+#gav .rodape{flex:0 0 auto;padding:0 12px calc(env(safe-area-inset-bottom) + 12px)}
+#gav .quem{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+#gav .av{width:46px;height:46px;border-radius:50%;background:#F1F2F4;display:flex;
+ align-items:center;justify-content:center;font-size:15px;font-weight:700;color:var(--ink2);
+ flex:0 0 auto}
+#gav .quem div{min-width:0}
+#gav .quem b{display:block;font-size:16.5px;font-weight:700;letter-spacing:-.01em;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#gav .quem span{display:block;font-size:12.5px;color:var(--ink2);
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#gav .sinc{width:100%;background:var(--red);color:#fff;border-radius:11px;padding:13px;
+ font-size:15.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:9px}
+#gav .sinc svg{width:19px;height:19px}
+#gav .quando{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12.5px;
+ color:var(--ink2);margin:10px 2px 12px}
+#gav .quando span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#gav .quando b{color:var(--red);font-weight:700}
+#gav nav button{width:100%;display:flex;align-items:center;gap:13px;padding:12px 11px;
+ border-radius:11px;font-size:15.5px;color:var(--ink);text-align:left;min-height:46px}
+#gav nav button.on{background:var(--red-lt);color:var(--red);font-weight:700}
+#gav nav button svg{width:22px;height:22px;flex:0 0 auto;color:var(--ink2)}
+#gav nav button.on svg{color:var(--red)}
+#gav nav hr{border:0;border-top:1px solid var(--line);margin:10px 4px}
+#gav .sair{width:100%;display:flex;align-items:center;gap:13px;padding:12px 11px;
+ border-radius:11px;color:var(--red);font-weight:700;font-size:15.5px;min-height:46px}
+#gav .sair svg{width:21px;height:21px;color:var(--red);flex:0 0 auto}
+#gav .ver{text-align:center;font-size:11.5px;color:var(--ink3);margin-top:4px;line-height:1.5}
+
+/* ---------- formulário e telas internas ---------- */
+h3.t{margin:14px 0 2px;font-size:21px;font-weight:800;letter-spacing:-.02em}
+p.sub{margin:0 0 12px;color:var(--ink2);font-size:13.5px;line-height:1.5}
+label.f{display:block;font-size:14px;font-weight:700;margin:13px 0 6px}
+input.tx,select.sel,textarea{width:100%;padding:14px;border:1.5px solid var(--line);
+ border-radius:11px;background:#fff;font-size:16px;min-height:50px}
+textarea{min-height:70px;resize:vertical}
+.bloco{background:#fff;border-radius:13px;box-shadow:var(--sh);padding:13px 14px;margin:12px 0}
+.bloco .gl{font-size:14px;font-weight:700;margin-bottom:10px}
+.opt{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid var(--line);
+ border-radius:11px;padding:13px;font-size:15px;width:100%;text-align:left;min-height:52px;
+ margin-bottom:7px}
+.opt .d{width:18px;height:18px;border-radius:50%;border:2px solid var(--line);flex:0 0 auto}
+.opt.on{border-color:var(--ink);font-weight:600}
+.opt.on .d{border-color:var(--ink);background:var(--ink);box-shadow:inset 0 0 0 3px #fff}
+.opt.on.p{border-color:var(--ok);background:var(--ok-bg)}.opt.on.p .d{border-color:var(--ok);background:var(--ok)}
+.opt.on.n{border-color:var(--no);background:var(--no-bg)}.opt.on.n .d{border-color:var(--no);background:var(--no)}
+.opt.on.w{border-color:var(--wa);background:var(--wa-bg)}.opt.on.w .d{border-color:var(--wa);background:var(--wa)}
+/* escolha múltipla: caixa quadrada em vez de bolinha */
+.opt.multi .cx{width:19px;height:19px;border-radius:5px;border:2px solid var(--line);
+ flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:12px;
+ color:#fff;box-sizing:border-box}
+.opt.multi.on{border-color:var(--blue);background:var(--blue-bg);font-weight:600}
+.opt.multi.on .cx{background:var(--blue);border-color:var(--blue)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.cta{width:100%;background:var(--red);color:#fff;border-radius:12px;padding:16px;font-size:16px;
+ font-weight:700;margin-top:12px;min-height:54px}
+.cta.o{background:#fff;color:var(--ink2);border:1.5px solid var(--line)}
+.cta.g{background:var(--ok)}
+.kg{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0}
+.k{background:#fff;border-radius:12px;box-shadow:var(--sh);padding:12px 13px}
+.k b{display:block;font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1.15}
+.k span{display:block;font-size:11.5px;color:var(--ink2);margin-top:3px;line-height:1.35}
+.k.wide{grid-column:1/-1}
+.k.r b{color:var(--red)}.k.g b{color:var(--ok)}.k.b b{color:var(--blue)}.k.w b{color:var(--wa)}
+.prog{height:7px;border-radius:4px;background:#EDEFF2;overflow:hidden;margin-top:8px}
+.prog i{display:block;height:100%;background:var(--ok)}
+.prog.r i{background:var(--red)}
+.info{background:var(--blue-bg);border-radius:11px;padding:12px 13px;font-size:13px;
+ color:var(--blue);margin-top:12px;line-height:1.55}
+.fotoprev{width:100%;border-radius:11px;display:block;margin-bottom:8px;
+ border:1px solid var(--line)}
+.fotoinfo{font-size:12px;color:var(--ink2);margin-bottom:10px}
+.aviso{background:var(--wa-bg);border-radius:11px;padding:12px 13px;font-size:13px;
+ color:var(--wa);margin-top:11px;line-height:1.55}
+.erro{background:var(--no-bg);border:1.5px solid #F2C4C9;border-radius:11px;padding:12px 13px;
+ font-size:13px;color:var(--no);margin:12px 0;line-height:1.55}
+.tabela{width:100%;border-collapse:collapse;font-size:13.5px;background:#fff;border-radius:12px;
+ overflow:hidden;box-shadow:var(--sh)}
+.tabela th{background:#F7F8FA;text-align:left;padding:9px 12px;font-size:12px;color:var(--ink2)}
+.tabela td{padding:9px 12px;border-top:1px solid var(--line)}
+.tabela td:last-child,.tabela th:last-child{text-align:right;font-weight:700}
+/* a barra fica por cima de qualquer selo da hospedagem, e a folga de baixo
+   deixa o selo na faixa vazia, sem cobrir os botões */
+#acao{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);
+ z-index:2147483000;display:none;gap:9px;
+ padding:10px 13px calc(env(safe-area-inset-bottom) + 20px)}
+#acao.on{display:flex}
+#acao button{flex:1;border-radius:12px;padding:15px;font-size:16px;font-weight:700}
+#acao .v{flex:0 0 100px;background:#fff;color:var(--ink2);border:1.5px solid var(--line)}
+#acao .s{background:var(--red);color:#fff}
+#folhaf{position:absolute;inset:0;background:rgba(22,24,29,.45);z-index:44;display:none}
+#folhaf.on{display:block}
+#folha{position:absolute;left:0;right:0;bottom:0;z-index:46;background:#fff;
+ border-radius:20px 20px 0 0;max-height:80%;display:none;flex-direction:column;
+ box-shadow:0 -6px 26px rgba(0,0,0,.22)}
+#folha.on{display:flex}
+#folha .fh{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 10px;
+ border-bottom:1px solid var(--line);flex:0 0 auto}
+#folha .fh b{font-size:17px;font-weight:700}
+#folha .fc{flex:1;min-height:0;overflow-y:auto;padding:4px 16px 10px}
+#folha .fl{font-size:12px;color:var(--ink3);font-weight:700;text-transform:uppercase;
+ letter-spacing:.04em;margin:14px 0 7px}
+#folha .fr{flex:0 0 auto;border-top:1px solid var(--line);
+ padding:10px 16px calc(env(safe-area-inset-bottom) + 12px)}
+/* selos injetados por serviços de hospedagem ficam por baixo das barras do app
+   e sem capturar toque, para não roubar o clique dos botões */
+[class*="netlify"],[id*="netlify"],[data-netlify]{z-index:1!important;pointer-events:none!important;
+ opacity:.35!important}
+/* ---- notificações, no formato de lista de avisos ---- */
+.nt{display:flex;gap:12px;padding:14px 4px;border-bottom:1px solid var(--line);align-items:flex-start}
+.nt .ic{width:46px;height:46px;border-radius:10px;flex:0 0 auto;display:flex;
+ align-items:center;justify-content:center;background:var(--red-lt);color:var(--red)}
+.nt .ic svg{width:23px;height:23px}
+.nt .ic.g{background:var(--ok-bg);color:var(--ok)}
+.nt .ic.w{background:var(--wa-bg);color:var(--wa)}
+.nt .ic.b{background:var(--blue-bg);color:var(--blue)}
+.nt .cp{flex:1;min-width:0}
+.nt b{display:block;font-size:15px;font-weight:700;line-height:1.3}
+.nt p{margin:2px 0 0;font-size:13.5px;color:var(--ink2);line-height:1.45;
+ display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.nt p.aberta{-webkit-line-clamp:unset}
+.nt .qd{flex:0 0 auto;font-size:12.5px;color:var(--ink3);padding-top:2px}
+.ntop{display:flex;align-items:center;justify-content:space-between;padding:2px 4px 8px}
+.ntop b{font-size:15px}
+.ntop button{color:var(--red);font-weight:700;font-size:14px;padding:6px 2px}
+/* ---- clientes, no formato de ficha com agenda ---- */
+.cl{background:#fff;border-radius:13px;box-shadow:var(--sh);margin-bottom:11px;padding:13px 14px}
+.cl .top{display:flex;align-items:center;gap:10px}
+.cl .lj{width:26px;height:26px;flex:0 0 auto;color:var(--ink2)}
+.cl .nm{flex:1;min-width:0;font-size:15px;font-weight:700;line-height:1.3}
+.cl .cod{flex:0 0 auto;display:flex;align-items:center;gap:6px;font-size:15px;
+ font-weight:700;color:var(--ink)}
+.cl .cod svg{width:19px;height:19px;color:#E8A400}
+.cl .sep{border-top:1px dashed var(--line);margin:11px 0 9px}
+.cl .cx{display:flex;align-items:center;gap:10px}
+.cl .ag{flex:1;min-width:0;font-size:13.5px;color:var(--ink2);line-height:1.6}
+.cl .ag b{color:var(--ok);font-weight:700}
+.cl .ag i{font-style:normal;color:var(--ink3)}
+.cl .bts{display:flex;gap:8px;flex:0 0 auto}
+/* O selo da hospedagem fica fixo no canto inferior direito e cobre os botões.
+   Aqui ele é reduzido e recuado para o canto, liberando a área de toque.
+   O jeito definitivo de removê-lo é reivindicar o site numa conta Netlify. */
+[class*="netlify"],[id*="netlify"],[class*="badge"][style*="fixed"],
+a[href*="netlify.com"],iframe[src*="netlify"]{
+  transform:scale(.42)!important;transform-origin:100% 100%!important;
+  opacity:.22!important;pointer-events:none!important;
+  bottom:0!important;right:0!important;z-index:0!important;
+}
+/* O aviso tem que ficar acima da barra de ação, senão a mensagem de validação
+   aparece escondida atrás dela e o botão parece não fazer nada. */
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#1C1E22;color:#fff;
+ padding:12px 18px;border-radius:99px;font-size:13.5px;font-weight:600;
+ z-index:2147483600;opacity:0;pointer-events:none;transition:opacity .2s;
+ max-width:88%;text-align:center;line-height:1.4;box-shadow:0 6px 20px rgba(0,0,0,.35)}
+/* com a barra de ação na tela, o aviso sobe para não ficar encoberto */
+body.comacao #toast{bottom:calc(env(safe-area-inset-bottom) + 108px)}
+#toast.on{opacity:1}
+.leaflet-container{font:inherit}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+#login .dica{margin:0 0 14px;font-size:14px;line-height:1.45;color:rgba(255,255,255,.9)}
+#login .dica b{color:#fff}
+#login input.pin{letter-spacing:.6em;font-size:22px;text-align:center}
+</style>
+</head>
+<body>
+<div id="tel">
+  <header id="topo">
+    <button class="ic" id="bmenu" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+    <h2 id="titulo">Visitas</h2>
+    <button class="ic r sino" id="bsino" aria-label="Pendências">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+      <b id="sinob" style="display:none">0</b></button>
+    <button class="ic r" id="bsinc" aria-label="Sincronizar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0115-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 01-15 6.7L3 16"/></svg></button>
+  </header>
+  <div id="faixas"></div>
+  <div id="tira" class="tira"></div>
+  <div id="barra" class="barra"></div>
+  <main id="app"></main>
+  <div id="acao"></div>
+  <div id="gav"><div class="fundo" id="gavf"></div><div class="painel" id="gavp"></div></div>
+  <div id="folhaf"></div><div id="folha"></div>
+  <div id="login"></div>
+</div>
+<div id="toast"></div>
+<script id="M" type="application/json">{"cidade":"Aparecida de Goiânia","uf":"GO","gc":"GC. AP","regiao":"Região Ap. de Goiânia","devs":["Desenvolvedor 1","Desenvolvedor 2","Desenvolvedor 3"],"cnaes":["Albergues, exceto assistenciais","Bares e outros estabelecimentos especializados em servir bebidas, com entretenimento","Bares e outros estabelecimentos especializados em servir bebidas, sem entretenimento","Cantinas - serviços de alimentação privativos","Comércio atacadista de bebidas não especificadas anteriormente","Comércio atacadista de mercadorias em geral, com predominância de produtos alimentícios","Comércio varejista de bebidas","Comércio varejista de mercadorias em geral, com predominância de produtos alimentícios - hipermercados","Comércio varejista de mercadorias em geral, com predominância de produtos alimentícios - minimercados, mercearias e armazéns","Comércio varejista de mercadorias em geral, com predominância de produtos alimentícios - supermercados","Comércio varejista de mercadorias em lojas de conveniência","Comércio varejista de produtos alimentícios em geral ou especializado em produtos alimentícios não especificados anteriormente","Fornecimento de alimentos preparados preponderantemente para empresas","Lanchonetes, casas de chá, de sucos e similares","Outras atividades de recreação e lazer não especificadas anteriormente","Padaria e confeitaria com predominância de revenda","Restaurantes e similares"],"bairros":["ALVORADA SUL","AMERICAN PARK","BAIRRO CARDOSO","BAIRRO ILDA","CARDOSO","CARDOSO CONTINUACAO","CELIA MARIA","CENTRO","CHACARAS BELA VISTA","CHACARAS MARIVANIA","CHACARAS SAO PEDRO","CIDADE LIVRE","CIDADE SATELITE SAO LUIZ","CIDADE VERA CRUZ","COLINA AZUL","COLINAS DE HOMERO","CONJUNTO ESTRELA DO SUL","CONJUNTO HABITACIONAL MADRE GERMANA I","CONJUNTO LIBERDADE","CONJUNTO PLANICIE","CONJUNTO RESIDENCIAL STORIL","CONJUNTO SANTA FE","EXPANSUL","FAZENDA SANTO ANTONIO","GARAVELO","GARAVELO RESIDENCIAL PARK","GOIANIA PARK SUL","ILDA","INDEPENDENCIA","INDEPENDENCIA 2 COMPLEMENTO","INDEPENDENCIA 3 COMPLEMENTO","INDEPENDENCIA DAS MANSOES","INDUSTRIAL SANTO ANTONIO","INTERNACIONAL PARK","ITAPOA","ITAPUA","JARDIM ALTO PARAISO","JARDIM BELA MORADA","JARDIM BELA VISTA","JARDIM BELA VISTA CONTINUACAO","JARDIM BELO HORIZONTE","JARDIM BOA ESPERANCA","JARDIM BONANCA","JARDIM BURITI SERENO","JARDIM CANADA","JARDIM CRISTAL","JARDIM CRISTALINO","JARDIM DAS ACACIAS","JARDIM DAS CASCATAS","JARDIM DAS ESMERALDAS","JARDIM DOM BOSCO","JARDIM DOM BOSCO 2 ETAPA","JARDIM DOS BURITIS","JARDIM ELDORADO","JARDIM ESMERALDAS","JARDIM ESPLANADA","JARDIM FLORENCA","JARDIM HELVECIA","JARDIM HELVECIA COMPLEMENTO","JARDIM IMPERIAL","JARDIM IPANEMA","JARDIM IPE","JARDIM IPIRANGA","JARDIM IRACEMA","JARDIM ISAURA","JARDIM LUZ","JARDIM MARIA INES","JARDIM MARIA INEZ","JARDIM MIRAMAR","JARDIM MONT SERRAT","JARDIM MONTE CRISTO","JARDIM NOVA ERA","JARDIM NOVA ERA ACRESCIMO","JARDIM NOVA ERA CONTINUACAO","JARDIM OLIMPICO","JARDIM PALACIOS","JARDIM PARAISO","JARDIM PROGRESSO","JARDIM REPOUSO","JARDIM RIO GRANDE","JARDIM RIVIERA","JARDIM ROSA DO SUL","JARDIM SAO CONRADO","JARDIM TIRADENTES","JARDIM TROPICAL","JARDIM VENEZA","MANSOES PARAISO","MORADA DOS PASSAROS","NOVA CIDADE","NOVA OLINDA","PAPILLON PARK","PAPILLON PARK COMPLEMENTO","PARQUE ATALAIA","PARQUE DAS NACOES","PARQUE FLAMBOYANT","PARQUE HAYALA","PARQUE IBIRAPUERA","PARQUE ITALIA","PARQUE ITATIAIA","PARQUE MONTREAL","PARQUE PRIMAVERA","PARQUE REAL","PARQUE REAL DE GOIANIA","PARQUE RIO DAS PEDRAS","PARQUE SANTA CECILIA","PARQUE TRINDADE","PARQUE TRINDADE II","PARQUE TRINDADE III","PARQUE VEIGA JARDIM","POLO EMPRESARIAL GOIAS","POLO EMPRESARIAL GOIAS ETAPA III","POLO EMPRESARIAL GOIAS ETAPA XIII","PONTAL SUL ACRESCIMO","QUINTA DA BOA VISTA","REAL GRANDEZA 2 ETAPA","RESIDENCIAL BRASICON I","RESIDENCIAL CANDIDO QUEIROZ","RESIDENCIAL CARAIBAS","RESIDENCIAL NORTE SUL","RESIDENCIAL SERRA DAS BRISAS","RESIDENCIAL SOLAR CENTRAL PARK","RESIDENCIAL VILLAGE GARAVELO","RESIDENCIAL VILLAGE GARAVELO 2 ETAPA","RETIRO DO BOSQUE","ROSA DOS VENTOS","SERRA DOURADA","SETOR AEROPORTO SUL","SETOR AEROPORTO SUL 2 ETAPA","SETOR ARAGUAIA","SETOR BELO HORIZONTE","SETOR CENTRAL","SETOR COLINA AZUL","SETOR COLONIAL SUL","SETOR COMENDADOR WALMOR","SETOR CONDE DOS ARCOS","SETOR DOS AFONSOS","SETOR DOS BANDEIRANTES","SETOR DOS ESTADOS","SETOR FABRICIO","SETOR GARAVELO","SETOR JARDIM LUZ","SETOR MARISTA SUL","SETOR OCIDENTE DA VILA BRASILIA","SETOR PLANICIE","SETOR PONTAL SUL","SETOR RESIDENCIAL CAMPOS ELISIOS","SETOR SANTO ANDRE","SETOR SERRA DOURADA 2 ETAPA","SETOR SERRA DOURADA 3 ETAPA","SETOR SERRA DOURADA 3A ETAPA","SETOR SERRA DOURADA 4 ETAPA","SETOR TOCANTINS","SITIO SANTA LUZIA","SITIOS SANTA LUZIA","SITIOS SANTA LUZIA RESIDENCIAL","TERRA DO SOL","TERRA PROMETIDA","VALE DO SOL","VERA CRUZ","VILA ADELIA","VILA ALZIRA","VILA BRASILIA","VILA CRUZEIRO DO SUL","VILA IRMAOS SOUZA","VILA MARIA","VILA MARIANA","VILA NOSSA SENHORA DE LOURDES","VILA OLIVEIRA","VILA REAL","VILA ROSA","VILA SANTA","VILA SANTO ANTONIO","VILA SANTOS DUMONT","VILA SAO JOAQUIM","VILA SAO JORGE","VILA SAO TOMAZ","VILA SUL","VILLA DEIFIORE","VILLA ROMANA","VILLASUL","VIRGINIA PARQUE"],"rotas":["124","125","126","131","132","231","232","233","324","325","331","411","421","431","511","512","513","514","515","521","522","523","524","525","526","527","528","531","532","533","534","535","T17"],"svs":["SV.AP.1","SV.AP.2","SV.AP.3","SV.AT.1","SV.AT.2","SV.AT.3","SV.G1.2","SV.G1.3","SV.G2.3","SV.G3.2","SV.G3.3"],"cons":["ANDRESON SILVA DE JESUS","ANTONIO MARCOS VERAS NASCIMENTO","BRANDON MARQUES DA COSTA SILVA","CRISTIANO JUNIO AUGUSTO ALVES","DIEGO MARTINS DA SILVA","EVELLYN SOUZA AGUIAR DA SILVA","EVELYN SANTOS DUARTE","FELIPE FERREIRA VIEIRA","GABRIEL NASCIMENTO SILVA VIDAL","ISRAEL ARCANJO DE OLIVEIRA FER","JOAO ROBERTO SOARES DOS PASSOS","JOSE APARECIDO RODRIGUES DE SOUZA","KLEBER FERNANDES FERREIRA","KLEBER FERREIRA DE SOUSA","LAYDIANE FRANCIELLE RODRIGUES SOUSA","LUCAS DE CARVALHO RAIMUNDO","LUCIANO SIGUEIRA","MAIKON DOUGLAS CARVALHO PEREIRA","MAIKYLLA ADRIELLY ALVES MARTINS","MARCOS ANTONIO DA SILVA","NATASHA SUELLEN BORGES PEREIRA","NOEMY MOURA SILVA","PAULA DE MORAES CARDOSO","RAFAEL PARAIZO DA SILVA","REGINALDO ALVES DE FARIA","REINALDO ROSA CRUZ","ROTA SEM VENDEDOR","SEBASTIAO LUIS DA SILVA","THIAGO DEMERSON PATRIK SILVA RODRIGUES","WELLINGTON ALVES DA SILVA"],"porDia":30,"diasUteis":22}</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+/* ===========================================================================
+   Band Desenvolvedores — app de campo
+   A base vem embutida e funciona sem internet. As respostas ficam no aparelho
+   e sobem para a planilha assim que houver sinal.
+   =========================================================================== */
+const VERSAO='2.0.1';
+const M=JSON.parse(document.getElementById('M').textContent);
+const DEVS=M.devs,CNAES=M.cnaes,BAIRROS=M.bairros,ROTAS=M.rotas,SVS=M.svs,CONS=M.cons;
+
+/* O acesso agora é pelo servidor: usuário e senha de cada desenvolvedor no
+   Supabase, e um PIN de 4 números no aparelho para o dia a dia. */
+
+const PRION=['Alta','Média','Baixa'];
+/* A faixa vem do canal do PDV, conforme a atividade principal registrada na Receita:
+   é o que melhor indica quanto de bebida o ponto vende. */
+const EXPRIO=['bebidas, bar, mercearia e conveniência',
+              'restaurante, lanchonete e padaria',
+              'demais canais de alimentação'];
+const PRIOK=['pri-a','pri-m','pri-b'];
+const PORTEN={1:'Micro empresa',3:'Pequeno porte',5:'Demais'};
+const PRECN=['CEP exato','quadra do CEP','rua conhecida','setor do CEP',
+             'faixa do CEP','centro do bairro','centro da cidade'];
+const BASE=[];
+/* A carteira NAO vem mais embutida no app (o arquivo fica publico no GitHub e
+   trazia nome, telefone e endereco de todos os PDVs). Ela chega pelo login,
+   so a de cada desenvolvedor, e fica guardada no aparelho. */
+if(document.getElementById('B')){
+  const L=document.getElementById('B').textContent.split('\n');
+  for(const l of L){
+    if(!l)continue;
+    const p=l.split('|');
+    BASE.push({cnpj:p[0],dev:+p[1],dia:+p[2],seq:+p[3],
+      lat:(+p[4])/100000-20,lon:(+p[5])/100000-55,rt:+p[6],sv:+p[7],cons:+p[8],
+      ba:+p[9],cn:+p[10],porte:+p[11],pr:+p[12],prec:+p[13],
+      cep:p[14],tel:p[15],nome:p[16],end:p[17]});
+  }
+}
+document.getElementById('M').remove();
+
+/* O roteiro embutido é o ponto de partida. Quando o coordenador publica um novo
+   pelo painel, o app baixa e passa a usar aquele — sem precisar reinstalar nada. */
+let PLANO=null;
+try{const g=localStorage.getItem('rtm_plano');if(g)PLANO=JSON.parse(g)}catch(e){}
+/* Clientes ativos perto do roteiro de cada dia, enviados pelo painel. */
+let VIZ={};
+function vizinhosDoDia(dia){
+  const k=S.dev+'|'+(dia==null?fDia:dia);
+  return (VIZ&&VIZ[k])?VIZ[k]:[];
+}
+function aplicaPlano(p){
+  if(!p||!Array.isArray(p.clientes))return false;
+  if(!p.clientes.length&&!p.versao)return false;
+  const iCn={},iBa={},iRt={},iSv={},iCo={};
+  const idx=(m,arr,v)=>{if(v==null||v==='')v='—';
+    if(m[v]===undefined){m[v]=arr.length;arr.push(v)}return m[v]};
+  const cn=[],ba=[],rt=[],sv=[],co=[];
+  const novo=p.clientes.map(c=>({
+    cnpj:String(c.cnpj),dev:+c.dev||0,dia:+c.dia||1,seq:+c.seq||1,
+    lat:+c.lat,lon:+c.lon,
+    rt:idx(iRt,rt,c.rota),sv:idx(iSv,sv,c.sv),cons:idx(iCo,co,c.consultor),
+    ba:idx(iBa,ba,c.bairro),cn:idx(iCn,cn,c.cnae),
+    porte:1,pr:+c.prioridade||0,prec:+c.precisao||0,
+    cep:'',tel:c.tel||'',nome:c.nome||'',
+    /* o roteiro publicado não traz o logradouro; sem isso o card fica com uma
+       linha vazia, então usamos bairro e cidade como endereço de referência */
+    end:c.endereco||[c.bairro,c.cidade].filter(Boolean).join(', '),
+    dataPlan:c.data||''}));
+  BASE.length=0;Array.prototype.push.apply(BASE,novo);
+  CNAES.length=0;Array.prototype.push.apply(CNAES,cn);
+  BAIRROS.length=0;Array.prototype.push.apply(BAIRROS,ba);
+  ROTAS.length=0;Array.prototype.push.apply(ROTAS,rt);
+  SVS.length=0;Array.prototype.push.apply(SVS,sv);
+  CONS.length=0;Array.prototype.push.apply(CONS,co);
+  DEVS.length=0;Array.prototype.push.apply(DEVS,p.devs&&p.devs.length?p.devs:
+    [...new Set(novo.map(c=>'Desenvolvedor '+(c.dev+1)))]);
+  if(p.porDia)S.metas.porDia=+p.porDia;
+  for(const k in _amostraDia)delete _amostraDia[k];
+  const cidades=[...new Set(p.clientes.map(c=>c.cidade).filter(Boolean))];
+  VIZ=p.vizinhos||{};
+  PLANO={versao:String(p.versao||''),inicio:p.inicio||'',porDia:p.porDia||30,
+         devs:DEVS.slice(),total:novo.length,baixadoEm:new Date().toISOString(),
+         escopo:p.escopo||(cidades.length===1?cidades[0]
+                 :cidades.length>1?cidades.length+' municípios':'')};
+  try{localStorage.setItem('rtm_plano',JSON.stringify(PLANO));
+      localStorage.setItem('rtm_plano_dados',JSON.stringify(p))}catch(e){}
+  montaCal();
+  return true;
+}
+/* o roteiro guardado é aplicado mais abaixo, depois de o estado (S) existir:
+   antes ele rodava aqui, dava erro em S.metas e os clientes próximos sumiam
+   a cada vez que o app era reaberto */
+
+/* ---------------- calendário de dias úteis, a partir de setembro ---------------- */
+const INICIO=[2026,9,1];
+const FERIADOS=['2026-09-07','2026-10-12','2026-11-02','2026-11-15','2026-11-20','2026-12-25',
+ '2027-01-01','2027-02-15','2027-02-16','2027-04-02','2027-04-21','2027-05-01','2027-05-27',
+ '2027-09-07','2027-10-12','2027-11-02','2027-11-15','2027-11-20','2027-12-25'];
+const SEMANA=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const MESES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+const p2=n=>('0'+n).slice(-2);
+let CAL=[];
+function montaCal(){CAL=(function(){
+  const total=Math.max.apply(null,BASE.map(c=>c.dia))+1,out=[];
+  const d=new Date(Date.UTC(INICIO[0],INICIO[1]-1,INICIO[2]));
+  while(out.length<total){
+    const w=d.getUTCDay(),iso=d.toISOString().slice(0,10);
+    if(w>=1&&w<=5&&FERIADOS.indexOf(iso)<0)
+      out.push({iso,dia:d.getUTCDate(),mes:d.getUTCMonth(),ano:d.getUTCFullYear(),dow:w});
+    d.setUTCDate(d.getUTCDate()+1);
+  }
+  return out;
+})()}
+montaCal();
+/* aceita aaaa-mm-dd ou dd/mm/aaaa e devolve sempre uma data utilizável */
+function isoDe(t){
+  const s=String(t||'');
+  let m=s.match(/^(\d{4})-(\d{2})-(\d{2})/); if(m)return m[1]+'-'+m[2]+'-'+m[3];
+  m=s.match(/^(\d{2})\/(\d{2})\/(\d{4})/); if(m)return m[3]+'-'+m[2]+'-'+m[1];
+  return '';
+}
+const _amostraDia={};
+function amostraDoDia(n){
+  if(_amostraDia[n]!==undefined)return _amostraDia[n];
+  const doDia=BASE.filter(x=>x.dia===n);
+  /* prefere um cliente que sempre foi deste dia: um remarcado pode ter vindo
+     com a data do dia de origem */
+  const r=S.reagendados||{};
+  const proprio=doDia.filter(x=>!r[x.cnpj])[0];
+  return _amostraDia[n]=proprio||doDia[0]||null;
+}
+/* O calendário embutido cobre só o roteiro que veio no app. Um roteiro publicado
+   pode ser mais longo, e aí o número do dia tem que sair da data do próprio plano. */
+function numeroDoDia(n){
+  const t=dataDo(n);
+  if(t)return t.slice(0,2);
+  const c=CAL[n-1];
+  return c?p2(c.dia):String(n);
+}
+function dataDo(n){
+  if(PLANO){
+    const c=amostraDoDia(n),iso=c?isoDe(c.dataPlan):'';
+    if(iso)return iso.slice(8,10)+'/'+iso.slice(5,7);
+  }
+  const c=CAL[n-1];return c?p2(c.dia)+'/'+p2(c.mes+1):'';
+}
+/* Se o roteiro for maior que o calendário, seguimos contando dias úteis
+   a partir do início do plano, em vez de ficar sem data. */
+function isoDoDia(n){
+  const c=BASE.filter(x=>x.dia===n)[0];
+  if(c&&c.dataPlan)return isoDe(c.dataPlan);
+  const k=CAL[n-1];
+  return k?k.iso:'';
+}
+function dowDo(n){
+  if(PLANO){
+    const c=amostraDoDia(n),iso=c?isoDe(c.dataPlan):'';
+    if(iso){
+      const d=new Date(iso+'T12:00:00Z');
+      if(!isNaN(d.getTime()))return SEMANA[d.getUTCDay()]||'';
+    }
+  }
+  const c=CAL[n-1];return c?SEMANA[c.dow]:'';
+}
+function mesDo(n){
+  if(PLANO){
+    const c=amostraDoDia(n),iso=c?isoDe(c.dataPlan):'';
+    if(iso){const m=MESES[+iso.slice(5,7)-1];if(m)return m+'/'+iso.slice(2,4)}
+  }
+  const c=CAL[n-1];return c?MESES[c.mes]+'/'+String(c.ano).slice(2):'';
+}
+function diaDeHoje(){
+  const h=new Date(),iso=h.getFullYear()+'-'+p2(h.getMonth()+1)+'-'+p2(h.getDate());
+  if(PLANO){const c=BASE.filter(x=>isoDe(x.dataPlan)===iso)[0];return c?c.dia:null}
+  for(let i=0;i<CAL.length;i++) if(CAL[i].iso===iso) return i+1;
+  return null;
+}
+/* janela sugerida de atendimento: 15 min por visita, com uma hora de almoço */
+function janela(seq){
+  const i=seq-1, min=8*60+i*15+(i>=16?60:0);
+  const f=m=>p2(Math.floor(m/60))+':'+p2(m%60);
+  return f(min)+' – '+f(min+14);
+}
+
+/* ---------------- estado ---------------- */
+const GUARDA=(function(){try{localStorage.setItem('rtm__t','1');
+  const ok=localStorage.getItem('rtm__t')==='1';localStorage.removeItem('rtm__t');return ok?'ok':'falha'}
+  catch(e){return 'bloqueado'}})();
+const LOCAL=location.protocol==='file:';
+const METAS_PADRAO={porDia:M.porDia,diasMes:M.diasUteis};
+const CHAVE='rtm_campo';
+let S={dev:null,email:'',vis:{},metas:Object.assign({},METAS_PADRAO),sync:{},
+  /* visita começada e ainda não salva: sobrevive a sair do módulo e a fechar o app */
+  andamento:null};
+try{const g=localStorage.getItem(CHAVE);if(g)S=Object.assign(S,JSON.parse(g))}catch(e){}
+if(!S.sync)S.sync={};
+delete S.sync.url;delete S.sync.segredo;
+try{
+  const d=localStorage.getItem('rtm_plano_dados');
+  if(d)aplicaPlano(JSON.parse(d));
+}catch(e){}
+let avisouSave=false;
+function save(){
+  try{localStorage.setItem(CHAVE,JSON.stringify(S))}
+  catch(e){ if(!avisouSave){avisouSave=true;
+      alert('ATENÇÃO: o navegador não está gravando as visitas neste aparelho.\n\n'+
+        'Abra o app pelo endereço https que o gestor enviou, não pelo arquivo baixado.');}
+    toast('Não foi possível salvar no aparelho'); }
+}
+
+let tela_='visitas',cur=null,tmp=null,fDia=null,fQ='',fQc='',modoLista=true,ultimo=null;
+/* histórico de avisos do próprio app, guardado no aparelho */
+function anota(tipo,titulo,texto){
+  if(!S.avisos)S.avisos=[];
+  const t=agora();
+  S.avisos.unshift({tipo,titulo,texto,data:t.data,hora:t.hora,novo:true});
+  if(S.avisos.length>60)S.avisos.length=60;
+  save();
+  const b=$('sinob'); if(b){const n=naoLidos();b.style.display=n?'block':'none';
+    b.textContent=n>99?'99+':n}
+}
+const naoLidos=()=>((S.avisos||[]).filter(a=>a.novo).length)+(MSGS.novas||0);
+let MSGS={lista:[],novas:0};
+const F={st:'todos', pr:new Set(), aprox:false};   /* filtros do módulo de visitas */
+const nFiltros=()=>(F.st!=='todos'?1:0)+(F.pr.size?1:0)+(F.aprox?1:0);
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=n=>Math.round(n||0).toLocaleString('pt-BR');
+let toastT;
+function toast(t){const el=$('toast');el.textContent=t;el.classList.add('on');
+  clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),2600)}
+function agora(){const d=new Date();
+  return {data:p2(d.getDate())+'/'+p2(d.getMonth()+1)+'/'+d.getFullYear(),
+    hora:p2(d.getHours())+':'+p2(d.getMinutes()),iso:d.toISOString(),dow:SEMANA[d.getDay()]}}
+function hav(a,b,c,e){const R=6371,p=Math.PI/180;
+  const x=Math.sin((c-a)*p/2)**2+Math.cos(a*p)*Math.cos(c*p)*Math.sin((e-b)*p/2)**2;
+  return 2*R*Math.asin(Math.sqrt(x))}
+const fmtKm=k=>{const n=Number(k);
+  if(!isFinite(n))return '—';
+  return n<1?Math.round(n*1000)+' m':n.toFixed(1)+' km'};
+/* Coordenada que vale: número de verdade. Vazio, nulo ou texto viram nada.
+   Sem isto, um registro vindo da planilha sem GPS quebrava a tela. */
+function coordOk(g){
+  if(!g)return null;
+  const la=Number(g.lat),lo=Number(g.lon);
+  if(!isFinite(la)||!isFinite(lo)||g.lat===''||g.lat==null||g.lon===''||g.lon==null)
+    return null;
+  return {lat:la,lon:lo,acc:Number(g.acc)||0};
+}
+const coordTxt=g=>{const c=coordOk(g);
+  return c?c.lat.toFixed(6)+', '+c.lon.toFixed(6):'não capturado'};
+const minha=()=>BASE.filter(c=>c.dev===S.dev);
+const reg=c=>S.vis[c.cnpj];
+/* Visita cancelada e remarcada não conta como feita: ela volta a ser pendente
+   no dia para onde foi. O registro do cancelamento continua na planilha. */
+const feito=c=>{const v=S.vis[c.cnpj];return !!v&&!v.reagendada};
+const remarcada=c=>{const v=S.vis[c.cnpj];return !!(v&&v.reagendada)};
+
+/* ---------------- ícones ---------------- */
+const IC={
+ busca:'<path d="M11 19a8 8 0 100-16 8 8 0 000 16zM21 21l-4.3-4.3"/>',
+ filtro:'<path d="M3 5h18M6 12h12M10 19h4"/>',
+ lista:'<path d="M4 6h16M4 12h16M4 18h16"/>',
+ mapa:'<path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/>',
+ pessoa:'<path d="M12 12a4 4 0 100-8 4 4 0 000 8z"/><path d="M4 21a8 8 0 0116 0"/>',
+ fone:'<path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .4 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.2a2 2 0 012.1-.5c.9.3 1.8.6 2.8.7a2 2 0 011.7 2z"/>',
+ rota:'<path d="M12 2l9 20-9-5-9 5 9-20z"/>',
+ seta:'<path d="M9 6l6 6-6 6"/>',
+ relogio:'<circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3.5 2"/>',
+ xis:'<circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/>',
+ play:'<path d="M8 5l11 7-11 7V5z"/>',
+ lapis:'<path d="M4 20h4l10-10-4-4L4 16v4z"/><path d="M14 6l4 4"/>',
+ sino:'<path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/>',
+ conferido:'<circle cx="12" cy="12" r="9"/><path d="M8.2 12.4l2.6 2.6 5-5.4"/>',
+ calend:'<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17"/>'+
+   '<path d="M8 3.2v3.4M16 3.2v3.4"/>',
+ filtro:'<path d="M4 6.5h16M7 12h10M10 17.5h4"/>',
+ lupa:'<circle cx="11" cy="11" r="6.5"/><path d="M15.8 15.8L21 21"/>',
+ seta2:'<path d="M4 12h15"/><path d="M13 6l6 6-6 6"/>',
+ pino:'<path d="M12 21s7-6.4 7-11a7 7 0 10-14 0c0 4.6 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/>',
+ loja:'<path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.6V20h14V9.6"/><path d="M9.6 20v-5.4h4.8V20"/>',
+ chave:'<circle cx="8" cy="12" r="4"/><path d="M12 12h9l-2 2.5"/><path d="M17.5 12v3"/>',
+ pedido:'<path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h6M9 17h6"/>',
+ grafico:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+ alvo:'<path d="M12 21a9 9 0 100-18 9 9 0 000 18z"/><path d="M12 16a4 4 0 100-8 4 4 0 000 8z"/>',
+ nuvem:'<path d="M18 16a4 4 0 000-8 6 6 0 00-11.6 2A3.5 3.5 0 006 16h12z"/><path d="M12 12v7M9 16l3 3 3-3"/>',
+ sair:'<path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/>',
+ chave:'<path d="M14.5 9.5a4 4 0 10-3.9 4.9l-.6.6H8v2H6v2H3v-3l6.1-6.1a4 4 0 005.4-.4z"/>',
+ sino:'<path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/>',
+ aviso:'<path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L2.4 17a2 2 0 001.7 3h15.8a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/>',
+ ok:'<path d="M20 6L9 17l-5-5"/>',
+ foto:'<path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/>',
+ sinc:'<path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0115-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 01-15 6.7L3 16"/>'};
+const svg=(k,w)=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="'+
+  (w||1.9)+'" stroke-linecap="round" stroke-linejoin="round">'+IC[k]+'</svg>';
+
+/* ---------------- login ---------------- */
+let verSenha=false;
+/* o olho fechado ganha o traço em diagonal */
+const olhoSvg=aberto=>
+  '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" '+
+  'stroke-width="1.9" stroke-linecap="round">'+
+  '<path d="M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12z"/>'+
+  '<circle cx="12" cy="12" r="3.2"/>'+(aberto?'<path d="M3 21L21 3"/>':'')+'</svg>';
+/* ---------------- servidor (Supabase) ----------------
+   O app fala com o banco do RTM no Supabase do merch. A chave abaixo é a
+   publicável, feita para ficar no app: o que protege os dados é o login de
+   cada um e as regras do banco (cada desenvolvedor só alcança o que é dele). */
+const SUPA={url:'https://kqpdledhaghuzuwjkvrf.supabase.co',chave:'sb_publishable_dMdB5b_G5X5TnXemexGIXQ_GWXS6cid'};
+const K_SESSAO='rtm_sessao',K_PIN='rtm_pin';
+let SESSAO=null;try{SESSAO=JSON.parse(localStorage.getItem(K_SESSAO)||'null')}catch(e){}
+let DESBLOQ=false;
+function guardaSessao(j){
+  SESSAO=j?{access_token:j.access_token,refresh_token:j.refresh_token,
+    expira:Date.now()+((+j.expires_in||3600)*1000)}:null;
+  try{SESSAO?localStorage.setItem(K_SESSAO,JSON.stringify(SESSAO)):localStorage.removeItem(K_SESSAO)}
+  catch(e){}
+}
+function erroDe(j,status){
+  const m=String((j&&(j.message||j.msg||j.error_description||j.error))||('erro '+status));
+  if(/Invalid login credentials|invalid_credentials|invalid_grant/i.test(m))
+    return 'E-mail ou senha incorretos.';
+  return m;
+}
+async function pede(caminho,opc){
+  let r;
+  try{ r=await fetch(SUPA.url+caminho,opc) }
+  catch(e){ throw new Error('Sem conexão com o servidor.') }
+  const t=await r.text();let j=null;try{j=t?JSON.parse(t):null}catch(e){}
+  return {ok:r.ok,status:r.status,j,t};
+}
+function semSessao(){
+  const e=new Error('Sua sessão expirou. Entre de novo com a senha.');e.semSessao=true;return e;
+}
+async function autentica(email,senha){
+  const r=await pede('/auth/v1/token?grant_type=password',{method:'POST',
+    headers:{apikey:SUPA.chave,'Content-Type':'application/json'},
+    body:JSON.stringify({email,password:senha})});
+  if(!r.ok)throw new Error(erroDe(r.j,r.status));
+  guardaSessao(r.j);
+}
+/* uma renovação por vez: o servidor só aceita cada chave de renovação uma vez */
+let renovando=null;
+function renova(){
+  if(renovando)return renovando;
+  if(!SESSAO||!SESSAO.refresh_token)return Promise.reject(semSessao());
+  renovando=pede('/auth/v1/token?grant_type=refresh_token',{method:'POST',
+      headers:{apikey:SUPA.chave,'Content-Type':'application/json'},
+      body:JSON.stringify({refresh_token:SESSAO.refresh_token})})
+    .then(r=>{
+      if(r.ok){guardaSessao(r.j);return}
+      if(r.status>=400&&r.status<500){guardaSessao(null);throw semSessao()}
+      throw new Error(erroDe(r.j,r.status));
+    })
+    .finally(()=>{renovando=null});
+  return renovando;
+}
+async function token(){
+  if(!SESSAO)throw semSessao();
+  if(Date.now()>SESSAO.expira-60000)await renova();
+  return SESSAO.access_token;
+}
+/* chama uma função do banco do RTM */
+async function rpc(nome,args,tentou){
+  const tk=await token();
+  const r=await pede('/rest/v1/rpc/'+nome,{method:'POST',headers:{apikey:SUPA.chave,
+    Authorization:'Bearer '+tk,'Content-Type':'application/json',
+    'Content-Profile':'rtm','Accept-Profile':'rtm'},body:JSON.stringify(args||{})});
+  if(r.status===401&&!tentou){await renova();return rpc(nome,args,true)}
+  if(r.status===401){guardaSessao(null);throw semSessao()}
+  if(!r.ok)throw new Error(erroDe(r.j,r.status));
+  return r.j;
+}
+const caminhoUrl=c=>String(c).split('/').map(encodeURIComponent).join('/');
+/* sobe um arquivo para a pasta rtm-fotos. Se ele já tinha subido numa tentativa
+   anterior (o servidor responde "já existe"), conta como enviado. */
+async function sobeArquivo(caminho,blob,tipo,tentou){
+  const tk=await token();
+  const r=await pede('/storage/v1/object/rtm-fotos/'+caminhoUrl(caminho),{method:'POST',
+    headers:{apikey:SUPA.chave,Authorization:'Bearer '+tk,'Content-Type':tipo||'image/jpeg',
+      'x-upsert':'false'},body:blob});
+  if(r.ok)return true;
+  if(/Duplicate|already exists/i.test(r.t||''))return true;
+  if(!tentou&&(r.status===401||/jwt|token/i.test(r.t||''))){
+    await renova();return sobeArquivo(caminho,blob,tipo,true)}
+  throw new Error(erroDe(r.j,r.status));
+}
+/* As fotos são privadas: para mostrar, o servidor dá um link que vale 1 hora. */
+const ASSIN={};let assinT=null;
+const PIXEL='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+function assina(cam){
+  const a=ASSIN[cam]; if(a&&(a.pedindo||a.ate>Date.now()))return;
+  ASSIN[cam]={pedindo:true,ate:0};
+  token().then(tk=>pede('/storage/v1/object/sign/rtm-fotos/'+caminhoUrl(cam),{method:'POST',
+      headers:{apikey:SUPA.chave,Authorization:'Bearer '+tk,'Content-Type':'application/json'},
+      body:JSON.stringify({expiresIn:3600})}))
+   .then(r=>{
+     const u=r.ok&&r.j&&(r.j.signedURL||r.j.signedUrl);
+     if(!u)throw new Error('sem link');
+     ASSIN[cam]={url:/^https?:/.test(u)?u:SUPA.url+'/storage/v1'+u,ate:Date.now()+50*60000};
+     clearTimeout(assinT);
+     assinT=setTimeout(()=>{if(DESBLOQ&&tela_!=='form')render()},150);
+   })
+   .catch(()=>{ASSIN[cam]={ate:Date.now()+60000,url:''}});
+}
+/* a foto de uma visita: a do aparelho, se ainda estiver aqui; senão a do servidor */
+function fotoDe(cnpj,v,largura){
+  const l=leFoto(cnpj); if(l)return l;
+  if(v&&v.fotoCaminho)return linkImagem('rtm:'+v.fotoCaminho,largura);
+  if(v&&v.fotoUrl)return linkImagem(v.fotoUrl,largura);
+  return '';
+}
+function meuNome(){return S.nome||DEVS[S.dev]||S.login||''}
+
+/* ---------------- entrada: senha, senha própria e PIN ---------------- */
+function telaEntrada(erro,corpo){
+  $('login').classList.add('on');
+  $('login').innerHTML=
+   '<div class="marca"><div class="pts"><i></i><i></i><i></i><i></i></div>'+
+   '<h1>Band</h1><p>DESENVOLVEDORES</p></div>'+
+   '<div class="campos">'+
+     '<div class="err'+(erro?' on':'')+'">'+esc(erro||'')+'</div>'+corpo+
+     '<div class="ver">Versão '+VERSAO+' · '+esc(M.cidade)+'</div>'+
+   '</div>';
+}
+function campoSenha(id,rotulo,ph,auto){
+  return '<div class="senha"><label for="'+id+'">'+rotulo+'</label>'+
+    '<input id="'+id+'" type="password" autocomplete="'+auto+'" placeholder="'+ph+'">'+
+    '<button class="olho" data-alvo="'+id+'" aria-label="Mostrar senha">'+olhoSvg(false)+'</button></div>';
+}
+function ligaOlhos(){
+  document.querySelectorAll('#login .olho').forEach(b=>{
+    b.onclick=()=>{
+      const c=$(b.dataset.alvo),ver=c.type==='password';
+      c.type=ver?'text':'password';
+      b.setAttribute('aria-label',ver?'Esconder senha':'Mostrar senha');
+      b.innerHTML=olhoSvg(ver);c.focus();
+    };
+  });
+}
+function pintaLogin(erro){
+  DESBLOQ=false;
+  telaEntrada(erro,
+     '<label for="lemail">E-mail</label>'+
+     '<input id="lemail" type="email" inputmode="email" autocomplete="username" '+
+       'placeholder="dc1@band.com.br" value="'+esc(S.email||'')+'">'+
+     campoSenha('lsenha','Senha','Digite a senha','current-password')+
+     '<button class="entrar" id="lentrar">Entrar</button>'+
+     '<div class="aj">Esqueceu a senha? <b id="lajuda">Fale com o coordenador</b></div>');
+  ligaOlhos();
+  $('lentrar').onclick=entrar;
+  $('lajuda').onclick=()=>toast('O coordenador volta a sua senha para a padrão pelo painel');
+  $('lsenha').onkeydown=e=>{if(e.key==='Enter')entrar()};
+}
+async function entrar(){
+  const em=($('lemail').value||'').trim().toLowerCase();
+  const se=($('lsenha').value||'').trim();
+  S.email=em;
+  if(!em||!se)return pintaLogin('Preencha e-mail e senha.');
+  if(!navigator.onLine)return pintaLogin('Sem internet. Para entrar com a senha é preciso conexão.');
+  const b=$('lentrar');b.disabled=true;b.textContent='Entrando…';
+  try{
+    await autentica(em,se);
+    const q=await rpc('quem_sou');
+    if(q.papel!=='desenvolvedor'){
+      await saiDoServidor();
+      return pintaLogin('Esta conta não é de desenvolvedor. Use o painel do RTM.');
+    }
+    if(S.login&&S.login!==q.login){
+      const fila=pendentes().length;
+      if(fila){
+        await saiDoServidor();
+        return pintaLogin('Este aparelho tem '+fila+' visita(s) de '+S.login+
+          ' ainda não enviadas. Entre como '+S.login+' e envie antes de trocar.');
+      }
+      trocaDeUsuario();
+    }
+    S.login=q.login;S.nome=q.nome;S.email=em;save();
+    if(q.precisaCriarSenha)return pintaNovaSenha();
+    const p=lePin();
+    if(!p||p.login!==S.login)return pintaCriaPin();
+    entraNoApp();
+  }catch(e){
+    /* entrou no servidor mas não passou na conferência: a sessão não fica */
+    if(SESSAO)await saiDoServidor();
+    pintaLogin(e.message||'Não consegui entrar.');
+  }
+}
+/* outro desenvolvedor vai usar este aparelho: nada do anterior fica à vista */
+function trocaDeUsuario(){
+  S.vis={};S.andamento=null;S.reagendados={};S.avisos=[];S.msgVistas=[];S.dev=null;
+  S.sync={};
+  try{
+    Object.keys(localStorage).filter(k=>k.indexOf('rtm_foto_')===0||k==='rtm_plano'||
+      k==='rtm_plano_dados'||k===K_PIN).forEach(k=>localStorage.removeItem(k));
+  }catch(e){}
+  BASE.length=0;PLANO=null;VIZ={};MSGS.lista=[];MSGS.novas=0;FEITAS.lista=null;
+}
+function pintaNovaSenha(erro){
+  telaEntrada(erro,
+    '<p class="dica">Primeiro acesso: crie a sua senha, com pelo menos 6 caracteres. '+
+      'Ela substitui a senha padrão.</p>'+
+    campoSenha('lnova','Nova senha','Pelo menos 6 caracteres','new-password')+
+    campoSenha('lrep','Repita a nova senha','Digite de novo','new-password')+
+    '<button class="entrar" id="lentrar">Salvar senha</button>');
+  ligaOlhos();
+  $('lentrar').onclick=salvaNovaSenha;
+  $('lrep').onkeydown=e=>{if(e.key==='Enter')salvaNovaSenha()};
+}
+async function salvaNovaSenha(){
+  const a=$('lnova').value,b=$('lrep').value;
+  if(a.length<6)return pintaNovaSenha('A senha precisa ter pelo menos 6 caracteres.');
+  if(a!==b)return pintaNovaSenha('As duas senhas não são iguais.');
+  const bt=$('lentrar');bt.disabled=true;bt.textContent='Salvando…';
+  try{ await rpc('trocar_minha_senha',{p_nova:a}); pintaCriaPin() }
+  catch(e){ if(e.semSessao)return pintaLogin(e.message); pintaNovaSenha(e.message) }
+}
+function campoPin(id,rotulo){
+  return '<label for="'+id+'">'+rotulo+'</label>'+
+    '<input id="'+id+'" class="pin" type="password" inputmode="numeric" pattern="[0-9]*" '+
+    'maxlength="4" autocomplete="off" placeholder="••••">';
+}
+function pintaCriaPin(erro){
+  telaEntrada(erro,
+    '<p class="dica">Crie um PIN de 4 números. No dia a dia você entra só com ele, '+
+      'mesmo sem internet.</p>'+
+    campoPin('lpin','PIN')+campoPin('lpin2','Repita o PIN')+
+    '<button class="entrar" id="lentrar">Criar PIN</button>');
+  $('lentrar').onclick=salvaPin;
+  $('lpin2').onkeydown=e=>{if(e.key==='Enter')salvaPin()};
+}
+async function hashPin(pin,sal){
+  const dados=new TextEncoder().encode(sal+'|'+pin);
+  if(window.crypto&&crypto.subtle){
+    const b=await crypto.subtle.digest('SHA-256',dados);
+    return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');
+  }
+  let h=0;for(const c of dados)h=(h*31+c)|0;return 'x'+h;
+}
+function lePin(){try{return JSON.parse(localStorage.getItem(K_PIN)||'null')}catch(e){return null}}
+async function salvaPin(){
+  const a=$('lpin').value,b=$('lpin2').value;
+  if(!/^\d{4}$/.test(a))return pintaCriaPin('O PIN tem 4 números.');
+  if(a!==b)return pintaCriaPin('Os dois PINs não são iguais.');
+  if(/^(\d)\1{3}$/.test(a)||a==='1234')return pintaCriaPin('Escolha um PIN menos óbvio.');
+  const sal=Math.random().toString(36).slice(2)+Date.now().toString(36);
+  try{localStorage.setItem(K_PIN,JSON.stringify({login:S.login,sal,hash:await hashPin(a,sal),erros:0}))}
+  catch(e){return pintaCriaPin('O navegador não deixou guardar o PIN.')}
+  entraNoApp();
+}
+function pintaPin(erro){
+  telaEntrada(erro,
+    '<p class="dica">Olá, <b>'+esc(meuNome())+'</b>. Digite o seu PIN.</p>'+
+    campoPin('lpin','PIN')+
+    '<button class="entrar" id="lentrar">Entrar</button>'+
+    '<div class="aj">Esqueceu o PIN? <b id="lajuda">Entrar com a senha</b></div>');
+  $('lentrar').onclick=confere;
+  $('lpin').onkeydown=e=>{if(e.key==='Enter')confere()};
+  $('lpin').oninput=()=>{if($('lpin').value.length===4)confere()};
+  $('lajuda').onclick=()=>{try{localStorage.removeItem(K_PIN)}catch(e){}pintaLogin()};
+}
+let conferindo=false;
+async function confere(){
+  const p=lePin(),v=$('lpin').value;
+  if(!p)return pintaLogin();
+  /* o PIN confere sozinho ao digitar o 4o número; tocar em Entrar logo depois
+     não pode contar como uma segunda tentativa errada */
+  if(conferindo)return;
+  if(!/^\d{4}$/.test(v))return pintaPin('Digite os 4 números do PIN.');
+  conferindo=true;
+  try{ return await confere2(p,v) } finally { conferindo=false }
+}
+async function confere2(p,v){
+  if(await hashPin(v,p.sal)===p.hash){
+    p.erros=0;try{localStorage.setItem(K_PIN,JSON.stringify(p))}catch(e){}
+    return entraNoApp();
+  }
+  p.erros=(p.erros||0)+1;
+  if(p.erros>=5){
+    try{localStorage.removeItem(K_PIN)}catch(e){}
+    guardaSessao(null);
+    return pintaLogin('PIN errado 5 vezes. Entre com a sua senha.');
+  }
+  try{localStorage.setItem(K_PIN,JSON.stringify(p))}catch(e){}
+  pintaPin('PIN errado. Restam '+(5-p.erros)+' tentativa(s).');
+}
+/* qual tela de entrada mostrar ao abrir o app */
+function abreEntrada(){
+  const p=lePin();
+  if(SESSAO&&S.login&&p&&p.login===S.login)return pintaPin();
+  if(!SESSAO&&S.login&&p)return pintaLogin('Sua sessão expirou. Entre de novo com a senha.');
+  pintaLogin();
+}
+function entraNoApp(){
+  DESBLOQ=true;
+  $('login').classList.remove('on');
+  fDia=diaSugerido();tela('visitas');
+  sincroniza(true);
+  enviar(true);
+  setTimeout(()=>reenviaFotos(true),1500);
+}
+/* a sessão caiu (senha trocada pelo coordenador, por exemplo): as visitas
+   continuam guardadas; ao sair do formulário, pede a senha de novo */
+function sessaoPerdida(){
+  guardaSessao(null);
+  anota('envio','Entre de novo com a senha',
+    'Sua sessão no servidor expirou. As visitas continuam guardadas no aparelho e '+
+    'sobem assim que você entrar de novo.');
+  if(tela_!=='form'&&tela_!=='plano')pintaLogin('Sua sessão expirou. Entre de novo com a senha.');
+  else toast('Sessão expirada: ao terminar, entre de novo com a senha');
+}
+async function saiDoServidor(){
+  const tk=SESSAO&&SESSAO.access_token;
+  guardaSessao(null);
+  if(tk)pede('/auth/v1/logout',{method:'POST',
+    headers:{apikey:SUPA.chave,Authorization:'Bearer '+tk}}).catch(()=>{});
+}
+function sair(){
+  if(pendentes().length&&!confirm('Há '+pendentes().length+
+    ' visita(s) ainda não enviadas. Elas ficam guardadas neste aparelho. Sair mesmo assim?'))return;
+  fecharGaveta();
+  try{localStorage.removeItem(K_PIN)}catch(e){}
+  saiDoServidor();save();pintaLogin();
+}
+function diaSugerido(){
+  const m=minha(),max=Math.max.apply(null,m.map(c=>c.dia)),h=diaDeHoje();
+  if(h&&h<=max)return h;
+  for(let d=1;d<=max;d++) if(m.filter(c=>c.dia===d).some(c=>!feito(c)))return d;
+  return 1;
+}
+
+/* ---------------- envio para a nuvem ---------------- */
+let enviando=false,refazer=false,retentar=null;
+const pendentes=()=>Object.keys(S.vis).filter(k=>!S.vis[k].enviado&&!S.vis[k].recusada);
+function pacote(ids){
+  return ids.map(cnpj=>{
+    const c=BASE.filter(x=>x.cnpj===cnpj)[0]||{},v=S.vis[cnpj];
+    const o=Object.assign({cnpj,bairro:BAIRROS[c.ba],cidade:M.cidade,cep:c.cep,
+      endereco:c.end,cnae:CNAES[c.cn],consultor:CONS[c.cons]},v);
+    ['enviado','daBase','recusada','fotoEnviada','fotoCaminhoPrevisto'].forEach(k=>delete o[k]);
+    return o;});
+}
+/* Manda as visitas pendentes, até 200 por vez. Agora o servidor responde de
+   verdade: só marca como enviada a que ele confirmou. A que ele recusar (CNPJ
+   inválido) sai da fila com um aviso, em vez de ficar tentando para sempre. */
+function enviar(silencioso){
+  if(!SESSAO){if(!silencioso)toast('Entre com a sua senha para enviar');return}
+  if(enviando){refazer=true;return}
+  const ids=pendentes().slice(0,200);
+  if(!ids.length){if(!silencioso)toast('Tudo já enviado');return}
+  if(!navigator.onLine){if(!silencioso)toast('Sem conexão — sobe sozinho depois');return}
+  enviando=true;
+  if(!silencioso)toast('Enviando '+ids.length+'…');
+  rpc('gravar_visitas',{p_visitas:pacote(ids)})
+  .then(j=>{
+    const rec={};(j.recusadas||[]).forEach(r=>rec[String(r.cnpj)]=r.motivo||'recusada');
+    let ok=0;
+    ids.forEach(k=>{const v=S.vis[k];if(!v)return;
+      if(rec[k]){v.recusada=rec[k]}else{v.enviado=true;ok++}});
+    const nr=Object.keys(rec).length;
+    if(nr)anota('envio','Visita não aceita pelo servidor',
+      nr+' visita(s) não entraram ('+Object.keys(rec).slice(0,3).map(k=>k+': '+rec[k]).join('; ')+
+      '). Mostre este aviso ao coordenador.');
+    if((j.avisos||[]).length)anota('envio','Campo não reconhecido',
+      'Em '+j.avisos.length+' visita(s) algum campo não pôde ser lido ('+
+      j.avisos.slice(0,3).map(a=>a.cnpj+': '+(a.campos||[]).join(', ')).join('; ')+').');
+    S.sync.ultimo=agora().data+' '+agora().hora;save();enviando=false;
+    if(ok>=5)anota('envio','Visitas enviadas',fmt(ok)+' visitas subiram para a base.');
+    if(!silencioso)toast(ok+' visita(s) enviada(s)'+(nr?', '+nr+' recusada(s)':''));
+    atualizaTela();
+    if(refazer||pendentes().length){refazer=false;setTimeout(()=>enviar(silencioso),120)}
+  })
+  .catch(e=>{
+    enviando=false;
+    if(e.semSessao)return sessaoPerdida();
+    if(!silencioso)toast('Falhou o envio: '+e.message+' — tentaremos de novo');
+    clearTimeout(retentar);retentar=setTimeout(()=>enviar(true),15000);
+  });
+}
+/* mensagens e roteiro chegam juntos na sincronização */
+function buscaMensagens(silencioso){sincroniza(silencioso)}
+const chaveMsg=m=>String(m.id||(m.data+m.titulo));
+
+/* Links do Drive vêm em formatos que não carregam dentro de uma tag de imagem.
+   Aqui qualquer variação é convertida para o formato que funciona. */
+function linkImagem(u,largura){
+  const t=String(u||'');
+  if(!t)return '';
+  /* foto ou imagem guardada na pasta privada do RTM */
+  if(t.indexOf('rtm:')===0){
+    const cam=t.slice(4),a=ASSIN[cam];
+    if(a&&a.url&&a.ate>Date.now())return a.url;
+    assina(cam);return PIXEL;
+  }
+  const m=t.match(/[-\w]{25,}/);
+  if(/drive\.google\.com|googleusercontent/.test(t)&&m)
+    return 'https://drive.google.com/thumbnail?id='+m[0]+'&sz=w'+(largura||1200);
+  return t;
+}
+
+/* Avisa o desenvolvedor de verdade: notificação do sistema quando ele deu
+   permissão, mais vibração e um aviso na tela. Sem serviço de push próprio,
+   isso acontece quando o app está aberto ou volta a ficar em primeiro plano. */
+function alertaMsg(m,quantas){
+  try{ if(navigator.vibrate)navigator.vibrate([220,110,220]) }catch(e){}
+  const titulo=quantas>1?quantas+' mensagens novas':(m.titulo||'Mensagem da coordenação');
+  const corpo=quantas>1?(m.titulo||''):(m.texto||'');
+  notificaSistema(titulo,corpo,/^https?:/.test(m.imagem||'')?m.imagem:'');
+  toast(quantas>1?quantas+' mensagens novas':'Nova mensagem: '+(m.titulo||''));
+}
+function notificaSistema(titulo,corpo,img){
+  if(typeof Notification==='undefined')return;
+  const mostra=()=>{
+    try{
+      const opc={body:corpo,tag:'coordenacao',renotify:true,
+        icon:img||undefined,badge:undefined,vibrate:[220,110,220]};
+      if(navigator.serviceWorker&&navigator.serviceWorker.ready){
+        navigator.serviceWorker.ready
+         .then(r=>r.showNotification(titulo,opc))
+         .catch(()=>{try{new Notification(titulo,opc)}catch(e){}});
+      }else{ new Notification(titulo,opc) }
+    }catch(e){}
+  };
+  if(Notification.permission==='granted')mostra();
+  else if(Notification.permission!=='denied')
+    Notification.requestPermission().then(p=>{if(p==='granted')mostra()});
+}
+function pedePermissaoAviso(){
+  if(typeof Notification==='undefined')
+    return toast('Este navegador não mostra alertas do sistema');
+  if(Notification.permission==='granted')return toast('Alertas já estão liberados');
+  Notification.requestPermission().then(p=>
+    toast(p==='granted'?'Alertas liberados':'Você recusou os alertas'));
+}
+/* recibo: recebido agora, e lido quando ele abre a tela de notificações */
+/* Os recibos são acumulados e vão num único envio, meio segundo depois.
+   Antes cada mensagem custava uma ida ao servidor. */
+let filaRecibo={recebidos:[],lidos:[]},reciboT=null;
+function recibo(msgId,lido){
+  if(!msgId)return;
+  const l=lido?filaRecibo.lidos:filaRecibo.recebidos;
+  if(l.indexOf(msgId)<0)l.push(msgId);
+  clearTimeout(reciboT);
+  reciboT=setTimeout(mandaRecibos,500);
+}
+function mandaRecibos(){
+  if(!SESSAO||!navigator.onLine)return;
+  [['recebidos',false],['lidos',true]].forEach(([campo,lido])=>{
+    const ids=filaRecibo[campo];
+    if(!ids.length)return;
+    filaRecibo[campo]=[];
+    rpc('registrar_recibos',{p_ids:ids,p_lido:lido})
+      .catch(()=>{ids.forEach(i=>{if(filaRecibo[campo].indexOf(i)<0)filaRecibo[campo].push(i)})});
+  });
+}
+/* Uma chamada só traz roteiro e mensagens. Antes eram três idas ao servidor,
+   e cada ida ao Apps Script leva alguns segundos. */
+let sincronizando=false;
+function sincroniza(silencioso,restaurar){
+  if(!SESSAO){if(!silencioso)toast('Entre com a sua senha para sincronizar');return}
+  if(sincronizando){if(!silencioso)toast('Sincronizando…');return}
+  if(!navigator.onLine){if(!silencioso)toast('Sem conexão — sincroniza quando voltar o sinal');return}
+  sincronizando=true;
+  if(!silencioso)girando(true);
+  const t0=Date.now();
+  /* Sem nenhuma visita guardada aqui, pedimos as que a base já tem deste
+     desenvolvedor. É o que salva o dia quando troca de celular. */
+  const precisaRestaurar=!!restaurar||!Object.keys(S.vis).length;
+  rpc('sincronizar',{p_versao:PLANO?PLANO.versao:null,p_restaurar:precisaRestaurar})
+   .then(j=>{
+     const novidade=[];
+     if(j.eu){S.nome=j.eu.nome||S.nome;S.login=j.eu.login||S.login}
+     /* roteiro: o servidor manda só os meus clientes */
+     if(j.plano&&Array.isArray(j.plano.clientes)){
+       const p=j.plano;
+       if(aplicaPlano(p)){
+         S.dev=p.meuDev==null?-1:+p.meuDev;
+         aplicaReagendados();
+         fDia=diaSugerido();
+         if(BASE.length){
+           anota('roteiro','Roteiro atualizado',
+             fmt(BASE.length)+' clientes na sua carteira, '+(p.porDia||S.metas.porDia)+
+             ' por dia, começando em '+((p.inicio||'').split('-').reverse().join('/'))+'.');
+           novidade.push('roteiro novo com '+fmt(BASE.length)+' clientes');
+         }else{
+           anota('roteiro','Você não está no roteiro publicado',
+             'O roteiro '+(p.versao||'')+' não tem clientes para você. Fale com o coordenador.');
+           novidade.push('roteiro novo sem clientes para você');
+         }
+       }
+     }
+     /* mensagens */
+     if(j.mensagens){
+       j.mensagens.forEach(m=>{if(!m.imagem&&m.imagemCaminho)m.imagem='rtm:'+m.imagemCaminho});
+       MSGS.lista=j.mensagens;
+       const vistas=S.msgVistas||[];
+       const novas=j.mensagens.filter(m=>vistas.indexOf(chaveMsg(m))<0);
+       MSGS.novas=novas.length;
+       novas.forEach(m=>{if(m.id)recibo(m.id,false)});
+       if(novas.length){
+         alertaMsg(novas[0],novas.length);
+         novidade.push(novas.length+(novas.length>1?' mensagens novas':' mensagem nova'));
+       }
+     }
+     /* visitas que estão na base e não neste aparelho voltam para cá
+        (o servidor só manda as deste desenvolvedor) */
+     if(j.visitas&&j.visitas.length){
+       let voltaram=0;
+       j.visitas.forEach(v=>{
+         const k=String(v.cnpj);
+         if(S.vis[k])return;
+         S.vis[k]=Object.assign({},v,{enviado:true,daBase:true,
+           temFoto:!!(v.fotoCaminho||v.fotoUrl),fotoEnviada:true});
+         delete S.vis[k].cnpj;
+         voltaram++;
+       });
+       if(voltaram){
+         novidade.push(voltaram+' visita(s) recuperada(s) da base');
+         anota('envio','Visitas recuperadas',
+           voltaram+' visita(s) que estavam na base voltaram para este aparelho.');
+       }
+     }
+     S.sync.ultimaBusca=agora().hora; save();
+     if(!silencioso)
+       toast(novidade.length?novidade.join(' e '):'Tudo em dia ('+(Date.now()-t0)+' ms)');
+     render();
+   })
+   .catch(e=>{
+     if(e.semSessao)return sessaoPerdida();
+     if(!silencioso)toast('Não consegui sincronizar: '+(e.message||'sem conexão'));
+   })
+   .finally(()=>{sincronizando=false;girando(false)});
+}
+function girando(on){
+  const b=$('bsinc'); if(!b)return;
+  b.classList.toggle('girando',!!on);
+  b.disabled=!!on;
+}
+function buscaPlano(silencioso){sincroniza(silencioso)}
+window.addEventListener('online',()=>{if(DESBLOQ){enviar(true);setTimeout(()=>reenviaFotos(true),800)}});
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden||!DESBLOQ)return;
+  enviar(true);
+  /* voltando ao app, busca na hora em vez de esperar o próximo ciclo */
+  if(DESBLOQ)sincroniza(true);
+});
+setInterval(()=>{if(!DESBLOQ)return;if(pendentes().length)enviar(true);reenviaFotos(true)},45000);
+/* procura mensagens novas de minuto em minuto com o app aberto */
+/* enquanto o app está aberto, procura novidade a cada 25 segundos */
+setInterval(()=>{if(DESBLOQ&&!document.hidden)sincroniza(true)},25000);
+
+/* ---------------- estrutura da tela ---------------- */
+const TITULOS={visitas:'Visitas',clientes:'Clientes',resultados:'Indicadores',
+  base:'Conta e envio',plano:'Plano de visita',cancelar:'Cancelar visita',
+  perto:'Na região de hoje',feitas:'Visitas feitas',feita:'Visita',
+  form:'Visita',ok:'Visita registrada',
+  avisos:'Notificações',aviso:'Mensagem'};
+/* O botão físico de voltar precisa navegar dentro do app, não sair dele.
+   Cada tela empilha um estado no histórico do navegador. */
+let pilha=[];
+function tela(t,semHistorico){
+  tela_=t;$('app').scrollTop=0;
+  if(!semHistorico){
+    pilha.push(t);
+    try{history.pushState({t,i:pilha.length},'','#'+t)}catch(e){}
+  }
+  render();
+}
+window.addEventListener('popstate',()=>{
+  if($('folha').classList.contains('on')){fecharFolha();empilha();return}
+  if($('gav').classList.contains('on')){fecharGaveta();empilha();return}
+  if(tela_==='form'){
+    if(confirm('Sair desta visita sem salvar?')){tela_='visitas';render()}
+    empilha();return;
+  }
+  /* do detalhe da mensagem, voltar leva à lista de notificações, não à raiz */
+  if(tela_==='aviso'){tela_='avisos';render();empilha();return}
+  if(tela_!=='visitas'){tela_='visitas';render();empilha();return}
+  /* já está na tela inicial: mantém o app aberto */
+  empilha();
+});
+function empilha(){try{history.pushState({t:tela_},'','#'+tela_)}catch(e){}}
+function render(){
+  try{ renderInterno() }
+  catch(err){
+    console.error(err);
+    $('app').className='';
+    $('app').innerHTML='<div class="erro" style="margin-top:16px">'+
+      '<b>Não consegui montar esta tela.</b><br>'+esc(err&&err.message||'erro desconhecido')+
+      '<br><br>Toque em Sincronizar para buscar o roteiro de novo.</div>'+
+      '<button class="cta o" onclick="sincroniza(false)">Sincronizar agora</button>'+
+      '<button class="cta o" onclick="irPara(\'base\')">Abrir Conta e envio</button>';
+  }
+}
+function renderInterno(){
+  if(!DESBLOQ){if(!$('login').classList.contains('on'))abreEntrada();return}
+  if(!SESSAO&&tela_!=='form'&&tela_!=='plano'){
+    pintaLogin('Sua sessão expirou. Entre de novo com a senha.');return}
+  /* Se o formulário está aberto, o que já foi digitado é recolhido antes de
+     qualquer redesenho. Sem isto, a sincronização apagava a tela por baixo. */
+  /* qualquer campo do formulário na tela já basta: antes a guarda exigia o campo
+     de nome, que não existe quando o ponto foi marcado como inexistente, e a
+     observação digitada era perdida */
+  if(tela_==='form'&&tmp&&($('fobs')||$('fnome')))colhe();
+  $('titulo').textContent=TITULOS[tela_]||'Visitas';
+  const p=pendentes().length;
+  /* o selo do sininho conta o que precisa de atenção: mensagens não lidas
+     e visitas ainda na fila de envio */
+  const nb=naoLidos()+p;
+  $('sinob').style.display=nb?'block':'none';$('sinob').textContent=nb>99?'99+':nb;
+  const mostraTira=tela_==='visitas';
+  $('tira').style.display=mostraTira?'':'none';
+  $('barra').style.display=mostraTira?'':'none';
+  pintaFaixas();
+  if(mostraTira){pintaTira();pintaBarra()}
+  $('app').className=(tela_==='visitas'&&!modoLista)?'nopad':'';
+  $('app').innerHTML=
+    tela_==='visitas'?(modoLista?vLista():'<div id="mapa"></div>'):
+    tela_==='form'?vForm(): tela_==='ok'?vOk():
+    tela_==='clientes'?vClientes(): tela_==='resultados'?vResultados():
+    tela_==='feitas'?vFeitas(): tela_==='feita'?vFeitaDet():
+    tela_==='perto'?vPerto():
+    tela_==='plano'?vPlanoVisita(): tela_==='cancelar'?vCancelar():
+    tela_==='avisos'?vAvisos(): tela_==='aviso'?vAviso():
+    tela_==='base'?vBase(): vLista();
+  if(tela_==='form'){ligaFoto();ligaObs()}
+  if(tela_==='clientes')ligaBuscaCli();
+  if(tela_==='feitas')ligaBuscaFeitas();
+  if(tela_==='plano')ligaCronometro(); else clearInterval(cronT);
+  if(tela_==='form')ligaFoto();
+  const a=$('acao');
+  document.body.classList.toggle('comacao',tela_==='form');
+  if(tela_==='form'){a.classList.add('on');
+    a.innerHTML='<button class="v" onclick="tela(\'visitas\')">Voltar</button>'+
+      '<button class="s" onclick="salvar()">Salvar visita</button>'}
+  else a.classList.remove('on');
+  if(tela_==='visitas'&&!modoLista)setTimeout(pintaMapa,30);
+  if(tela_==='visitas'&&modoLista)setTimeout(centraDia,30);
+}
+$('bmenu').onclick=abrirGaveta;
+$('bsinc').onclick=()=>{enviar(true);sincroniza(false)};
+$('bsino').onclick=()=>tela('avisos');
+
+/* ---------------- tira de dias ---------------- */
+/* Faixas de aviso logo abaixo do cabeçalho: mensagem nova da coordenação e
+   visita começada e não salva. Aparecem em qualquer tela do app. */
+function pintaFaixas(){
+  const el=$('faixas'); if(!el)return;
+  let h='';
+  const nv=MSGS.novas||0;
+  if(nv>0&&tela_!=='avisos'&&tela_!=='aviso'){
+    const m=(MSGS.lista||[])[0]||{};
+    h+='<div class="fx msg" onclick="tela(\'avisos\')">'+
+      (m.imagem
+        ? '<span class="mini"><img src="'+esc(linkImagem(m.imagem,120))+'" alt="" '+
+          'onerror="this.style.display=\'none\'"></span>'
+        : '<span class="mini ic">'+svg('sino',2)+'</span>')+
+      '<div class="tx"><b>'+(nv>1?nv+' mensagens novas':esc(m.titulo||'Mensagem da coordenação'))+
+        '</b><span>'+esc(nv>1?(m.titulo||''):(m.texto||''))+'</span></div>'+
+      '<span class="ver">Ver</span>'+
+      '<button class="x" onclick="event.stopPropagation();dispensaMsg()" '+
+        'aria-label="Dispensar">&times;</button></div>';
+  }
+  if(S.andamento&&tela_!=='plano'&&tela_!=='form'){
+    const c=BASE.filter(x=>x.cnpj===S.andamento.cnpj)[0];
+    if(c)h+='<div class="fx and" onclick="retomaAndamento()">'+
+      '<span class="mini ic and">'+svg('relogio',2)+'</span>'+
+      '<div class="tx"><b>Visita em andamento</b>'+
+        '<span>'+esc(c.nome)+' · iniciada às '+esc(S.andamento.hora||'')+'</span></div>'+
+      '<span class="ver" id="fxcron">'+decorridoAndamento()+'</span></div>';
+    else { S.andamento=null; save() }
+  }
+  el.innerHTML=h;
+  ligaCronFaixa();
+}
+function dispensaMsg(){ marcaLidos(); pintaFaixas() }
+let cronFx=null;
+function ligaCronFaixa(){
+  clearInterval(cronFx);
+  if(!S.andamento)return;
+  cronFx=setInterval(()=>{
+    const a=$('fxcron'),b=$('pvcron'),c=document.querySelector('.card.andando .cron');
+    if(!a&&!b&&!c){clearInterval(cronFx);return}
+    if(a)a.textContent=decorridoAndamento();
+    if(c)c.textContent=decorridoAndamento();
+  },1000);
+}
+function pintaTira(){
+  const m=minha(),max=Math.max.apply(null,m.map(c=>c.dia)),hj=diaDeHoje();
+  let h='<div class="rol">';
+  for(let d=1;d<=max;d++){
+    const dd=m.filter(c=>c.dia===d),ok=dd.filter(feito).length,falta=dd.length-ok;
+    h+='<button class="'+(d===fDia?'on':'')+'" onclick="setDia('+d+')">'+
+      '<div class="dw">'+dowDo(d)+'</div>'+
+      '<div class="bola">'+numeroDoDia(d)+'</div>'+
+      '<span class="cnt'+(falta===0?' ok':'')+'">'+(falta===0?ok:falta)+'</span>'+
+      '</button>';
+  }
+  const dd=m.filter(c=>c.dia===fDia);
+  h+='</div><div class="leg"><i class="d">●</i> '+
+     dd.filter(c=>!feito(c)).length+' pendentes'+
+     (hj?'<i>·</i> hoje é '+dowDo(hj)+' '+dataDo(hj):'')+'</div>';
+  $('tira').innerHTML=h;
+}
+function setDia(d){fDia=d;render()}
+function centraDia(){const f=$('tira').querySelector('button.on');
+  if(f&&f.scrollIntoView)try{f.scrollIntoView({inline:'center',block:'nearest'})}catch(e){}}
+
+/* ---------------- busca e alternador ---------------- */
+function pintaBarra(){
+  const nf=nFiltros();
+  $('barra').innerHTML=
+   '<div class="busca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" '+
+     'stroke-width="2" stroke-linecap="round">'+IC.busca+'</svg>'+
+     '<input id="fq" placeholder="Buscar visitas" value="'+esc(fQ)+'"></div>'+
+   '<button class="bfil'+(nf?' on':'')+'" id="bfil">'+svg('filtro',2)+
+     (nf?'<b>'+nf+'</b>':'')+'</button>'+
+   '<div class="seg"><button class="'+(modoLista?'on':'')+'" id="bl">'+svg('lista',2)+'</button>'+
+   '<button class="'+(!modoLista?'on':'')+'" id="bm">'+svg('mapa',1.8)+'</button></div>';
+  let t;$('fq').oninput=e=>{clearTimeout(t);t=setTimeout(()=>{fQ=e.target.value.trim().toLowerCase();
+    if(modoLista)$('app').innerHTML=vLista()},250)};
+  $('bfil').onclick=abrirFiltros;
+  $('bl').onclick=()=>{modoLista=true;render()};
+  $('bm').onclick=()=>{modoLista=false;render()};
+}
+/* Folha genérica, usada pelos filtros do módulo de visitas feitas. */
+function abreFolha(titulo,corpo,rodape){
+  $('folha').innerHTML=
+   '<div class="fh"><b>'+esc(titulo)+'</b>'+
+     '<button onclick="fecharFolha()" style="color:var(--red);font-weight:700;'+
+     'font-size:13.5px">Fechar</button></div>'+
+   '<div class="fc">'+corpo+'</div>'+
+   '<div class="fr"><button class="cta" style="margin:0" onclick="fecharFolha()">'+
+     (rodape||'Aplicar')+'</button></div>';
+  $('folha').classList.add('on');
+  $('folhaf').classList.add('on');
+  const fc=$('folha').querySelector('.fc'); if(fc)fc.scrollTop=0;
+  empilha();
+}
+function abrirFiltros(){
+  const m=minha().filter(c=>c.dia===fDia);
+  const cnt=k=>m.filter(k).length;
+  const bt=(on,txt,fn,sub)=>'<button class="opt'+(on?' on':'')+'" onclick="'+fn+'">'+
+    '<span class="d"></span><span style="flex:1">'+txt+
+    (sub?'<br><span style="font-size:12px;color:var(--ink2);font-weight:400">'+sub+'</span>':'')+
+    '</span></button>';
+  $('folha').innerHTML=
+   '<div class="fh"><b>Filtrar visitas</b>'+
+     '<button onclick="limparFiltros()" style="color:var(--red);font-weight:700;font-size:13.5px">'+
+     'Limpar</button></div>'+
+   '<div class="fc">'+
+     '<div class="fl">Situação</div>'+
+     bt(F.st==='todos','Todas','setF(\'st\',\'todos\')',m.length+' visitas')+
+     bt(F.st==='pend','Pendentes','setF(\'st\',\'pend\')',cnt(c=>!feito(c))+' a fazer')+
+     bt(F.st==='ok','Concluídas','setF(\'st\',\'ok\')',cnt(c=>feito(c))+' registradas')+
+     '<div class="fl">Prioridade do canal</div>'+
+     [0,1,2].map(i=>bt(F.pr.has(i),PRION[i],'togPri('+i+')',
+        cnt(c=>c.pr===i)+' no dia · '+EXPRIO[i])).join('')+
+     '<div class="fl">Endereço</div>'+
+     bt(F.aprox,'Só posição aproximada','togAprox()',
+        cnt(c=>c.prec>=3)+' precisam de confirmação em campo')+
+   '</div>'+
+   '<div class="fr"><button class="cta" style="margin:0" onclick="fecharFolha()">'+
+     'Ver '+filtrados().length+' visitas</button></div>';
+  $('folha').classList.add('on');
+  $('folhaf').classList.add('on');
+  const fc=$('folha').querySelector('.fc'); if(fc)fc.scrollTop=0;
+  empilha();
+}
+function fecharFolha(){$('folha').classList.remove('on');$('folhaf').classList.remove('on');render()}
+function setF(k,v){F[k]=v;abrirFiltros()}
+function togPri(i){F.pr.has(i)?F.pr.delete(i):F.pr.add(i);abrirFiltros()}
+function togAprox(){F.aprox=!F.aprox;abrirFiltros()}
+function limparFiltros(){F.st='todos';F.pr.clear();F.aprox=false;abrirFiltros()}
+
+/* ---------------- lista de visitas ---------------- */
+function filtrados(){
+  let l=minha().filter(c=>c.dia===fDia);
+  if(F.st!=='todos')l=l.filter(c=>(F.st==='ok')===feito(c));
+  if(F.pr.size)l=l.filter(c=>F.pr.has(c.pr));
+  if(F.aprox)l=l.filter(c=>c.prec>=3);
+  if(fQ)l=l.filter(c=>c.nome.toLowerCase().includes(fQ)||
+    BAIRROS[c.ba].toLowerCase().includes(fQ)||c.end.toLowerCase().includes(fQ)||
+    String(c.cnpj).includes(fQ));
+  /* pendentes primeiro, da prioridade mais alta para a mais baixa;
+     as concluídas vão para o fim, mantendo a sequência do roteiro */
+  return l.slice().sort((a,b)=>
+    (emAndamento(b)?1:0)-(emAndamento(a)?1:0) ||
+    (feito(a)?1:0)-(feito(b)?1:0) || a.pr-b.pr || a.seq-b.seq);
+}
+const doDia=filtrados;
+function vLista(){
+  const l=doDia();
+  if(!l.length)return '<div class="vazio">Nenhuma visita nesta seleção.</div>';
+  return l.map(card).join('')+'<div style="height:6px"></div>';
+}
+/* rua e bairro em linhas separadas, sem repetir e sem deixar linha vazia
+   quando o roteiro publicado não traz o logradouro */
+function endereco(c){
+  const bai=(BAIRROS[c.ba]||'').trim();
+  const rua=(c.end||'').trim();
+  if(!rua)return bai;
+  if(bai&&rua.toUpperCase().indexOf(bai.toUpperCase())>=0)return rua;
+  return bai?rua+'<br>'+bai:rua;
+}
+function card(c){
+  const v=reg(c);
+  if(remarcada(c)){
+    const de=v.diaOriginal||'';
+    return '<div class="card remarcada" onclick="abrir(\''+c.cnpj+'\')">'+
+     '<div class="top"><div class="tt"><span class="seq">'+c.seq+'.</span> '+esc(c.nome)+'</div>'+
+     '<div class="chips"><span class="chip '+PRIOK[c.pr]+'">'+PRION[c.pr]+'</span>'+
+     '<span class="chip st-r">Remarcada</span></div></div>'+
+     '<div class="hora">'+esc(v.motivo||'cancelada')+
+       (de?' · veio do dia '+de:'')+'</div>'+
+     '<div class="end">'+esc(endereco(c))+'</div>'+
+     '<div class="base"><div class="nm">'+esc(CNAES[c.cn])+'</div>'+
+       '<button class="acao" onclick="event.stopPropagation();ligar(\''+c.cnpj+'\')">'+
+         svg('fone')+'</button>'+
+       '<button class="acao" onclick="event.stopPropagation();rota(\''+c.cnpj+'\')">'+
+         svg('rota')+'</button></div>'+
+     '<div class="pe"><div class="pg"><i style="width:0"></i></div>'+
+       '<span style="color:var(--red);font-weight:700">refazer</span></div></div>';
+  }
+  if(emAndamento(c)){
+    return '<div class="card andando" onclick="abrir(\''+c.cnpj+'\')">'+
+     '<div class="top"><div class="tt"><span class="seq">'+c.seq+'.</span> '+esc(c.nome)+'</div>'+
+     '<div class="chips"><span class="chip '+PRIOK[c.pr]+'">'+PRION[c.pr]+'</span>'+
+     '<span class="chip st-a">Em andamento</span></div></div>'+
+     '<div class="hora">iniciada às '+esc(S.andamento.hora||'')+'</div>'+
+     '<div class="end">'+esc(endereco(c))+'</div>'+
+     '<div class="base"><div class="nm">'+esc(CNAES[c.cn])+'</div>'+
+       '<button class="acao" onclick="event.stopPropagation();ligar(\''+c.cnpj+'\')">'+
+         svg('fone')+'</button>'+
+       '<button class="acao" onclick="event.stopPropagation();rota(\''+c.cnpj+'\')">'+
+         svg('rota')+'</button></div>'+
+     '<div class="pe"><div class="pg"><i style="width:45%;background:var(--wa)"></i></div>'+
+       '<span class="cron">'+decorridoAndamento()+'</span></div></div>';
+  }
+  const st=!v?['st-p','Pendente']
+    :(v.cancelada?['st-x','Cancelada']
+    :v.existe==='Sim, está funcionando'?['st-c','Concluída']
+    :(['Encerrou as atividades','Endereço não localizado'].indexOf(v.existe)>=0
+      ?['st-n','Não existe']:['st-c','Concluída']));
+  const cls=!v?'':(st[0]==='st-x'?'canc':st[0]==='st-n'?'nao':'done');
+  return '<div class="card '+cls+'" onclick="abrir(\''+c.cnpj+'\')">'+
+   '<div class="top"><div class="tt"><span class="seq">'+c.seq+'.</span> '+esc(c.nome)+'</div>'+
+   '<div class="chips"><span class="chip '+PRIOK[c.pr]+'">'+PRION[c.pr]+'</span>'+
+   '<span class="chip '+st[0]+'">'+st[1]+'</span></div></div>'+
+   '<div class="hora">'+janela(c.seq)+'</div>'+
+   '<div class="end">'+esc(endereco(c))+'</div>'+
+   '<div class="base"><div class="nm">'+esc(CNAES[c.cn])+'</div>'+
+     '<button class="acao" onclick="event.stopPropagation();abrir(\''+c.cnpj+'\')">'+svg('pessoa')+'</button>'+
+     '<button class="acao" onclick="event.stopPropagation();ligar(\''+c.cnpj+'\')">'+svg('fone')+'</button>'+
+     '<button class="acao" onclick="event.stopPropagation();rota(\''+c.cnpj+'\')">'+svg('rota')+'</button>'+
+   '</div>'+
+   '<div class="pe"><div class="pg"><i style="width:'+(v?100:0)+'%"></i></div>'+
+     '<span>'+(v?1:0)+'/1</span></div></div>';
+}
+function ligar(cnpj){const c=BASE.filter(x=>x.cnpj===cnpj)[0];
+  if(!c.tel)return toast('Sem telefone cadastrado');location.href='tel:'+c.tel}
+function rota(cnpj){const c=BASE.filter(x=>x.cnpj===cnpj)[0];
+  window.open('https://www.google.com/maps/dir/?api=1&destination='+c.lat+','+c.lon,'_blank')}
+
+/* ---------------- mapa do dia ---------------- */
+let mapa=null,camada=null;
+function pintaMapa(){
+  const el=$('mapa');if(!el)return;
+  if(typeof L==='undefined'){
+    el.outerHTML='<div class="vazio">O mapa precisa de internet na primeira vez.<br>'+
+      'Volte para a lista pelo botão ao lado da busca.</div>';return}
+  const l=doDia();if(!l.length){el.outerHTML='<div class="vazio">Nada para mostrar.</div>';return}
+  if(mapa){mapa.remove();mapa=null}
+  mapa=L.map(el,{zoomControl:false}).setView([l[0].lat,l[0].lon],14);
+  L.control.zoom({position:'bottomright'}).addTo(mapa);
+  L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+    {attribution:'Esri, HERE, Garmin',maxZoom:19}).addTo(mapa);
+  camada=L.layerGroup().addTo(mapa);
+  l.forEach(c=>{
+    const v=reg(c);
+    const cor=!v?'#1273DE':(['Encerrou as atividades','Endereço não localizado']
+      .indexOf(v.existe)>=0?'#93131F':'#0B7A3B');
+    L.marker([c.lat,c.lon],{icon:L.divIcon({className:'',iconSize:[30,30],iconAnchor:[15,15],
+      html:'<div style="width:30px;height:30px;border-radius:50%;background:'+cor+
+      ';border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.4);color:#fff;font-size:12px;'+
+      'font-weight:700;display:flex;align-items:center;justify-content:center">'+c.seq+'</div>'})})
+     .bindTooltip(c.seq+' · '+c.nome,{direction:'top'})
+     .on('click',()=>abrir(c.cnpj)).addTo(camada);
+  });
+  mapa.fitBounds(L.latLngBounds(l.map(c=>[c.lat,c.lon])).pad(.15));
+  setTimeout(()=>mapa.invalidateSize(),120);
+}
+
+/* ---------------- formulário ---------------- */
+const EXISTE=[{t:'Sim, está funcionando',k:'p',ativo:true},
+ {t:'Existe, mas estava fechado agora',k:'w',ativo:true},
+ {t:'Existe, mas mudou de ramo',k:'w',ativo:false},
+ {t:'Encerrou as atividades',k:'n',ativo:false},
+ {t:'Endereço não localizado',k:'n',ativo:false}];
+const HORAS=(function(){const o=[];for(let h=0;h<24;h++)for(const m of ['00','30'])
+  o.push(p2(h)+':'+m);return o})();
+const DIASSEM=['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'];
+const CANAIS=['Mercearia','Bar / Boteco','Adega','Lanchonete','Restaurante','Padaria',
+ 'Conveniência','Supermercado','Distribuidor','Outros'];
+const FORNEC=['Distribuidor da concorrência','Atacado / Cash & Carry','Direto da fábrica',
+ 'Outro distribuidor','Ainda não compra bebidas'];
+const INTERESSE=[{t:'Quer se cadastrar agora',k:'p'},{t:'Tem interesse, mas depois',k:'w'},
+ {t:'Não tem interesse',k:'n'}];
+/* Um ponto pode estar na nossa base pelo CPF do dono, mesmo sem o CNPJ cadastrado.
+   Sem esta pergunta o desenvolvedor abriria um cadastro que já existe. */
+const CADBAND=[{t:'Não tem cadastro na BAND',k:'n'},
+ {t:'Tem cadastro no CNPJ',k:'p'},
+ {t:'Tem cadastro no CPF do dono',k:'p'},
+ {t:'O dono não sabe informar',k:'w'}];
+const SAC=[{t:'Sim, já passei para o SAC',k:'p'},{t:'Não passei ainda',k:'n'}];
+
+/* Cancelar não é o mesmo que "não existe": é ter ido e não conseguido registrar.
+   O motivo entra no painel e o cliente volta para outro dia, perto de onde o
+   desenvolvedor vai estar. */
+const MOTIVOS=[
+  {t:'Estabelecimento fechado agora',k:'w'},
+  {t:'Não consegui falar com o responsável',k:'w'},
+  {t:'Não deu tempo no dia',k:'w'},
+  {t:'Endereço não localizado',k:'n'},
+  {t:'Outro motivo',k:'n'}
+];
+/* Até esta distância consideramos que ele esteve no cliente. */
+const RAIO_PRESENCA_M=100;
+
+
+/* Abrir um cliente cai primeiro no plano de visita: ali o desenvolvedor confere
+   o endereço, toca em Iniciar, o app pega a localização e só então libera o
+   formulário. Assim a coordenada é do momento da chegada, não do fim. */
+function abrir(cnpj){
+  cur=BASE.filter(c=>c.cnpj===cnpj)[0];
+  if(!cur)return toast('Cliente não encontrado');
+  tmp=reg(cur)?JSON.parse(JSON.stringify(reg(cur))):null;
+  /* se esta visita já foi iniciada, o cronômetro continua de onde parou */
+  const a=S.andamento;
+  VISITA=(a&&a.cnpj===cnpj)
+    ? {inicio:a.inicio,gps:a.gps,erroGps:a.erroGps||'',buscando:false,hora:a.hora}
+    : {inicio:null,gps:null,erroGps:'',buscando:false};
+  tela('plano');
+}
+function abreFormulario(){
+  /* retoma exatamente onde parou: o rascunho tem prioridade sobre o registro salvo */
+  const rasc=(S.andamento&&S.andamento.cnpj===cur.cnpj)?S.andamento.rascunho:null;
+  tmp=rasc
+    ? JSON.parse(JSON.stringify(rasc))
+    : (reg(cur)?JSON.parse(JSON.stringify(reg(cur)))
+      :{existe:'',dias:[],abre:'',fecha:'',nome:cur.nome,tel:cur.tel,canal:'',fornec:[],
+        cadBand:'',vende:'',interesse:'',sac:'',sacProt:'',obs:'',gps:null});
+  /* traz de volta a foto guardada, seja de um rascunho ou de uma visita salva */
+  if(!tmp.foto)tmp.foto=leFoto(cur.cnpj)||null;
+  if(tmp.foto&&!tmp.fotoHora)tmp.fotoHora=tmp.fotoHora||'';
+  /* registro que voltou da planilha chega com os campos em outro formato */
+  if(!Array.isArray(tmp.dias))
+    tmp.dias=String(tmp.dias||'').split(',').filter(String).map(Number);
+  if(!Array.isArray(tmp.fornec))
+    tmp.fornec=tmp.fornec?String(tmp.fornec).split(';').map(x=>x.trim()).filter(Boolean):[];
+  ['existe','abre','fecha','nome','tel','canal','cadBand','vende','interesse','sac',
+   'sacProt','obs'].forEach(k=>{if(tmp[k]==null)tmp[k]=''});
+  tmp.gps=coordOk(tmp.gps);
+  /* a coordenada da chegada já vem do plano de visita */
+  if(VISITA.gps&&!tmp.gps)tmp.gps=VISITA.gps;
+  if(VISITA.inicio)tmp.inicioEm=VISITA.inicio;
+  tela('form');
+}
+
+/* ---------------- plano de visita ---------------- */
+let VISITA={inicio:null,gps:null,erroGps:'',buscando:false};
+let CANC={motivo:'',obs:'',gps:null,erroGps:'',buscando:false,hora:''};
+function abreCancelar(){
+  CANC={motivo:'',obs:'',gps:VISITA.gps||null,erroGps:'',buscando:false,hora:VISITA.hora||''};
+  tela('cancelar');
+  /* se a visita não foi iniciada, pega a posição agora para provar a ida */
+  if(!CANC.gps)pegaGpsCancelamento();
+}
+function pegaGpsCancelamento(){
+  if(!navigator.geolocation){CANC.erroGps='Aparelho sem GPS.';render();return}
+  CANC.buscando=true;render();
+  navigator.geolocation.getCurrentPosition(p=>{
+    CANC.gps={lat:+p.coords.latitude.toFixed(6),lon:+p.coords.longitude.toFixed(6),
+      acc:Math.round(p.coords.accuracy||0)};
+    CANC.hora=agora().hora;CANC.buscando=false;render();
+  },e=>{
+    CANC.buscando=false;
+    CANC.erroGps=(e&&e.code===1)?'Permissão de localização negada.'
+      :'Não consegui o sinal do GPS.';
+    render();
+  },{enableHighAccuracy:true,timeout:15000,maximumAge:0});
+}
+function esteveNoLocal(){
+  if(!CANC.gps||!cur)return false;
+  return hav(cur.lat,cur.lon,CANC.gps.lat,CANC.gps.lon)*1000<=RAIO_PRESENCA_M;
+}
+function vCancelar(){
+  const c=cur; if(!c)return '<div class="vazio">Nenhum cliente selecionado.</div>';
+  const g=CANC.gps;
+  const m=g?hav(c.lat,c.lon,g.lat,g.lon)*1000:null;
+  const perto=esteveNoLocal();
+  let h='<h3 class="t">Cancelar a visita</h3>'+
+   '<p class="sub">'+esc(c.nome)+'<br>'+esc(endereco(c).replace(/<br>/g,', '))+'</p>'+
+   '<div class="gl2">Sua posição agora</div><div class="pv pvgps">'+
+   (CANC.buscando?'<p class="sub" style="margin:0">Buscando o sinal…</p>'
+    :coordOk(g)?'<div class="glin"><span>Latitude</span><b>'+coordOk(g).lat.toFixed(6)+'</b></div>'+
+       '<div class="glin"><span>Longitude</span><b>'+coordOk(g).lon.toFixed(6)+'</b></div>'+
+       '<div class="glin"><span>Distância do cliente</span><b'+
+         (perto?' style="color:var(--ok)"':' style="color:var(--wa)"')+'>'+
+         Math.round(m)+' m</b></div>'+
+       '<div class="'+(perto?'info':'aviso')+'" style="margin:10px 0 0">'+
+         (perto?'Sua posição confirma que você esteve no cliente. Isso vai registrado '+
+           'no painel.'
+          :'Você está a '+Math.round(m)+' m do cliente. O painel vai mostrar que a '+
+           'visita foi cancelada sem presença confirmada.')+'</div>'
+    :'<div class="aviso" style="margin:0">'+esc(CANC.erroGps||'Sem localização.')+
+     '<br><br>Sem GPS o painel não consegue confirmar que você esteve lá.</div>'+
+     '<button class="cta o" onclick="pegaGpsCancelamento()">Tentar de novo</button>')+
+   '</div>'+
+   bl('Por que não deu para visitar?',
+     MOTIVOS.map(o=>opt(o.t,CANC.motivo===o.t,o.k,
+       'setMotivo('+JSON.stringify(o.t).replace(/"/g,'&quot;')+')')).join(''))+
+   bl('Observação','<textarea id="cobs" placeholder="Opcional, mas ajuda a entender">'+
+     esc(CANC.obs||'')+'</textarea>');
+  const prox=proximoDiaPerto(c);
+  h+='<div class="info">Ao confirmar, este cliente sai do dia de hoje e volta '+
+    (prox?'no <b>dia '+prox.dia+', '+dowDo(prox.dia)+' '+dataDo(prox.dia)+
+      '</b>, que é quando você vai estar mais perto dele ('+fmtKm(prox.km)+').'
+     :'para o fim do seu roteiro.')+'</div>'+
+   '<button class="cta" onclick="confirmaCancelamento()">Confirmar cancelamento</button>'+
+   '<button class="cta o" onclick="tela(\'plano\')">Voltar</button>'+
+   '<div style="height:20px"></div>';
+  return h;
+}
+function setMotivo(t){
+  const el=$('cobs'); if(el)CANC.obs=el.value;
+  CANC.motivo=t;render();
+}
+
+/* Escolhe o próximo dia do roteiro cujo grupo de clientes está mais perto
+   deste ponto, para a revisita não obrigar um deslocamento extra. */
+function proximoDiaPerto(c){
+  const m=minha(),hj=fDia||1;
+  const dias={};
+  m.forEach(x=>{
+    if(x.dia<=hj||x.cnpj===c.cnpj)return;
+    if(feito(x))return;
+    (dias[x.dia]=dias[x.dia]||[]).push(x);
+  });
+  let melhor=null;
+  Object.keys(dias).forEach(d=>{
+    const l=dias[d];
+    const la=l.reduce((a,x)=>a+x.lat,0)/l.length;
+    const lo=l.reduce((a,x)=>a+x.lon,0)/l.length;
+    const km=hav(c.lat,c.lon,la,lo);
+    if(!melhor||km<melhor.km)melhor={dia:+d,km};
+  });
+  return melhor;
+}
+
+function confirmaCancelamento(){
+  const el=$('cobs'); if(el)CANC.obs=el.value;
+  if(!CANC.motivo)return toast('Escolha o motivo do cancelamento');
+  const t=agora(),c=cur;
+  const g=CANC.gps;
+  const gc=coordOk(g);
+  const dist=gc?+hav(c.lat,c.lon,gc.lat,gc.lon).toFixed(3):null;
+  const perto=esteveNoLocal();
+  const prox=proximoDiaPerto(c);
+  const reg={
+    existe:'Visita cancelada',
+    motivo:CANC.motivo, obs:CANC.obs||'',
+    esteveNoLocal:perto?'Sim':'Não',
+    cancelada:true,
+    nome:c.nome, tel:c.tel,
+    dias:[], abre:'', fecha:'', canal:'', cadBand:'', vende:'', fornec:'',
+    interesse:'', sac:'', sacProt:'',
+    data:t.data, hora:t.hora, iso:t.iso, dow:t.dow, dev:meuNome(),
+    rota:ROTAS[c.rt], sv:SVS[c.sv], diaRoteiro:c.dia,
+    dataPlan:dataDo(c.dia), dowPlan:dowDo(c.dia),
+    noPrazo:t.data.slice(0,5)===dataDo(c.dia),
+    latRef:c.lat, lonRef:c.lon, gps:g||null, dist,
+    inicioHora:(S.andamento&&S.andamento.cnpj===c.cnpj)?S.andamento.hora:'',
+    duracaoSeg:(S.andamento&&S.andamento.cnpj===c.cnpj&&S.andamento.inicio)
+      ? Math.round((Date.now()-S.andamento.inicio)/1000):null,
+    reagendadoPara:prox?prox.dia:null,
+    enviado:false
+  };
+  S.vis[c.cnpj]=reg;
+  /* o cliente volta para o dia mais próximo do trajeto futuro */
+  if(prox){
+    S.reagendados=S.reagendados||{};
+    S.reagendados[c.cnpj]=prox.dia;
+    if(S.vis[c.cnpj]){S.vis[c.cnpj].reagendada=true;S.vis[c.cnpj].diaOriginal=c.dia}
+    /* aplica na hora, senão o dia novo só muda ao reabrir o app */
+    aplicaReagendados();
+    aplicaReagendados();
+  }
+  if(S.andamento&&S.andamento.cnpj===c.cnpj)S.andamento=null;
+  save();
+  ultimo=c.cnpj;
+  anota('aviso','Visita cancelada',c.nome+' — '+CANC.motivo+
+    (prox?'. Volta no dia '+prox.dia+', '+dowDo(prox.dia)+' '+dataDo(prox.dia)+'.':''));
+  tela('ok');
+  enviar(true);
+}
+
+/* Reagendamento é uma marca por cliente, guardada no aparelho, aplicada sobre
+   o roteiro. Assim ela sobrevive a receber um roteiro novo do painel. */
+function aplicaReagendados(){
+  const r=S.reagendados||{};
+  if(!Object.keys(r).length)return;
+  /* A data de cada dia vem de um cliente daquele dia. Um remarcado carrega a
+     data do dia de origem, e a tira passava a mostrar a mesma data duas vezes.
+     Guardamos a data verdadeira de cada dia antes de mover ninguém. */
+  const dataDoDia={};
+  BASE.forEach(c=>{ if(!r[c.cnpj]&&c.dataPlan&&dataDoDia[c.dia]===undefined)
+    dataDoDia[c.dia]=c.dataPlan });
+  BASE.forEach(c=>{
+    const novo=r[c.cnpj];
+    if(!novo)return;
+    c.dia=novo;
+    if(dataDoDia[novo])c.dataPlan=dataDoDia[novo];
+  });
+  _amostraDia={};          /* a amostra por dia precisa ser recalculada */
+}
+function vPlanoVisita(){
+  const c=cur;
+  if(!c)return '<div class="vazio">Nenhum cliente selecionado.</div>';
+  const v=reg(c);
+  const g=VISITA.gps;
+  const dist=g?hav(c.lat,c.lon,g.lat,g.lon):null;
+  return '<div class="pv">'+
+    '<div class="pvtopo" onclick="verFicha()">'+
+      '<span class="lj">'+svg('loja',1.9)+'</span>'+
+      '<div class="tx"><b>'+esc(c.nome)+'</b>'+
+        '<span>'+esc(endereco(c).replace(/<br>/g,', '))+
+        (c.cep?' – '+esc(c.cep):'')+'</span></div>'+
+      '<span class="ch">'+svg('seta',2.4)+'</span>'+
+    '</div>'+
+    '<div class="pvsep"></div>'+
+    '<div class="pvlin">'+
+      '<div class="nm">'+c.seq+' - '+esc(String(c.cnpj).slice(0,8))+' - '+esc(c.nome)+'</div>'+
+      '<div class="hr">'+svg('relogio',1.9)+
+        '<b id="pvcron">'+cronometro()+'</b>'+
+        '<span class="hrlab">'+(VISITA.inicio?'em andamento'
+          :(v?'durou':''))+'</span></div>'+
+    '</div>'+
+    '<div class="pvlin sub2">'+
+      '<span>'+dowDo(c.dia)+' '+dataDo(c.dia)+' · '+janela(c.seq)+'</span>'+
+      '<span class="hist" onclick="abreHistorico()">Histórico <i>'+(v?1:0)+'</i>'+
+        svg('seta2',2.2)+'</span>'+
+    '</div>'+
+    '<div class="pvbt">'+
+      (v
+        /* já registrada: dá para revisar o que foi respondido ou refazer do zero */
+        ? '<button class="pvcancel" onclick="abreFormulario()">'+svg('lapis',2.2)+
+            'Editar</button>'+
+          '<button class="pvgo" onclick="refazVisita()">'+svg('play',2.2)+
+            'Iniciar de novo</button>'
+        : '<button class="pvcancel" onclick="abreCancelar()">'+svg('xis',2.2)+
+            'Cancelar</button>'+
+          (VISITA.inicio
+            ? '<button class="pvgo" onclick="abreFormulario()">'+svg('play',2.2)+
+              'Continuar</button>'
+            : '<button class="pvgo" onclick="iniciaVisita()"'+(VISITA.buscando?' disabled':'')+
+              '>'+svg('play',2.2)+(VISITA.buscando?'Localizando…':'Iniciar')+'</button>'))+
+    '</div>'+
+    (v?'<div class="pvbt" style="margin-top:8px">'+
+      '<button class="pvcancel" onclick="tela(\'visitas\')" style="flex:1">Voltar '+
+      'ao roteiro</button></div>':'')+
+  '</div>'+
+  '<div class="gl2">Localização</div>'+
+  '<div class="pv pvgps">'+
+    (g
+      ? '<div class="glin"><span>Latitude</span><b>'+coordOk(g).lat.toFixed(6)+'</b></div>'+
+        '<div class="glin"><span>Longitude</span><b>'+coordOk(g).lon.toFixed(6)+'</b></div>'+
+        '<div class="glin"><span>Precisão do sinal</span><b>'+(g.acc||0)+' m</b></div>'+
+        '<div class="glin"><span>Distância do ponto estimado</span><b'+
+          (dist>0.3?' style="color:var(--wa)"':'')+'>'+fmtKm(dist)+'</b></div>'+
+        '<div class="glin"><span>Marcada às</span><b>'+esc(VISITA.hora||'')+'</b></div>'+
+        (dist>0.3?'<div class="aviso" style="margin:10px 0 0">Você está a '+fmtKm(dist)+
+          ' do ponto estimado. Se este é o endereço certo, siga: a coordenada coletada '+
+          'corrige a base.</div>':'')
+      : (VISITA.erroGps
+          ? '<div class="aviso" style="margin:0">'+esc(VISITA.erroGps)+
+            '<br><br>Você pode seguir sem a localização, mas o registro fica sem prova '+
+            'de presença.</div>'+
+            '<button class="cta o" onclick="iniciaVisita()">Tentar de novo</button>'
+          : '<p class="sub" style="margin:0">Toque em <b>Iniciar</b> para registrar sua '+
+            'chegada. O app grava latitude, longitude e o horário neste momento.</p>'))+
+  '</div>'+
+  (v?'<div class="'+(v.cancelada?'aviso':'info')+'">'+
+     (v.cancelada
+       ? 'Visita cancelada em '+esc(v.data)+' às '+esc(v.hora)+' — '+esc(v.motivo||'')+
+         '.<br>Presença no local: <b>'+esc(v.esteveNoLocal||'—')+'</b>'+
+         (v.reagendadoPara?'. Reagendada para o dia '+v.reagendadoPara+'.':'')
+       : 'Registrada em '+esc(v.data)+' às '+esc(v.hora)+' — '+esc(v.existe||'')+
+         '.<br><b>Editar</b> abre o que já foi respondido. <b>Iniciar de novo</b> '+
+         'começa outra visita, com nova localização e novo cronômetro.')+
+     '</div>':'')+
+  (emAndamento(c)?'<div class="aviso">Visita iniciada às '+esc(S.andamento.hora||'')+
+     ' e ainda não salva. Ela fica assim até você concluir.'+
+     '<br><br><b onclick="descartaAndamento()" style="text-decoration:underline;'+
+     'cursor:pointer">Descartar o início</b></div>':'')+
+  '<div class="g2" style="margin-top:12px">'+
+    '<button class="cta o" style="margin:0" onclick="rota(\''+c.cnpj+'\')">Ir até lá</button>'+
+    '<button class="cta o" style="margin:0" onclick="ligar(\''+c.cnpj+'\')">Ligar</button>'+
+  '</div><div style="height:20px"></div>';
+}
+function marcaAndamento(){
+  if(!cur)return;
+  const antes=(S.andamento&&S.andamento.cnpj===cur.cnpj)?S.andamento.rascunho:null;
+  S.andamento={cnpj:cur.cnpj,inicio:VISITA.inicio,hora:VISITA.hora||agora().hora,
+    gps:VISITA.gps||null,erroGps:VISITA.erroGps||'',dev:S.dev,rascunho:antes||null};
+  save();
+  anota('roteiro','Visita iniciada',cur.nome+' às '+S.andamento.hora+
+    '. Ela fica em andamento até você salvar.');
+}
+function descartaAndamento(){
+  if(!confirm('Descartar o início desta visita? O horário, a localização de chegada '+
+    'e as respostas já preenchidas serão perdidos.'))return;
+  const cn=S.andamento&&S.andamento.cnpj;
+  S.andamento=null;save();
+  if(cn&&!S.vis[cn]){try{localStorage.removeItem('rtm_foto_'+cn)}catch(e){}}
+  VISITA={inicio:null,gps:null,erroGps:'',buscando:false};
+  tmp=null;
+  render();
+}
+const emAndamento=c=>!!(S.andamento&&S.andamento.cnpj===c.cnpj&&!feito(c));
+function decorridoAndamento(){
+  if(!S.andamento||!S.andamento.inicio)return '';
+  const s=Math.max(0,Math.floor((Date.now()-S.andamento.inicio)/1000));
+  const h=Math.floor(s/3600);
+  return (h?h+'h ':'')+p2(Math.floor(s%3600/60))+':'+p2(s%60);
+}
+function retomaAndamento(){
+  const a=S.andamento; if(!a)return;
+  const c=BASE.filter(x=>x.cnpj===a.cnpj)[0];
+  if(!c){S.andamento=null;save();return toast('O cliente saiu do roteiro')}
+  cur=c;
+  tmp=reg(c)?JSON.parse(JSON.stringify(reg(c))):null;
+  VISITA={inicio:a.inicio,gps:a.gps,erroGps:a.erroGps||'',buscando:false,hora:a.hora};
+  fDia=c.dia;
+  tela('plano');
+}
+const mmss=s=>{const t=Math.max(0,Math.round(s));
+  const h=Math.floor(t/3600);
+  return (h?h+':'+p2(Math.floor(t%3600/60)):p2(Math.floor(t/60)))+':'+p2(t%60)};
+/* Visita em andamento: conta para cima. Visita já registrada: mostra o tempo
+   que ela levou. Antes ficava 00:00 nos dois casos. */
+function cronometro(){
+  if(VISITA.inicio)return mmss((Date.now()-VISITA.inicio)/1000);
+  const v=cur?reg(cur):null;
+  if(v){
+    if(v.duracaoSeg!=null)return mmss(v.duracaoSeg);
+    if(v.duracaoMin!=null)return mmss(v.duracaoMin*60);
+    if(v.inicioHora&&v.hora){
+      const m=x=>{const p=String(x).split(':');return (+p[0])*60+(+p[1])};
+      const d=m(v.hora)-m(v.inicioHora);
+      if(d>0)return mmss(d*60);
+    }
+    /* registro antigo, de antes de o app medir a duração */
+    return '—';
+  }
+  return '00:00';
+}
+let cronT=null;
+function ligaCronometro(){
+  clearInterval(cronT);
+  if(!VISITA.inicio)return;      /* valor fixo: nada a atualizar */
+  const el=$('pvcron'); if(el)el.textContent=cronometro();
+  if(!VISITA.inicio)return;
+  cronT=setInterval(()=>{const el=$('pvcron');
+    if(!el){clearInterval(cronT);return}
+    el.textContent=cronometro()},1000);
+}
+/* Abre o que já foi registrado neste cliente, com todas as respostas e a foto. */
+let VOLTA_FEITA='feitas';
+function abreHistorico(){
+  if(!cur)return;
+  const v=reg(cur);
+  if(!v)return toast('Este cliente ainda não tem visita registrada');
+  FEITA=Object.assign({cnpj:cur.cnpj,nome:cur.nome},v);
+  VOLTA_FEITA='plano';        /* para o botão Voltar levar de volta ao plano */
+  tela('feita');
+}
+function iniciaVisita(){
+  if(!navigator.geolocation){
+    VISITA.erroGps='Este aparelho não informa a localização.';
+    VISITA.inicio=Date.now();marcaAndamento();render();return;
+  }
+  VISITA.buscando=true;VISITA.erroGps='';render();
+  navigator.geolocation.getCurrentPosition(p=>{
+    const t=agora();
+    VISITA.gps={lat:+p.coords.latitude.toFixed(6),lon:+p.coords.longitude.toFixed(6),
+      acc:Math.round(p.coords.accuracy||0)};
+    VISITA.hora=t.hora;VISITA.inicio=Date.now();VISITA.buscando=false;
+    marcaAndamento();
+    render();
+  },e=>{
+    VISITA.buscando=false;
+    VISITA.erroGps=(e&&e.code===1)
+      ? 'Permissão de localização negada. Libere o acesso ao GPS para este site.'
+      : 'Não consegui obter o sinal do GPS agora.';
+    VISITA.inicio=Date.now();
+    marcaAndamento();
+    render();
+  },{enableHighAccuracy:true,timeout:15000,maximumAge:0});
+}
+function verFicha(){ if(cur)abreFormulario() }
+
+/* Refazer: apaga o cronômetro anterior e começa uma visita nova neste cliente,
+   mantendo as respostas já dadas como ponto de partida. */
+function refazVisita(){
+  if(!confirm('Iniciar esta visita de novo? A localização e o horário serão '+
+    'registrados agora. As respostas anteriores ficam para você revisar.'))return;
+  VISITA={inicio:null,gps:null,erroGps:'',buscando:false};
+  S.andamento=null;save();
+  iniciaVisita();
+}
+const bl=(t,i)=>'<div class="bloco"><div class="gl">'+t+'</div>'+i+'</div>';
+const opt=(t,on,k,fn)=>'<button class="opt'+(on?' on '+(k||''):'')+'" onclick="'+fn+'">'+
+  '<span class="d"></span>'+esc(t)+'</button>';
+const sel=(id,arr,val,ph)=>'<select class="sel" id="'+id+'"><option value="">'+ph+'</option>'+
+  arr.map(o=>'<option'+(val===o?' selected':'')+'>'+esc(o)+'</option>').join('')+'</select>';
+function vForm(){
+  const c=cur,ex=EXISTE.filter(e=>e.t===tmp.existe)[0];
+  let h='<h3 class="t">'+esc(c.nome)+'</h3>'+
+   '<p class="sub">'+c.seq+'ª visita · '+janela(c.seq)+' · '+dowDo(c.dia)+' '+dataDo(c.dia)+'<br>'+
+   esc(c.end)+'<br>'+esc(BAIRROS[c.ba])+' · CEP '+esc(c.cep)+'<br>'+
+   'CNPJ '+esc(c.cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,'$1.$2.$3/$4-$5'))+'<br>'+
+   esc(CNAES[c.cn])+'</p>'+
+   '<div class="g2"><button class="cta o" style="margin:0" onclick="rota(\''+c.cnpj+'\')">Ir até lá</button>'+
+   '<button class="cta o" style="margin:0" onclick="ligar(\''+c.cnpj+'\')">Ligar</button></div>';
+  if(c.prec>=3)h+='<div class="aviso">Posição aproximada ('+esc(PRECN[c.prec])+
+    '). Procure pelo nome na rua e use <b>Marcar minha posição</b> para gravar o local certo.</div>';
+  h+=bl('1. O estabelecimento existe neste endereço?',
+    EXISTE.map((e,i)=>opt(e.t,tmp.existe===e.t,e.k,'setEx('+i+')')).join(''));
+  if(ex&&ex.ativo){
+    h+='<div class="bloco"><div class="gl">2. Horário de atendimento</div>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">'+
+      DIASSEM.map((d,i)=>'<button class="opt" style="width:auto;padding:9px 12px;margin:0'+
+        (tmp.dias.indexOf(i)>=0?';border-color:var(--ink);font-weight:700;background:#F7F8FA':'')+
+        '" onclick="togDia('+i+')">'+d.slice(0,3)+'</button>').join('')+'</div>'+
+      '<div class="g2"><div><label class="f" style="margin:0 0 5px">Abre</label>'+
+        sel('abre',HORAS,tmp.abre,'--:--')+'</div>'+
+      '<div><label class="f" style="margin:0 0 5px">Fecha</label>'+
+        sel('fecha',HORAS,tmp.fecha,'--:--')+'</div></div></div>';
+    h+='<div class="bloco"><div class="gl">3. Confirme os dados</div>'+
+      '<label class="f" style="margin-top:0">Nome do estabelecimento</label>'+
+      '<input class="tx" id="fnome" value="'+esc(tmp.nome)+'">'+
+      '<label class="f">Telefone</label><input class="tx" id="ftel" inputmode="tel" value="'+
+      esc(tmp.tel)+'" placeholder="62999998888">'+
+      '<label class="f">Canal do PDV</label>'+sel('fcanal',CANAIS,tmp.canal,'Selecione')+'</div>';
+    h+=bl('4. Já tem cadastro na BAND?',
+      CADBAND.map(o=>opt(o.t,tmp.cadBand===o.t,o.k,
+        'setCampo(\'cadBand\',\''+o.t+'\')')).join('')+
+      '<p class="sub" style="margin:8px 0 0">Pode existir cadastro no CPF do dono mesmo '+
+      'sem CNPJ. Confirme com ele antes de abrir um novo.</p>');
+    h+=bl('5. Vende bebidas hoje?',['Sim, vende','Não vende']
+      .map(t=>opt(t,tmp.vende===t,t[0]==='S'?'p':'n','setCampo(\'vende\',\''+t+'\')')).join(''));
+    if(tmp.vende==='Sim, vende'){
+      /* um PDV costuma comprar de mais de uma fonte, então aqui vale marcar várias */
+      const marc=Array.isArray(tmp.fornec)?tmp.fornec:(tmp.fornec?[tmp.fornec]:[]);
+      h+='<div class="bloco"><div class="gl">6. Compra de quem hoje '+
+        '<em style="font-weight:400;color:var(--ink2);font-size:12.5px">'+
+        '(pode marcar mais de um)</em></div>'+
+        FORNEC.map(f=>'<button class="opt multi'+(marc.indexOf(f)>=0?' on':'')+'" '+
+          'onclick="togFornec('+JSON.stringify(f).replace(/"/g,'&quot;')+')">'+
+          '<span class="cx">'+(marc.indexOf(f)>=0?'&#10003;':'')+'</span>'+
+          esc(f)+'</button>').join('')+
+        (marc.length?'<p class="sub" style="margin:8px 0 0">Marcados: <b>'+
+          esc(marc.join(', '))+'</b></p>':'')+'</div>';
+    }
+    h+=bl('7. Interesse em se cadastrar na BAND',INTERESSE
+      .map(o=>opt(o.t,tmp.interesse===o.t,o.k,'setCampo(\'interesse\',\''+o.t+'\')')).join(''));
+    h+='<div class="bloco"><div class="gl">8. Passou as informações para o SAC?</div>'+
+      SAC.map(o=>opt(o.t,tmp.sac===o.t,o.k,'setCampo(\'sac\',\''+o.t+'\')')).join('')+
+      (tmp.sac==='Sim, já passei para o SAC'
+        ? '<label class="f">Protocolo ou observação do SAC</label>'+
+          '<input class="tx" id="fsacprot" value="'+esc(tmp.sacProt||'')+'" '+
+          'placeholder="opcional">'
+        : '')+
+      '<p class="sub" style="margin:8px 0 0">Marque só depois de enviar os dados. '+
+      'O coordenador acompanha isso no painel.</p></div>';
+  }
+  h+='<div class="bloco"><div class="gl">Foto do local <em style="font-weight:400;color:var(--ink2)">'+
+    '— obrigatória</em></div>'+
+    (tmp.foto
+      ? '<img src="'+tmp.foto+'" class="fotoprev" alt="foto do local">'+
+        '<div class="fotoinfo">Registrada às '+esc(tmp.fotoHora||'')+
+        (tmp.fotoGps?' · com localização':'')+'</div>'+
+        '<button class="cta o" onclick="$(\'ffoto\').click()">Tirar outra foto</button>'
+      : '<p class="sub" style="margin:0 0 10px">Tire a foto da fachada agora, pelo app. '+
+        'Se o ponto não existir, fotografe o endereço como está.</p>'+
+        '<button class="cta" onclick="$(\'ffoto\').click()">Abrir a câmera</button>')+
+    '<input type="file" id="ffoto" accept="image/*" capture="environment" style="display:none">'+
+    '</div>';
+  h+=bl('Observação','<textarea id="fobs" placeholder="Opcional">'+esc(tmp.obs||'')+
+    '</textarea>');
+  h+='<div class="info"><b>Localização.</b> Ao salvar, o app grava a hora e as suas coordenadas '+
+    'de GPS, e calcula a distância até o ponto estimado.'+
+    (coordOk(tmp.gps)?'<br><br>Marcado: <b>'+coordTxt(tmp.gps)+'</b> ('+
+      fmtKm(hav(c.lat,c.lon,tmp.gps.lat,tmp.gps.lon))+' do ponto estimado)':'')+'</div>'+
+    '<button class="cta o" onclick="marcar()">Marcar minha posição agora</button>'+
+    '<div style="height:78px"></div>';
+  return h;
+}
+function setCampo(k,v){
+  colhe();
+  tmp[k]=v;
+  if(k==='vende'&&v!=='Sim, vende')tmp.fornec=[];
+  guardaRascunho();      /* depois de aplicar, senão a resposta não entra no rascunho */
+  render();
+}
+function setEx(i){
+  colhe();
+  tmp.existe=EXISTE[i].t;
+  if(!EXISTE[i].ativo){tmp.dias=[];tmp.abre='';tmp.fecha='';tmp.canal='';tmp.vende='';
+    tmp.fornec=[];tmp.interesse='';tmp.cadBand='';tmp.sac='';tmp.sacProt=''}
+  guardaRascunho();render();
+}
+function togFornec(f){
+  colhe();
+  if(!Array.isArray(tmp.fornec))tmp.fornec=tmp.fornec?[tmp.fornec]:[];
+  const i=tmp.fornec.indexOf(f);
+  if(i>=0)tmp.fornec.splice(i,1); else tmp.fornec.push(f);
+  /* "ainda não compra bebidas" não convive com um fornecedor */
+  const nenhum='Ainda não compra bebidas';
+  if(f===nenhum&&tmp.fornec.indexOf(nenhum)>=0)tmp.fornec=[nenhum];
+  else if(tmp.fornec.length>1)tmp.fornec=tmp.fornec.filter(x=>x!==nenhum);
+  guardaRascunho();render();
+}
+function togDia(i){
+  colhe();
+  const k=tmp.dias.indexOf(i);
+  if(k>=0)tmp.dias.splice(k,1); else tmp.dias.push(i);
+  guardaRascunho();render();
+}
+/* Tudo que o desenvolvedor já respondeu fica guardado no aparelho enquanto a
+   visita está em andamento. Assim ele pode sair para outro módulo e voltar. */
+function guardaRascunho(){
+  if(!cur||!tmp)return;
+  if(!S.andamento||S.andamento.cnpj!==cur.cnpj)return;
+  const r=Object.assign({},tmp);
+  /* a foto é grande e tem armazenamento próprio; o rascunho guarda só a marca */
+  if(r.foto){guardaFoto(cur.cnpj,r.foto);r.temFoto=true}
+  delete r.foto;
+  S.andamento.rascunho=r;
+  save();
+}
+function colhe(){
+  const g=id=>{const e=$(id);return e?e.value:undefined};
+  const p=[['abre','abre'],['fecha','fecha'],['fnome','nome'],['ftel','tel'],
+           ['fcanal','canal'],['fforn','fornec'],['fsacprot','sacProt'],['fobs','obs']];
+  p.forEach(([id,k])=>{const v=g(id);if(v!==undefined)tmp[k]=v});
+  guardaRascunho();
+}
+/* A foto tem que ser tirada na hora, pelo app. O atributo capture faz o celular
+   abrir a câmera direto, mas alguns navegadores ignoram e abrem a galeria — por isso
+   também conferimos a data do arquivo e recusamos imagem antiga. */
+const FOTO_MAX_MIN=15;
+/* A observação é guardada enquanto se digita, sem remontar a tela, para o texto
+   não se perder nem o cursor sair do lugar. */
+function ligaObs(){
+  const el=$('fobs'); if(!el)return;
+  let t;
+  el.oninput=()=>{clearTimeout(t);t=setTimeout(()=>{
+    if(tmp){tmp.obs=el.value;guardaRascunho()}
+  },400)};
+  el.onblur=()=>{if(tmp){tmp.obs=el.value;guardaRascunho()}};
+}
+function ligaFoto(){
+  const el=$('ffoto'); if(!el)return;
+  el.onchange=ev=>{
+    const f=(ev.target.files||[])[0]; ev.target.value='';
+    if(!f)return;
+    if(!/^image\//.test(f.type))return toast('Selecione uma imagem');
+    const idade=(Date.now()-(f.lastModified||0))/60000;
+    if(isFinite(idade)&&idade>FOTO_MAX_MIN)
+      return toast('Essa foto não é de agora. Tire uma nova pela câmera.');
+    toast('Preparando a foto…');
+    const fr=new FileReader();
+    fr.onload=()=>comprime(fr.result,f);
+    fr.onerror=()=>toast('Não consegui ler a foto');
+    fr.readAsDataURL(f);
+  };
+}
+function comprime(dataUrl,arq){
+  const img=new Image();
+  img.onload=()=>{
+    const lado=900;
+    const esc=Math.min(1,lado/Math.max(img.width,img.height));
+    const c=document.createElement('canvas');
+    c.width=Math.round(img.width*esc);c.height=Math.round(img.height*esc);
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+    let out=c.toDataURL('image/jpeg',0.55);
+    /* se ainda ficar grande, aperta mais: o aparelho guarda tudo localmente */
+    if(out.length>320000)out=c.toDataURL('image/jpeg',0.4);
+    const t=agora();
+    tmp.foto=out;tmp.fotoHora=t.hora;tmp.fotoIso=t.iso;
+    tmp.fotoKB=Math.round(out.length/1365);
+    tmp.fotoGps=tmp.gps?{lat:tmp.gps.lat,lon:tmp.gps.lon}:null;
+    colhe();render();
+    toast('Foto registrada · '+tmp.fotoKB+' KB');
+  };
+  img.onerror=()=>toast('Imagem inválida');
+  img.src=dataUrl;
+}
+function marcar(){
+  if(!navigator.geolocation)return toast('Aparelho sem GPS');
+  toast('Buscando o sinal…');
+  navigator.geolocation.getCurrentPosition(p=>{
+    tmp.gps={lat:+p.coords.latitude.toFixed(6),lon:+p.coords.longitude.toFixed(6),
+      acc:Math.round(p.coords.accuracy||0)};
+    colhe();render();toast('Posição marcada');},
+   e=>toast(e&&e.code===1?'Permissão de localização negada':'Sinal indisponível'),
+   {enableHighAccuracy:true,timeout:12000,maximumAge:0});
+}
+function salvar(){
+  colhe();
+  if(!tmp.existe)return toast('Responda se o estabelecimento existe');
+  const ex=EXISTE.filter(e=>e.t===tmp.existe)[0];
+  if(ex.ativo){
+    if(!tmp.dias.length)return toast('Marque os dias de atendimento');
+    if(!tmp.abre||!tmp.fecha)return toast('Informe o horário de abertura e fechamento');
+    if(!tmp.canal)return toast('Informe o canal do PDV');
+    if(!tmp.cadBand)return toast('Responda se já tem cadastro na BAND');
+    if(!tmp.vende)return toast('Informe se vende bebidas');
+    if(tmp.vende==='Sim, vende'&&(!tmp.fornec||!tmp.fornec.length))
+      return toast('Marque de quem ele compra hoje');
+    if(!tmp.interesse)return toast('Informe o interesse em se cadastrar');
+    if(!tmp.sac)return toast('Responda se passou as informações para o SAC');
+  }
+  /* a foto fica por último, na mesma ordem em que o formulário é preenchido */
+  if(!tmp.foto&&!tmp.fotoCaminho)return toast('Tire a foto do local antes de salvar');
+  const t=agora();
+  const fim=()=>{
+    /* a planilha guarda como texto separado por ponto e vírgula */
+    if(Array.isArray(tmp.fornec))tmp.fornec=tmp.fornec.join('; ');
+    Object.assign(tmp,{data:t.data,hora:t.hora,iso:t.iso,dow:t.dow,dev:meuNome(),
+      rota:ROTAS[cur.rt],sv:SVS[cur.sv],diaRoteiro:cur.dia,
+      dataPlan:dataDo(cur.dia),dowPlan:dowDo(cur.dia),
+      noPrazo:t.data.slice(0,5)===dataDo(cur.dia),
+      latRef:cur.lat,lonRef:cur.lon,
+      email:S.email||'',
+      dist:coordOk(tmp.gps)
+        ?+hav(cur.lat,cur.lon,coordOk(tmp.gps).lat,coordOk(tmp.gps).lon).toFixed(3):null,
+      /* quanto tempo a visita levou, do Iniciar até o Salvar */
+      inicioHora:(S.andamento&&S.andamento.cnpj===cur.cnpj)?S.andamento.hora:'',
+      duracaoMin:(S.andamento&&S.andamento.cnpj===cur.cnpj&&S.andamento.inicio)
+        ? Math.max(1,Math.round((Date.now()-S.andamento.inicio)/60000)) : null,
+      duracaoSeg:(S.andamento&&S.andamento.cnpj===cur.cnpj&&S.andamento.inicio)
+        ? Math.round((Date.now()-S.andamento.inicio)/1000) : null,
+      enviado:false});
+    delete tmp.recusada;
+    if(S.andamento&&S.andamento.cnpj===cur.cnpj)S.andamento=null;
+    /* a imagem fica numa chave separada: o registro da visita continua leve */
+    const foto=tmp.foto; delete tmp.foto;
+    /* foto nova: sobe de novo; refazendo sem tirar outra, vale a que já subiu */
+    const fotoNova=!!foto&&foto!==leFoto(cur.cnpj)||!!foto&&!tmp.fotoEnviada;
+    if(fotoNova){delete tmp.fotoCaminho;tmp.fotoEnviada=false;delete tmp.fotoCaminhoPrevisto}
+    tmp.temFoto=!!foto||!!tmp.fotoCaminho;
+    S.vis[cur.cnpj]=tmp;
+    if(foto)guardaFoto(cur.cnpj,foto);
+    save();ultimo=cur.cnpj;tela('ok');
+    /* a visita primeiro, a foto depois: as duas gravam na mesma linha da planilha
+       e se saírem juntas podem se atropelar */
+    enviar(true);
+    if(foto&&fotoNova){const cn=cur.cnpj;enviaFoto(cn,foto,(ok,msg)=>{
+      if(!ok)toast('Foto na fila: '+msg);
+      if(tela_==='ok')render();
+    })}
+  };
+  if(tmp.gps)return fim();
+  if(!navigator.geolocation){tmp.gpsErro='Aparelho sem GPS';return fim()}
+  toast('Marcando a localização…');
+  navigator.geolocation.getCurrentPosition(p=>{
+    tmp.gps={lat:+p.coords.latitude.toFixed(6),lon:+p.coords.longitude.toFixed(6),
+      acc:Math.round(p.coords.accuracy||0)};fim();},
+   e=>{tmp.gps=null;tmp.gpsErro=(e&&e.code===1)?'Permissão negada':'Sinal indisponível';fim()},
+   {enableHighAccuracy:true,timeout:12000,maximumAge:0});
+}
+function guardaFoto(cnpj,dataUrl){
+  try{localStorage.setItem('rtm_foto_'+cnpj,dataUrl)}
+  catch(e){toast('Sem espaço para guardar a foto no aparelho')}
+}
+function leFoto(cnpj){try{return localStorage.getItem('rtm_foto_'+cnpj)}catch(e){return null}}
+/* A foto sobe para a pasta privada rtm-fotos, em visitas/<login>/. O nome é
+   fixo por foto: reenviar a mesma foto não cria cópia. Quando o servidor
+   confirma, a visita é reenviada com o caminho da foto e a cópia do aparelho
+   é apagada (antes elas se acumulavam até lotar o armazenamento). */
+function caminhoFoto(cnpj,v){
+  const st=String((v&&v.fotoIso)||new Date().toISOString()).replace(/[^0-9]/g,'').slice(0,14);
+  return 'visitas/'+S.login+'/'+String(cnpj).replace(/[^0-9A-Za-z]/g,'')+'_'+st+'.jpg';
+}
+function enviaFoto(cnpj,dataUrl,aoTerminar){
+  const fim=(ok,m)=>{if(aoTerminar)aoTerminar(ok,m);else if(!ok)toast('Foto não subiu: '+m)};
+  if(!SESSAO||!S.login)return fim(false,'entre com a senha');
+  if(!navigator.onLine)return fim(false,'sem conexão');
+  const v0=S.vis[cnpj];
+  const cam=(v0&&v0.fotoCaminhoPrevisto)||caminhoFoto(cnpj,v0);
+  if(v0){v0.fotoCaminhoPrevisto=cam;save()}
+  fetch(dataUrl).then(r=>r.blob())
+   .then(b=>sobeArquivo(cam,b,'image/jpeg'))
+   .then(()=>{
+     const v=S.vis[cnpj];
+     if(v){v.fotoEnviada=true;v.fotoCaminho=cam;v.enviado=false;delete v.fotoCaminhoPrevisto;
+       delete v.recusada;save();
+       try{localStorage.removeItem('rtm_foto_'+cnpj)}catch(e){}
+       enviar(true)}
+     fim(true,cam);
+   })
+   .catch(e=>{if(e.semSessao)sessaoPerdida();fim(false,e.message||'falhou')});
+}
+/* testa a conexão com o banco do RTM */
+function testaConexao(){
+  toast('Testando…');
+  rpc('diagnostico')
+   .then(j=>alert('Conexão OK.\n\nRoteiro em uso: '+(j.roteiroEmUso||'nenhum publicado')+
+     '\nSuas visitas na base: '+fmt(j.visitas)))
+   .catch(e=>alert('Não consegui falar com o servidor.\n\n'+(e.message||'')));
+}
+let subindoFotos=false;
+function reenviaFotos(silencioso){
+  if(subindoFotos||!SESSAO||!navigator.onLine)return;
+  const p=Object.keys(S.vis).filter(k=>S.vis[k].temFoto&&!S.vis[k].fotoEnviada&&leFoto(k));
+  if(!p.length){if(!silencioso)toast('Nenhuma foto pendente');return}
+  subindoFotos=true;
+  if(!silencioso)toast('Enviando '+p.length+' foto(s)…');
+  let i=0,falhas=0;
+  const proxima=()=>{
+    if(i>=p.length){subindoFotos=false;
+      if(!silencioso)toast(falhas?falhas+' foto(s) não subiram':'Fotos enviadas');return}
+    const k=p[i++],f=leFoto(k);
+    enviaFoto(k,f,(ok,msg)=>{if(!ok)falhas++;setTimeout(proxima,300)});
+  };
+  proxima();
+}
+function vOk(){
+  const c=BASE.filter(x=>x.cnpj===ultimo)[0],v=S.vis[ultimo],t=agora();
+  const m=minha(),hoje=m.filter(x=>feito(x)&&S.vis[x.cnpj].data===t.data).length;
+  const dd=m.filter(x=>x.dia===fDia),falta=dd.filter(x=>!feito(x)).length;
+  return '<div style="text-align:center;padding:24px 0 6px">'+
+   '<div style="width:66px;height:66px;border-radius:50%;background:var(--ok-bg);color:var(--ok);'+
+   'display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 12px">&#10003;</div>'+
+   '<h3 class="t" style="margin:0">Visita registrada</h3>'+
+   '<p class="sub" style="margin-top:4px">'+esc(c.nome)+'<br>'+esc(v.existe)+'</p></div>'+
+   '<div class="kg">'+
+   '<div class="k r"><b>'+hoje+' / '+S.metas.porDia+'</b><span>visitas de hoje</span></div>'+
+   '<div class="k g"><b>'+falta+'</b><span>faltam neste dia</span></div>'+
+   '<div class="k b"><b>'+(v.dist!=null?fmtKm(v.dist):'—')+'</b><span>do ponto estimado</span></div>'+
+   '<div class="k w"><b>'+esc(v.hora)+'</b><span>'+esc(v.data)+'</span></div>'+
+   (v.duracaoSeg!=null||v.duracaoMin!=null
+     ? '<div class="k wide"><b>'+esc(duracaoTexto(v))+'</b><span>tempo da visita'+
+       (v.inicioHora?', das '+esc(v.inicioHora)+' às '+esc(v.hora):'')+'</span></div>'
+     : '')+'</div>'+
+   (fotoDe(ultimo,v,900)?'<img src="'+esc(fotoDe(ultimo,v,900))+'" class="fotoprev">':'')+
+   (v.gpsErro?'<div class="aviso">Localização não capturada: '+esc(v.gpsErro)+'.</div>':'')+
+   (v.temFoto?(v.fotoEnviada
+     ?'<div class="info">Foto enviada.</div>'
+     :'<div class="aviso">Foto guardada no aparelho, ainda subindo. '+
+      'Se demorar, use <b>Conta e envio &gt; Reenviar fotos pendentes</b>.</div>'):'')+
+   (v.enviado?'<div class="info">Enviado para a base.</div>':
+     '<div class="aviso">Guardado no aparelho. Sobe assim que houver sinal.</div>')+
+   '<button class="cta" onclick="proximo()">Próximo cliente</button>'+
+   '<button class="cta o" onclick="tela(\'visitas\')">Voltar ao roteiro</button>';
+}
+function duracaoTexto(v){
+  const s=v.duracaoSeg;
+  if(s!=null&&s<60)return s+' s';
+  const m=v.duracaoMin!=null?v.duracaoMin:(s!=null?Math.round(s/60):null);
+  if(m==null)return '—';
+  if(m<60)return m+' min';
+  return Math.floor(m/60)+'h '+p2(m%60);
+}
+function proximo(){
+  const m=minha().filter(c=>c.dia===fDia&&!feito(c));
+  if(!m.length){toast('Dia concluído');return tela('visitas')}
+  abrir(m[0].cnpj);
+}
+
+/* ---------------- demais telas ---------------- */
+/* Ficha de cliente no mesmo formato do app do vendedor: nome, código,
+   separador tracejado, agenda de visita e os botões de ligar e traçar rota. */
+let buscaCli='';
+function vClientes(){
+  const m=minha();
+  const q=buscaCli.toLowerCase();
+  let l=m;
+  if(q)l=m.filter(c=>c.nome.toLowerCase().includes(q)||
+    String(c.cnpj).includes(q)||(BAIRROS[c.ba]||'').toLowerCase().includes(q));
+  l=l.slice().sort((a,b)=>a.dia-b.dia||a.seq-b.seq);
+  const hj=diaDeHoje();
+  let h='<div class="barra" style="padding:10px 0 12px">'+
+    '<div class="busca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" '+
+    'stroke-width="2" stroke-linecap="round">'+IC.busca+'</svg>'+
+    '<input id="qcli" placeholder="Buscar clientes" value="'+esc(buscaCli)+'"></div></div>';
+  if(!l.length)return h+'<div class="vazio">Nenhum cliente encontrado.</div>';
+  h+=l.slice(0,300).map(c=>{
+    const v=reg(c), hoje=hj===c.dia;
+    const quando=hoje
+      ? '<b style="color:var(--ok)">Hoje às '+janela(c.seq).slice(0,5)+'</b>'
+      : dowDo(c.dia)+' '+dataDo(c.dia)+' às '+janela(c.seq).slice(0,5);
+    return '<div class="cli" onclick="abrir(\''+c.cnpj+'\')">'+
+      '<div class="ct">'+
+        '<span class="lj">'+svg('loja',1.9)+'</span>'+
+        '<div class="nm">'+esc(c.nome)+'</div>'+
+        '<span class="cod">'+svg('chave',1.9)+esc(String(c.cnpj).slice(0,8))+'</span>'+
+      '</div>'+
+      '<div class="sep"></div>'+
+      '<div class="cb">'+
+        '<div class="ag">'+quando+
+          (v?' · <b style="color:var(--ok)">visitado</b>':'')+
+          '<br><span style="color:var(--ink3)">'+esc(BAIRROS[c.ba]||'')+'</span></div>'+
+        '<button class="acao" onclick="event.stopPropagation();ligar(\''+c.cnpj+'\')">'+
+          svg('fone')+'</button>'+
+        '<button class="acao" onclick="event.stopPropagation();rota(\''+c.cnpj+'\')">'+
+          svg('rota')+'</button>'+
+      '</div></div>';
+  }).join('');
+  if(l.length>300)h+='<p class="sub" style="text-align:center">Mostrando 300 de '+
+    fmt(l.length)+'. Use a busca para achar um cliente.</p>';
+  return h;
+}
+function ligaBuscaCli(){
+  const el=$('qcli'); if(!el)return;
+  let t; el.oninput=e=>{clearTimeout(t);t=setTimeout(()=>{
+    buscaCli=e.target.value.trim();
+    const foco=d0();$('app').innerHTML=vClientes();ligaBuscaCli();
+    const n=$('qcli'); if(n&&foco){n.focus();n.setSelectionRange(n.value.length,n.value.length)}
+  },260)};
+}
+const d0=()=>document.activeElement&&document.activeElement.id==='qcli';
+/* Notificações no formato do app do vendedor: miniatura, título, duas linhas
+   de texto e a data à direita. Junta os avisos do próprio app com as mensagens
+   que a coordenação escreve na aba "mensagens" da planilha. */
+const ICN={roteiro:['#E8F1FC','#1266C7','alvo'],envio:['#E7F5EC','#0B7A3B','nuvem'],
+  foto:['#FFF4E0','#9A6200','loja'],aviso:['#FDECEE','#93131F','pedido'],
+  msg:['#FDE7EB','#E4002B','grafico'],promo:['#FDE7EB','#E4002B','loja'],
+  meta:['#E7F5EC','#0B7A3B','grafico'],urgente:['#FDECEE','#93131F','pedido']};
+function vAvisos(){
+  const locais=(S.avisos||[]).map(a=>({tipo:a.tipo||'aviso',titulo:a.titulo,
+    texto:a.texto,data:a.data,hora:a.hora,novo:a.novo}));
+  const remotas=(MSGS.lista||[]).map(m=>({tipo:m.tipo||'msg',titulo:m.titulo,texto:m.texto,
+    data:m.data||'',hora:'',novo:false,imagem:m.imagem||''}));
+  const tudo=remotas.concat(locais);
+  marcaLidos();
+  let h='<div style="display:flex;align-items:center;justify-content:space-between;'+
+    'padding:4px 0 10px"><h3 class="t" style="margin:0">Notificações</h3>'+
+    (tudo.length?'<button onclick="limpaAvisos()" style="color:var(--red);font-weight:700;'+
+      'font-size:14px;padding:6px 2px">Limpar</button>':'')+'</div>';
+  if(!tudo.length)return h+'<div class="vazio">Nenhuma notificação por enquanto.<br>'+
+    'Avisos do app e recados da coordenação aparecem aqui.</div>';
+  AVISOS_NA_TELA=tudo;
+  h+=tudo.map((a,i)=>{
+    const c=ICN[a.tipo]||ICN.aviso;
+    return '<div class="nt'+((a.imagem||(a.texto||'').length>70)?' clic':'')+'"'+
+      ((a.imagem||(a.texto||'').length>70)?' onclick="abreAviso('+i+')"':'')+'>'+
+      (a.imagem
+        ? '<span class="ic" style="background:'+c[0]+';padding:0">'+
+          '<img src="'+esc(linkImagem(a.imagem,240))+'" alt="" loading="lazy" '+
+          'onerror="this.style.display=\'none\'"></span>'
+        : '<span class="ic" style="background:'+c[0]+';color:'+c[1]+'">'+svg(c[2],1.9)+'</span>')+
+      '<div class="tx"><b>'+esc(a.titulo||'')+'</b>'+
+        '<span>'+esc(a.texto||'')+'</span></div>'+
+      '<span class="dt">'+esc((a.data||'').slice(0,5))+'</span>'+
+      (a.texto&&a.texto.length>70||a.imagem
+        ? '<span class="ch">'+svg('seta',2.2)+'</span>':'')+'</div>';
+  }).join('');
+  return h;
+}
+let AVISOS_NA_TELA=[],AVISO_ABERTO=null;
+function abreAviso(i){
+  AVISO_ABERTO=AVISOS_NA_TELA[i]||null;
+  if(AVISO_ABERTO)tela('aviso');
+}
+function vAviso(){
+  const a=AVISO_ABERTO;
+  if(!a)return '<div class="vazio">Mensagem não encontrada.</div>';
+  const c=ICN[a.tipo]||ICN.aviso;
+  return '<div style="display:flex;align-items:center;gap:10px;padding:6px 0 12px">'+
+     '<span class="ic" style="width:38px;height:38px;border-radius:9px;background:'+c[0]+
+       ';color:'+c[1]+';display:flex;align-items:center;justify-content:center">'+
+       svg(c[2],1.9)+'</span>'+
+     '<div style="flex:1;min-width:0"><div style="font-size:12px;color:var(--ink3)">'+
+       esc(TIPON[a.tipo]||'Aviso')+' · '+esc(a.data||'')+(a.hora?' às '+esc(a.hora):'')+'</div>'+
+     '</div></div>'+
+   '<h3 class="t" style="margin:0 0 10px">'+esc(a.titulo||'')+'</h3>'+
+   (a.imagem
+     ? '<img src="'+esc(linkImagem(a.imagem,1200))+'" alt="" '+
+       'style="width:100%;border-radius:12px;display:block;margin:0 0 14px;'+
+       'background:#EDEFF2" onerror="this.style.display=\'none\';'+
+       'document.getElementById(\'imgerro\').style.display=\'block\'">'+
+       '<div class="aviso" id="imgerro" style="display:none">Não consegui carregar a imagem. '+
+       'Toque em <b>Abrir imagem</b> para ver no navegador.</div>'+
+       '<button class="cta o" onclick="window.open(\''+esc(linkImagem(a.imagem,1600))+
+       '\',\'_blank\')">Abrir imagem</button>'
+     : '')+
+   '<div style="font-size:15px;line-height:1.65;color:var(--ink);white-space:pre-wrap">'+
+     esc(a.texto||'')+'</div>'+
+   '<button class="cta o" onclick="tela(\'avisos\')">Voltar às notificações</button>'+
+   '<div style="height:20px"></div>';
+}
+const TIPON={aviso:'Aviso',promo:'Promoção',roteiro:'Roteiro',meta:'Meta',
+  urgente:'Urgente',msg:'Coordenação',envio:'Envio',foto:'Foto'};
+function marcaLidos(){
+  if(S.avisos)S.avisos.forEach(a=>a.novo=false);
+  /* guarda quais mensagens já foram vistas e avisa o painel */
+  const vistas=S.msgVistas||[];
+  (MSGS.lista||[]).forEach(m=>{
+    const k=chaveMsg(m);
+    if(vistas.indexOf(k)<0){vistas.push(k); if(m.id)recibo(m.id,true)}
+  });
+  S.msgVistas=vistas.slice(-200);
+  MSGS.novas=0; save();
+  const b=$('sinob'); if(b)b.style.display='none';
+}
+function limpaAvisos(){
+  S.avisos=[]; MSGS.lista=[]; MSGS.novas=0; save(); render();
+}
+/* Quem já compra da BAND na mesma região do dia. O desenvolvedor aproveita a ida
+   para reforçar mix, conferir material de PDV ou resolver uma pendência. */
+let GPSPERTO=null,BUSCANDOGPS=false;
+function vPerto(){
+  let l=vizinhosDoDia().slice(), diaMostrado=fDia, avisoOutro='';
+  if(!l.length){
+    /* pode não haver nada no dia escolhido, mas haver nos outros dias do roteiro */
+    const outros=Object.keys(VIZ||{}).filter(k=>k.indexOf(S.dev+'|')===0)
+      .map(k=>+k.split('|')[1]).sort((a,b)=>Math.abs(a-fDia)-Math.abs(b-fDia));
+    if(outros.length){
+      diaMostrado=outros[0];
+      l=(VIZ[S.dev+'|'+diaMostrado]||[]).slice();
+      avisoOutro='<div class="aviso" style="margin-top:10px">Nenhum cliente mapeado no '+
+        'dia '+fDia+'. Mostrando o dia '+diaMostrado+', que é o mais próximo com '+
+        'clientes na região.</div>';
+    }
+  }
+  if(!l.length){
+    const temAlgum=Object.keys(VIZ||{}).length>0;
+    return '<div class="vazio">'+
+      (temAlgum
+        ? 'Nenhum cliente ativo mapeado na sua região.'
+        : '<b>O roteiro em uso não trouxe os clientes da região.</b><br><br>'+
+          'Roteiro '+esc(PLANO?PLANO.versao:'embutido')+
+          (PLANO&&PLANO.escopo?' · '+esc(PLANO.escopo):'')+'.<br><br>'+
+          'Toque em Sincronizar: se o coordenador publicou depois, a lista chega.')+
+      '</div>'+
+      '<button class="cta o" onclick="sincroniza(false)">Sincronizar agora</button>';
+  }
+  if(GPSPERTO)l.forEach(c=>c.dGps=kmAte(GPSPERTO.lat,GPSPERTO.lon,c.lat,c.lon));
+  l.sort((a,b)=>GPSPERTO?(a.dGps-b.dGps):(a.km-b.km));
+  let h='<div class="info" style="margin-top:10px">'+
+    '<b>'+fmt(l.length)+' clientes ativos</b> na região onde você trabalha '+
+    esc(dowDo(diaMostrado)+' '+dataDo(diaMostrado))+'. '+
+    'Para ver outro dia, troque o dia na tela de Visitas. '+
+    (GPSPERTO?'Ordenados pela distância de onde você está agora.'
+      :'Toque abaixo para ordenar pelos mais próximos de você.')+'</div>'+
+    (GPSPERTO?'':'<button class="cta o" onclick="localizaPerto()"'+
+      (BUSCANDOGPS?' disabled':'')+'>'+
+      (BUSCANDOGPS?'Localizando…':'Usar minha localização')+'</button>');
+  h=avisoOutro+h;
+  h+=l.map(c=>{
+    const d=(GPSPERTO&&c.dGps!=null)?c.dGps:c.km;
+    return '<div class="cli">'+
+      '<div class="ct">'+
+        '<span class="lj">'+svg('loja',1.9)+'</span>'+
+        '<div class="nm">'+esc(c.nome)+'</div>'+
+        '<span class="cod">'+svg('chave',1.9)+esc(String(c.cod))+'</span>'+
+      '</div>'+
+      '<div class="sep"></div>'+
+      '<div class="cb">'+
+        '<div class="ag"><b style="color:var(--blue)">'+fmtKm(d)+'</b>'+
+          (GPSPERTO?' de você':' do seu roteiro')+
+          (c.rota?' · rota '+esc(c.rota):'')+
+          '<br><span style="color:var(--ink3)">'+esc(c.bairro||'')+'</span></div>'+
+        '<button class="acao" onclick="rotaPara('+c.lat+','+c.lon+')">'+svg('rota')+'</button>'+
+      '</div></div>';
+  }).join('');
+  return h+'<div style="height:20px"></div>';
+}
+function kmAte(la1,lo1,la2,lo2){
+  const dy=(la2-la1)*111.32;
+  const dx=(lo2-lo1)*111.32*Math.cos((la1+la2)/2*Math.PI/180);
+  return Math.sqrt(dy*dy+dx*dx);
+}
+function localizaPerto(){
+  if(!navigator.geolocation)return toast('Este aparelho não informa a localização');
+  BUSCANDOGPS=true;render();
+  navigator.geolocation.getCurrentPosition(p=>{
+    GPSPERTO={lat:p.coords.latitude,lon:p.coords.longitude};
+    BUSCANDOGPS=false;render();
+  },()=>{BUSCANDOGPS=false;toast('Não consegui obter o GPS agora');render()},
+  {enableHighAccuracy:true,timeout:15000,maximumAge:30000});
+}
+function rotaPara(lat,lon){
+  window.open('https://www.google.com/maps/dir/?api=1&destination='+lat+','+lon,'_blank');
+}
+/* ============================================================================
+   VISITAS FEITAS
+   Lê direto da planilha, não do que está guardado no aparelho. É isso que faz
+   o histórico aparecer mesmo em celular novo ou endereço novo do app.
+   ============================================================================ */
+let FEITAS={carregando:false,lista:null,erro:'',q:'',data:'todas',sit:'todas',fonte:''};
+let FEITA=null;
+
+const MESES_LONGO=['janeiro','fevereiro','março','abril','maio','junho','julho',
+  'agosto','setembro','outubro','novembro','dezembro'];
+/* "09/09/2026" e "08:15" viram "9 de setembro de 2026 às 08:15" */
+function dataLonga(d,h){
+  const m=String(d||'').match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if(!m)return [d,h].filter(Boolean).join(' ');
+  const txt=(+m[1])+' de '+MESES_LONGO[+m[2]-1]+' de '+m[3];
+  return h?txt+' às '+h:txt;
+}
+const isoDaVisita=v=>{
+  const m=String(v.data||'').match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  return m?m[3]+'-'+m[2]+'-'+m[1]:'';
+};
+const SITCOR={'Sim, está funcionando':['#E7F5EC','#0B7A3B','Funcionando'],
+  'Está fechado agora':['#FFF4E0','#9A6200','Fechado agora'],
+  'Mudou de ramo':['#FFF4E0','#9A6200','Mudou de ramo'],
+  'Encerrou as atividades':['#EDEFF2','#4A5560','Encerrou'],
+  'Não encontrei o endereço':['#EDEFF2','#4A5560','Endereço não achado'],
+  'Cancelada':['#E8F1FC','#1266C7','Cancelada']};
+const sitDe=v=>SITCOR[v.existe]||['#EDEFF2','#4A5560',v.existe||'Registrada'];
+
+function buscaFeitas(silencioso){
+  if(!SESSAO||!navigator.onLine){
+    FEITAS.lista=locaisComoFeitas();FEITAS.fonte='aparelho';
+    FEITAS.erro=SESSAO?'sem conexão':'entre com a senha';return render();
+  }
+  FEITAS.carregando=true; if(!silencioso)render();
+  rpc('minhas_visitas',{p_limite:3000})
+   .then(j=>{
+     FEITAS.carregando=false;
+     /* o servidor só manda as minhas, e o que vem de lá já está enviado */
+     const l=(j.visitas||[]).map(v=>Object.assign({},v,{daBase:true,enviado:true}));
+     const daBase={};
+     l.forEach(v=>daBase[String(v.cnpj)]=1);
+     const fila=locaisComoFeitas().filter(v=>!daBase[String(v.cnpj)]);
+     FEITAS.lista=fila.concat(l);FEITAS.aviso='';
+     FEITAS.fonte='base';FEITAS.erro='';
+     render();
+   })
+   .catch(e=>{
+     FEITAS.carregando=false;
+     if(e.semSessao)sessaoPerdida();
+     FEITAS.lista=locaisComoFeitas();FEITAS.fonte='aparelho';
+     FEITAS.erro=e&&e.message||'sem conexão';
+     render();
+   });
+}
+function locaisComoFeitas(){
+  return Object.keys(S.vis||{}).map(k=>Object.assign({cnpj:k},S.vis[k]))
+    .sort((a,b)=>String(b.iso||'').localeCompare(String(a.iso||'')));
+}
+
+function vFeitas(){
+  if(FEITAS.lista===null&&!FEITAS.carregando){setTimeout(()=>buscaFeitas(true),0);
+    FEITAS.carregando=true}
+  let h='<div class="barra" style="padding:10px 0 12px">'+
+    '<div class="fbusca">'+
+      '<div class="busca" style="flex:1"><svg viewBox="0 0 24 24" fill="none" '+
+        'stroke="currentColor" stroke-width="2" stroke-linecap="round">'+IC.lupa+'</svg>'+
+        '<input id="qfeitas" placeholder="Buscar visitas" value="'+esc(FEITAS.q)+'"></div>'+
+      '<button class="fbt'+(FEITAS.data!=='todas'?' on':'')+'" onclick="folhaData()">'+
+        svg('calend',1.9)+'Data</button>'+
+      '<button class="fbt'+(FEITAS.sit!=='todas'?' on':'')+'" onclick="folhaSitFeitas()">'+
+        svg('filtro',2.1)+'</button>'+
+    '</div></div>';
+  if(FEITAS.carregando)
+    return h+'<div class="vazio">Buscando as suas visitas na base…</div>';
+  const l=filtraFeitas();
+  h+=(FEITAS.aviso?'<div class="aviso" style="margin:0 0 10px">'+esc(FEITAS.aviso)+
+    '</div>':'')+
+    '<div class="fnota">'+
+    (FEITAS.fonte==='base'
+      ? fmt((FEITAS.lista||[]).length)+' visitas suas na base'
+      : 'Mostrando o que está neste aparelho'+(FEITAS.erro?' · '+esc(FEITAS.erro):''))+
+    (l.length!==(FEITAS.lista||[]).length?' · '+fmt(l.length)+' no filtro':'')+
+    ' <b onclick="buscaFeitas(false)">Atualizar</b></div>';
+  if(!l.length)return h+'<div class="vazio">Nenhuma visita encontrada'+
+    (FEITAS.q||FEITAS.data!=='todas'||FEITAS.sit!=='todas'?' com este filtro.':'.')+'</div>';
+  h+=l.slice(0,300).map((v,i)=>{
+    const s=sitDe(v), pend=!v.enviado&&!v.daBase;
+    const foto=fotoDe(v.cnpj,v,180);
+    return '<div class="ped" onclick="abreFeita('+i+')">'+
+      '<div class="ptop">'+
+        '<span class="pbadge" style="background:'+s[0]+';color:'+s[1]+'">'+
+          svg('conferido',1.9)+esc(s[2])+'</span>'+
+        '<span class="pst '+(pend?'fila':'ok')+'">'+svg(pend?'nuvem':'conferido',1.9)+
+          (pend?'Na fila':'Enviado')+'</span>'+
+      '</div>'+
+      '<div class="plin">'+svg('chave',1.9)+'<span>'+esc(cnpjCurto(v.cnpj))+'</span></div>'+
+      '<div class="plin forte">'+svg('loja',1.9)+'<span>'+esc(v.nome||'—')+'</span></div>'+
+      '<div class="plin">'+svg('calend',1.9)+'<span>'+esc(dataLonga(v.data,v.hora))+
+        '</span></div>'+
+      '<div class="pbase">'+
+        (foto?'<img class="pfoto" src="'+esc(foto)+'" alt="" loading="lazy" '+
+          'onerror="this.style.display=\'none\'">':'<span class="pfoto vazia">'+
+          svg('foto',1.7)+'</span>')+
+        '<div class="pmet">'+
+          '<div><span>Interesse</span><b>'+esc(curto(v.interesse))+'</b></div>'+
+          '<div><span>Cadastro BAND</span><b>'+esc(curto(v.cadBand))+'</b></div>'+
+        '</div>'+
+        '<span class="pseta">'+svg('seta2',2.2)+'</span>'+
+      '</div></div>';
+  }).join('');
+  if(l.length>300)h+='<p class="sub" style="text-align:center">Mostrando 300 de '+
+    fmt(l.length)+'. Use a busca.</p>';
+  return h+'<div style="height:16px"></div>';
+}
+const cnpjCurto=c=>{const t=String(c||'').padStart(14,'0');
+  return t.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,'$1.$2.$3/$4-$5')};
+const curto=t=>{const s=String(t||'—');return s.length>18?s.slice(0,17)+'…':s};
+
+function filtraFeitas(){
+  let l=(FEITAS.lista||[]).slice();
+  const q=FEITAS.q.toLowerCase();
+  if(q)l=l.filter(v=>String(v.nome||'').toLowerCase().includes(q)||
+    String(v.cnpj||'').includes(q)||String(v.canal||'').toLowerCase().includes(q));
+  if(FEITAS.sit!=='todas')l=l.filter(v=>String(v.existe||'')===FEITAS.sit);
+  if(FEITAS.data!=='todas'){
+    const hoje=new Date(), z=n=>('0'+n).slice(-2);
+    const iso=d=>d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate());
+    const hj=iso(hoje);
+    const ontem=new Date(hoje.getTime()-86400000);
+    if(FEITAS.data==='hoje')l=l.filter(v=>isoDaVisita(v)===hj);
+    else if(FEITAS.data==='ontem')l=l.filter(v=>isoDaVisita(v)===iso(ontem));
+    else if(FEITAS.data==='semana'){
+      const lim=iso(new Date(hoje.getTime()-6*86400000));
+      l=l.filter(v=>isoDaVisita(v)>=lim);
+    } else if(FEITAS.data.indexOf('-')>0)l=l.filter(v=>isoDaVisita(v)===FEITAS.data);
+  }
+  return l;
+}
+function ligaBuscaFeitas(){
+  const el=$('qfeitas'); if(!el)return;
+  let t; el.oninput=e=>{clearTimeout(t);t=setTimeout(()=>{
+    FEITAS.q=e.target.value.trim();
+    $('app').innerHTML=vFeitas();ligaBuscaFeitas();
+    const n=$('qfeitas'); if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length)}
+  },260)};
+}
+function folhaData(){
+  const l=FEITAS.lista||[];
+  const conta=f=>l.filter(f).length;
+  const hoje=new Date(), z=n=>('0'+n).slice(-2);
+  const iso=d=>d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate());
+  const hj=iso(hoje), on=iso(new Date(hoje.getTime()-86400000));
+  const lim=iso(new Date(hoje.getTime()-6*86400000));
+  const op=[
+    ['todas','Todas as datas',l.length],
+    ['hoje','Hoje',conta(v=>isoDaVisita(v)===hj)],
+    ['ontem','Ontem',conta(v=>isoDaVisita(v)===on)],
+    ['semana','Últimos 7 dias',conta(v=>isoDaVisita(v)>=lim)]];
+  abreFolha('Data da visita',
+    '<div class="fl">Período</div>'+
+    op.map(([k,t,n])=>'<button class="opt'+(FEITAS.data===k?' on':'')+'" '+
+      'onclick="setFeitas(\'data\',\''+k+'\')"><span class="d"></span>'+
+      '<span style="flex:1">'+t+'<br><span style="font-size:12px;color:var(--ink2);'+
+      'font-weight:400">'+n+' visita(s)</span></span></button>').join('')+
+    '<div class="fl">Ou um dia específico</div>'+
+    '<input class="tx" type="date" id="fdatadia" value="'+
+      (FEITAS.data.indexOf('-')>0?esc(FEITAS.data):'')+'" '+
+      'onchange="setFeitas(\'data\',this.value)">',
+    'Ver as visitas');
+}
+function folhaSitFeitas(){
+  const l=FEITAS.lista||[];
+  const sits=[...new Set(l.map(v=>v.existe).filter(Boolean))];
+  const bt=(k,t,n)=>'<button class="opt'+(FEITAS.sit===k?' on':'')+'" '+
+    'onclick="setFeitas(\'sit\','+JSON.stringify(k).replace(/"/g,'&quot;')+')">'+
+    '<span class="d"></span><span style="flex:1">'+esc(t)+
+    '<br><span style="font-size:12px;color:var(--ink2);font-weight:400">'+n+
+    ' visita(s)</span></span></button>';
+  abreFolha('Situação',
+    '<div class="fl">O que foi encontrado</div>'+
+    bt('todas','Todas as situações',l.length)+
+    sits.map(k=>bt(k,k,l.filter(v=>v.existe===k).length)).join(''),
+    'Ver as visitas');
+}
+function setFeitas(campo,valor){
+  FEITAS[campo]=valor;
+  /* fecharFolha já redesenha a tela */
+  fecharFolha();
+}
+function abreFeita(i){
+  FEITA=filtraFeitas()[i]||null;
+  VOLTA_FEITA='feitas';
+  if(FEITA)tela('feita');
+}
+
+function vFeitaDet(){
+  const v=FEITA;
+  if(!v)return '<div class="vazio">Visita não encontrada.</div>';
+  const s=sitDe(v);
+  const foto=fotoDe(v.cnpj,v,1200);
+  const lin=(r,d)=>d?'<div class="dlin"><span>'+r+'</span><b>'+esc(d)+'</b></div>':'';
+  const g=coordOk(v.gps);
+  const noRot=BASE.filter(c=>String(c.cnpj)===String(v.cnpj))[0];
+  return '<div class="pv" style="margin-top:10px">'+
+      '<div class="ptop"><span class="pbadge" style="background:'+s[0]+';color:'+s[1]+'">'+
+        svg('conferido',1.9)+esc(s[2])+'</span>'+
+        '<span class="pst '+((!v.enviado&&!v.daBase)?'fila':'ok')+'">'+
+        ((!v.enviado&&!v.daBase)?'Na fila':'Enviado')+'</span></div>'+
+      '<h3 class="t" style="margin:10px 0 2px;font-size:17px">'+esc(v.nome||'—')+'</h3>'+
+      '<div class="sub" style="margin:0">'+esc(cnpjCurto(v.cnpj))+'</div>'+
+      '<div class="sub" style="margin:6px 0 0">'+esc(dataLonga(v.data,v.hora))+'</div>'+
+    '</div>'+
+    (foto?'<div class="gl2">Foto do local</div>'+
+      '<img src="'+esc(foto)+'" style="width:100%;border-radius:12px;display:block;'+
+      'margin:8px 0 0;background:#EDEFF2" onerror="this.style.display=\'none\'">'+
+      '<button class="cta o" onclick="window.open(\''+esc(foto)+'\',\'_blank\')">'+
+      'Abrir a foto</button>':'')+
+    '<div class="gl2">O que foi respondido</div><div class="pv pvgps">'+
+      lin('Situação',v.existe)+
+      lin('Atende',(v.diasTexto||(Array.isArray(v.dias)?v.dias.map(i=>DIASSEM[i]&&
+        DIASSEM[i].slice(0,3)).join(' '):'')))+
+      lin('Horário',v.abre?v.abre+' às '+v.fecha:'')+
+      lin('Canal',v.canal)+
+      lin('Cadastro na BAND',v.cadBand)+
+      lin('Vende bebidas',v.vende)+
+      lin('Compra de',v.fornec)+
+      lin('Interesse',v.interesse)+
+      lin('Passou ao SAC',v.sac)+
+      lin('Protocolo',v.sacProt||v.sacProtocolo)+
+      lin('Telefone',v.tel)+
+      lin('Motivo do cancelamento',
+        /^https?:/i.test(String(v.motivo||''))?'':v.motivo)+
+      lin('Esteve no local',v.esteveNoLocal)+
+      lin('Reagendada para',v.reagendadoPara)+
+    '</div>'+
+    (v.obs?'<div class="gl2">Observação</div>'+
+      '<div class="pv" style="font-size:14px;line-height:1.6;white-space:pre-wrap">'+
+      esc(v.obs)+'</div>':'')+
+    '<div class="gl2">Registro</div><div class="pv pvgps">'+
+      lin('Desenvolvedor',v.dev)+
+      lin('Início',v.inicioHora)+
+      lin('Duração',v.duracaoMin?v.duracaoMin+' min':'')+
+      (g?'<div class="dlin"><span>Coordenada</span><b>'+coordTxt(v.gps)+'</b></div>':'')+
+      lin('Precisão',g?g.acc+' m':'')+
+      lin('Distância do ponto',v.dist!=null?fmtKm(v.dist):'')+
+      lin('Rota',v.rota)+lin('Bairro',v.bairro)+
+    '</div>'+
+    (g?'<button class="cta o" onclick="rotaPara('+g.lat+','+g.lon+')">'+
+      'Ver no mapa onde foi registrada</button>':'')+
+    (noRot?'<button class="cta o" onclick="abrir(\''+v.cnpj+'\')">'+
+      'Abrir esta visita para editar</button>':'')+
+    '<button class="cta o" onclick="tela(VOLTA_FEITA)">'+
+      (VOLTA_FEITA==='plano'?'Voltar ao plano de visita':'Voltar à lista')+'</button>'+
+    '<div style="height:20px"></div>';
+}
+function vResultados(){
+  /* Conta o que está no aparelho mais o que a planilha já tem deste
+     desenvolvedor. Sem isso, um celular novo mostrava tudo zerado mesmo
+     com o trabalho registrado. */
+  if(FEITAS.lista===null&&!FEITAS.carregando){
+    FEITAS.carregando=true;
+    setTimeout(()=>buscaFeitas(true),0);
+  }
+  const reg2={};
+  Object.keys(S.vis||{}).forEach(k=>reg2[k]=S.vis[k]);
+  (FEITAS.lista||[]).forEach(v=>{const k=String(v.cnpj);
+    if(!reg2[k])reg2[k]=v});
+  const m=minha();
+  const naCarteira={};m.forEach(c2=>naCarteira[String(c2.cnpj)]=1);
+  const meus=Object.keys(reg2).filter(k=>naCarteira[k]||reg2[k].daBase)
+    .map(k=>({cnpj:k}));
+  const V=x=>reg2[x.cnpj]||{};
+  const c=t=>meus.filter(x=>V(x).existe===t).length;
+  const existe=c('Sim, está funcionando');
+  const morto=c('Encerrou as atividades')+c('Endereço não localizado');
+  const quer=meus.filter(x=>V(x).interesse==='Quer se cadastrar agora').length;
+  const vende=meus.filter(x=>V(x).vende==='Sim, vende').length;
+  const gps=meus.filter(x=>V(x).gps).length;
+  const comFoto=meus.filter(x=>V(x).temFoto).length;
+  const canc=meus.filter(x=>V(x).cancelada).length;
+  const cancNoLocal=meus.filter(x=>V(x).cancelada&&
+    V(x).esteveNoLocal==='Sim').length;
+  const fotoNaFila=meus.filter(x=>V(x).temFoto&&!V(x).fotoEnviada).length;
+  const porDia={};meus.forEach(x=>{const d=V(x).dow;porDia[d]=(porDia[d]||0)+1});
+  const porMes={};m.forEach(x=>{const k=mesDo(x.dia);
+    if(!porMes[k])porMes[k]={pl:0,ok:0};porMes[k].pl++;if(feito(x))porMes[k].ok++});
+  return '<h3 class="t">Indicadores</h3><p class="sub">'+esc(meuNome())+'</p>'+
+   '<div class="kg">'+
+   '<div class="k b"><b>'+fmt(meus.length)+'</b><span>visitas registradas</span>'+
+     '<div class="prog"><i style="width:'+(m.length?100*meus.length/m.length:0)+'%"></i></div></div>'+
+   '<div class="k g"><b>'+fmt(existe)+'</b><span>confirmados funcionando</span></div>'+
+   '<div class="k r"><b>'+fmt(morto)+'</b><span>não existem mais</span></div>'+
+   '<div class="k w"><b>'+fmt(quer)+'</b><span>querem cadastro agora</span></div>'+
+   '<div class="k"><b>'+fmt(vende)+'</b><span>já vendem bebidas</span></div>'+
+   '<div class="k"><b>'+fmt(gps)+'</b><span>com GPS capturado</span></div>'+
+   (canc?'<div class="k w"><b>'+fmt(canc)+'</b><span>canceladas · '+cancNoLocal+
+     ' com presença confirmada</span></div>':'')+
+   '<div class="k'+(fotoNaFila?' w':'')+'"><b>'+fmt(comFoto)+'</b><span>com foto do local'+
+     (fotoNaFila?' · '+fotoNaFila+' por enviar':'')+'</span></div>'+
+   '<div class="k wide"><b>'+fmt(m.length-meus.length)+'</b><span>ainda por visitar na carteira'+
+     '</span><div class="prog"><i style="width:'+(m.length?100*meus.length/m.length:0)+
+     '%"></i></div></div></div>'+
+   '<label class="f">Visitas por dia da semana</label>'+
+   '<table class="tabela"><tbody>'+['Seg','Ter','Qua','Qui','Sex','Sáb']
+     .map(d=>'<tr><td>'+d+'</td><td>'+(porDia[d]||0)+'</td></tr>').join('')+'</tbody></table>'+
+   '<label class="f">Agenda por mês</label>'+
+   '<table class="tabela"><thead><tr><th>Mês</th><th>Planejado</th><th>Feito</th></tr></thead><tbody>'+
+     Object.keys(porMes).map(k=>'<tr><td>'+k+'</td><td style="text-align:right;font-weight:400">'+
+       porMes[k].pl+'</td><td>'+porMes[k].ok+'</td></tr>').join('')+'</tbody></table>';
+}
+function vBase(){
+  const fila=pendentes().length,env=Object.keys(S.vis).length-fila;
+  const recus=Object.keys(S.vis).filter(k=>S.vis[k].recusada).length;
+  const fotosFila=Object.keys(S.vis).filter(k=>S.vis[k].temFoto&&!S.vis[k].fotoEnviada).length;
+  let h='';
+  if(LOCAL||GUARDA!=='ok')h+='<div class="erro">'+
+    (LOCAL?'<b>Este app foi aberto como arquivo do celular.</b><br>Assim o navegador não deixa '+
+      'instalar na tela de início e pode não guardar as visitas. Peça ao gestor o endereço '+
+      'que começa com <b>https://</b>.':'<b>O navegador está bloqueando o armazenamento.</b><br>'+
+      'Saia da navegação anônima e libere os dados de site.')+'</div>';
+  h+='<h3 class="t">Conta e envio</h3>'+
+   '<p class="sub">Você entrou como <b>'+esc(meuNome())+'</b> ('+esc(S.email||S.login||'')+'). '+
+   'Cada visita sobe sozinha quando há sinal; sem sinal, fica guardada neste aparelho.</p>'+
+   (SESSAO?'':'<div class="aviso">Sua sessão expirou. Saia e entre de novo com a senha '+
+     'para voltar a enviar.</div>')+
+   '<div class="kg"><div class="k g"><b>'+fmt(env-recus)+'</b><span>já na base</span></div>'+
+   '<div class="k '+(fila?'r':'')+'"><b>'+fmt(fila)+'</b><span>na fila do aparelho</span></div>'+
+   (fotosFila?'<div class="k r"><b>'+fmt(fotosFila)+'</b><span>fotos na fila</span></div>':'')+
+   (recus?'<div class="k r"><b>'+fmt(recus)+'</b><span>recusadas pelo servidor</span></div>':'')+
+   '<div class="k wide"><b style="font-size:15px">'+esc(S.sync.ultimo||'nunca')+
+     '</b><span>último envio</span></div></div>'+
+   (fila?'<button class="cta g" onclick="enviar(false)">Enviar os '+fila+' pendentes</button>':'')+
+   '<button class="cta o" onclick="reenviaFotos(false)">Reenviar fotos pendentes</button>'+
+   '<button class="cta o" onclick="testaConexao()">Testar conexão</button>'+
+   '<label class="f">Recuperar trabalho</label>'+
+   '<div class="info">Se você trocou de celular ou limpou o navegador, as visitas já '+
+     'enviadas continuam na base. Traga elas de volta.</div>'+
+   '<button class="cta o" onclick="sincroniza(false,true)">Recuperar visitas da base</button>'+
+   '<label class="f">Alertas no aparelho</label>'+
+   '<div class="info">Libere os alertas para receber as mensagens da coordenação '+
+     'com aviso e vibração.</div>'+
+   '<button class="cta o" onclick="pedePermissaoAviso()">Liberar alertas</button>'+
+   '<button class="cta o" onclick="reenviar()">Reenviar tudo</button>'+
+   '<label class="f">Roteiro de campo</label>'+
+   '<div class="'+(PLANO?'info':'aviso')+'">'+
+     (PLANO?'Roteiro '+esc(PLANO.versao)+', recebido em <b>'+esc((PLANO.baixadoEm||'').slice(0,10)
+        .split('-').reverse().join('/'))+'</b><br>'+fmt(minha().length)+' clientes seus · '+
+        PLANO.porDia+' por dia · início '+esc((PLANO.inicio||'').split('-').reverse().join('/'))
+      :'Nenhum roteiro recebido ainda. Ele chega ao sincronizar, depois que o coordenador publicar.')+
+   '</div>'+
+   '<button class="cta o" onclick="sincroniza(false)">Buscar agora</button>'+
+   '<label class="f">Exportar em arquivo</label>'+
+   '<button class="cta o" onclick="exportar(\'json\')">Baixar JSON</button>'+
+   '<button class="cta o" onclick="exportar(\'csv\')">Baixar CSV</button>';
+  return h;
+}
+function reenviar(){Object.keys(S.vis).forEach(k=>{delete S.vis[k].enviado;delete S.vis[k].recusada});save();enviar(false)}
+function registros(){
+  return Object.keys(S.vis).map(cnpj=>{
+    const c=BASE.filter(x=>x.cnpj===cnpj)[0]||{},v=S.vis[cnpj];
+    return Object.assign({cnpj,bairro:BAIRROS[c.ba],cidade:M.cidade,cep:c.cep,
+      endereco:c.end,cnae:CNAES[c.cn],consultor:CONS[c.cons]},v);});
+}
+function baixar(nome,txt,tipo){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\ufeff'+txt],{type:tipo+';charset=utf-8'}));
+  a.download=nome;a.click();
+  setTimeout(()=>{try{URL.revokeObjectURL(a.href)}catch(e){}},4000);
+}
+function exportar(f){
+  const r=registros();
+  if(!r.length)return toast('Nenhuma visita registrada ainda');
+  if(f==='json'){baixar('coleta-campo.json',JSON.stringify({origem:'Band Desenvolvedores',cidade:M.cidade,
+    gerado:agora().iso,visitas:r}),'application/json');return toast(r.length+' visita(s)')}
+  const cols=['cnpj','nome','existe','dias','abre','fecha','canal','vende','fornec','interesse',
+    'tel','obs','dev','rota','sv','consultor','bairro','cep','endereco','cnae',
+    'diaRoteiro','dataPlan','dowPlan','data','hora','dow','noPrazo','temFoto','fotoHora',
+    'latRef','lonRef','gpsLat','gpsLon','gpsAcc','dist'];
+  const linha=o=>cols.map(k=>{
+    let v=k==='gpsLat'?(o.gps&&o.gps.lat):k==='gpsLon'?(o.gps&&o.gps.lon):
+      k==='gpsAcc'?(o.gps&&o.gps.acc):k==='dias'?(o.dias||[]).map(i=>DIASSEM[i]).join(' '):o[k];
+    return v==null?'':String(v).replace(/;/g,',').replace(/\n/g,' ')}).join(';');
+  baixar('coleta-campo.csv',cols.join(';')+'\n'+r.map(linha).join('\n'),'text/csv');
+  toast(r.length+' visita(s)');
+}
+
+/* ---------------- gaveta ---------------- */
+/* O texto da gaveta precisa refletir o roteiro em uso, não o que veio embutido. */
+function escopoAtual(){
+  if(PLANO&&PLANO.escopo)return PLANO.escopo;
+  if(PLANO){
+    const c=[...new Set(minha().map(x=>typeof CIDADES!=='undefined'&&CIDADES?CIDADES[x.ci]:null).filter(Boolean))];
+    if(c.length===1)return c[0];
+    if(c.length>1)return c.length+' municípios';
+  }
+  return M.cidade;
+}
+function abrirGaveta(){
+  empilha();
+  const m=minha(),feitas=m.filter(feito).length;
+  const item=(k,ic,t)=>'<button class="'+(tela_===k?'on':'')+'" onclick="irPara(\''+k+'\')">'+
+    svg(ic)+t+'</button>';
+  $('gavp').innerHTML=
+   '<div class="cabeca">'+
+     '<div class="quem"><div class="av">'+esc(String(S.login||'DC').toUpperCase())+'</div><div>'+
+       '<b>'+esc(meuNome())+'</b><span>'+esc(escopoAtual())+' · '+
+         fmt(m.length)+' clientes</span>'+
+     '</div></div>'+
+     '<button class="sinc" onclick="enviar(false)">'+svg('sinc',2)+'Sincronizar</button>'+
+     '<div class="quando"><span>'+(S.sync.ultimo?'Enviado '+esc(S.sync.ultimo):'Nunca enviado')+
+       '</span><b onclick="irPara(\'base\')" style="color:var(--red);flex:0 0 auto">Conta ›</b></div>'+
+   '</div>'+
+   '<div class="meio"><nav>'+
+     item('visitas','alvo','Visitas')+
+     item('feitas','conferido','Visitas feitas')+
+     item('perto','rota','Na região de hoje'+
+       (vizinhosDoDia().length?' · '+vizinhosDoDia().length:''))+
+     item('clientes','loja','Clientes')+
+     item('resultados','grafico','Indicadores')+'<hr>'+
+     item('base','nuvem','Conta e envio')+'<hr>'+
+     '<button class="sair" onclick="sair()">'+svg('sair')+'Sair</button>'+
+   '</nav></div>'+
+   '<div class="rodape">'+
+     '<div class="ver">Versão '+VERSAO+'<br>'+feitas+' de '+fmt(m.length)+' visitados</div>'+
+   '</div>';
+  $('gav').classList.add('on');
+}
+function fecharGaveta(){$('gav').classList.remove('on')}
+function irPara(k){fecharGaveta();tela(k)}
+$('gavf').onclick=fecharGaveta;
+$('folhaf').onclick=fecharFolha;
+
+/* ---------------- instalação e início ---------------- */
+/* O manifesto e os ícones agora são arquivos de verdade (manifest.json), o que o
+   PWABuilder exige para gerar o APK. O sw.js guarda o app para abrir sem sinal. */
+if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+window.addEventListener('resize',()=>{if(mapa)mapa.invalidateSize()});
+if(S.reagendados)aplicaReagendados();
+abreEntrada();
+empilha();empilha();
+</script>
+</body>
+</html>
