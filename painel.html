@@ -1,0 +1,711 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Painel Band Desenvolvedores</title>
+<meta name="theme-color" content="#1F2023">
+<link rel="icon" href="icon-192.png">
+<style>
+:root{
+  --verm:#E4002B; --verm-esc:#B80022; --verm-bg:#FDE7EC;
+  --ink:#1A1D21; --ink2:#5B6270; --ink3:#9CA3AF; --linha:#E5E7EB; --papel:#FFF; --fundo:#F1F2F4;
+  --lado:#1F2023; --lado2:#2B2C30; --lado-txt:#C9CBD1;
+  --verde:#0F7A52; --verde-bg:#E6F4EE; --amb:#96620F; --amb-bg:#FDF2DC; --azul:#1E6FD9; --azul-bg:#E9F1FC;
+  --teal:#2F7F86; --teal-bg:#DCEEF0; --roxo:#6D4BC4; --roxo-bg:#F0EBFB;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:var(--sans);font-size:14px;color:var(--ink);background:var(--fundo);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--azul);outline-offset:2px}
+.esc{display:none!important}
+
+/* ---------- entrada ---------- */
+#entrada{position:fixed;inset:0;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(360px,.9fr);background:var(--lado)}
+#entrada .lado{position:relative;overflow:hidden;padding:56px;color:#fff;display:flex;flex-direction:column;justify-content:space-between;
+  background:radial-gradient(120% 90% at 0% 100%,#5a0a19 0%,rgba(90,10,25,0) 60%),linear-gradient(160deg,#1F2023 0%,#141518 100%)}
+#entrada .lado .lg{width:46px;height:46px;border-radius:12px;background:var(--verm);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:17px}
+#entrada .lado h1{font-size:46px;line-height:1.04;margin:0;letter-spacing:-.02em;max-width:12ch}
+#entrada .lado h1 span{color:#ff5a6e}
+#entrada .lado p{color:#b9bcc4;max-width:46ch;line-height:1.55;margin:18px 0 0}
+#entrada .lado small{color:#7d818b}
+#entrada .form{background:var(--papel);display:flex;flex-direction:column;justify-content:center;padding:56px}
+#entrada .form h2{margin:0 0 6px;font-size:22px} #entrada .form .sub{color:var(--ink2);margin:0 0 26px}
+#entrada label{display:block;font-weight:600;font-size:13px;margin:14px 0 6px}
+#entrada input{width:100%;border:1px solid var(--linha);border-radius:10px;padding:12px 13px;background:#fff}
+#entrada .bt{width:100%;margin-top:22px;padding:12px}
+#entrada .erro{background:var(--verm-bg);color:var(--verm-esc);border-radius:10px;padding:10px 12px;margin-bottom:6px;font-size:13px}
+@media(max-width:820px){#entrada{grid-template-columns:1fr}#entrada .lado{display:none}}
+
+/* ---------- estrutura ---------- */
+.app{display:grid;grid-template-columns:240px minmax(0,1fr);height:100%}
+aside{background:var(--lado);color:var(--lado-txt);display:flex;flex-direction:column;overflow-y:auto}
+.marca{display:flex;gap:10px;align-items:center;padding:18px 16px;border-bottom:1px solid #303136}
+.marca .lg{width:34px;height:34px;border-radius:9px;background:var(--verm);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px}
+.marca b{color:#fff;display:block;font-size:15px} .marca small{font-size:12px}
+nav{padding:10px 8px;display:flex;flex-direction:column;gap:2px}
+nav .grupo{font-size:11px;color:#80838c;padding:12px 12px 4px;font-weight:600}
+nav button{position:relative;display:flex;gap:11px;align-items:center;text-align:left;border:none;background:none;color:var(--lado-txt);padding:9px 12px;border-radius:9px;cursor:pointer;font-size:14px;line-height:1.25}
+nav button:hover{background:var(--lado2)}
+nav button[aria-current="page"]{background:var(--lado2);color:#fff;font-weight:600}
+nav button[aria-current="page"]::before{content:"";position:absolute;left:-8px;top:8px;bottom:8px;width:3px;border-radius:3px;background:var(--verm)}
+nav button.breve{opacity:.55}
+nav button .tag{margin-left:auto;font-size:10.5px;border:1px solid #45474d;border-radius:8px;padding:0 6px;color:#9a9da5}
+nav svg{flex:none;opacity:.85}
+nav .n{margin-left:auto;background:var(--verm);color:#fff;font-size:11.5px;font-weight:700;border-radius:10px;padding:1px 7px}
+.hoje{margin:auto 10px 12px;background:var(--verm);color:#fff;border-radius:14px;padding:14px}
+.hoje .top{display:flex;justify-content:space-between;align-items:center;font-size:12px}
+.hoje .pill{background:rgba(255,255,255,.22);border-radius:12px;padding:2px 9px;font-weight:700}
+.hoje h3{margin:8px 0 2px;font-size:14px;font-weight:600}
+.hoje .big{font-size:30px;font-weight:800;line-height:1.05}
+.hoje .big small{font-size:14px;font-weight:600;opacity:.9}
+.hoje .mini{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.hoje .mini div{background:rgba(0,0,0,.18);border-radius:9px;text-align:center;padding:7px 2px}
+.hoje .mini b{display:block;font-size:17px} .hoje .mini span{font-size:11px;opacity:.9}
+.quem{padding:10px 16px 16px;font-size:12px;color:#8d9099;display:flex;justify-content:space-between;gap:8px}
+.quem button{background:none;border:none;color:#cfd1d6;cursor:pointer;padding:0;text-decoration:underline}
+
+main{overflow-y:auto;min-width:0}
+.cab{background:var(--papel);border-bottom:1px solid var(--linha);padding:16px 26px;display:flex;gap:16px;align-items:flex-start;position:sticky;top:0;z-index:5}
+.cab h1{margin:0;font-size:19px} .cab p{margin:3px 0 0;color:var(--ink2);font-size:13px}
+.cab .acoes{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.bt{border:1px solid var(--linha);background:var(--papel);border-radius:9px;padding:8px 13px;font-weight:600;cursor:pointer;white-space:nowrap}
+.bt.escuro{background:var(--ink);color:#fff;border-color:var(--ink)}
+.bt.verm{background:var(--verm);color:#fff;border-color:var(--verm)}
+.bt.peq{padding:5px 10px;font-size:13px}
+.bt:disabled{opacity:.5;cursor:default}
+.corpo{padding:22px 26px 40px;display:flex;flex-direction:column;gap:18px}
+
+/* filtros */
+.filtros{background:var(--papel);border-bottom:1px solid var(--linha);padding:12px 26px 14px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.filtros label{display:flex;flex-direction:column;gap:5px;font-size:11.5px;font-weight:700;color:var(--ink2)}
+.filtros select,.filtros input{border:1px solid var(--linha);border-radius:9px;padding:7px 10px;background:#fff;font-weight:500;color:var(--ink);min-width:150px}
+.filtros input[type=search]{min-width:240px}
+
+/* cartoes e numeros */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.kpi{background:var(--papel);border:1px solid var(--linha);border-radius:14px;padding:14px 16px}
+.kpi b{display:block;font-size:26px;font-weight:800;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.kpi span{color:var(--ink2);font-size:12.5px}
+.kpi.v b{color:var(--verm)} .kpi.g b{color:var(--verde)} .kpi.a b{color:var(--azul)}
+.cartao{background:var(--papel);border:1px solid var(--linha);border-radius:14px}
+.cartao>.tt{padding:14px 18px;border-bottom:1px solid var(--linha);display:flex;gap:10px;align-items:center}
+.cartao>.tt h2{margin:0;font-size:15px} .cartao>.tt span{color:var(--ink2);font-size:12.5px}
+.cartao>.tt .acoes{margin-left:auto;display:flex;gap:8px}
+.cartao>.cc{padding:16px 18px}
+.vazio{color:var(--ink2);text-align:center;padding:36px 16px}
+.aviso{background:var(--amb-bg);color:var(--amb);border-radius:10px;padding:10px 12px;font-size:13px}
+.info{background:var(--azul-bg);color:#174f99;border-radius:10px;padding:10px 12px;font-size:13px}
+.ok{background:var(--verde-bg);color:var(--verde);border-radius:10px;padding:10px 12px;font-size:13px}
+
+/* tabela */
+.tab{width:100%;border-collapse:collapse;font-size:13.5px}
+.tab th{text-align:left;font-size:11.5px;color:var(--ink2);font-weight:700;padding:9px 12px;border-bottom:1px solid var(--linha);background:#FAFAFB;position:sticky;top:0}
+.tab td{padding:10px 12px;border-bottom:1px solid #F0F1F3;vertical-align:middle}
+.tab tr.clic{cursor:pointer} .tab tr.clic:hover td{background:#FAFAFB}
+.tab .num{text-align:right;font-variant-numeric:tabular-nums}
+.tab small{color:var(--ink2);display:block}
+.rolagem{overflow:auto;max-height:calc(100vh - 330px)}
+.selo{display:inline-block;border-radius:20px;padding:2px 9px;font-size:12px;font-weight:600;white-space:nowrap}
+.selo.v{background:var(--verde-bg);color:var(--verde)} .selo.a{background:var(--amb-bg);color:var(--amb)}
+.selo.r{background:var(--verm-bg);color:var(--verm-esc)} .selo.c{background:#EEF0F3;color:var(--ink2)} .selo.b{background:var(--azul-bg);color:var(--azul)}
+
+/* desenvolvedores */
+.devs{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.dev{background:var(--papel);border:1px solid var(--linha);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.dev .top{display:flex;gap:12px;align-items:center}
+.dev .av{width:46px;height:46px;border-radius:12px;background:var(--lado);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center}
+.dev.off .av{background:#9CA3AF}
+.dev input{border:1px solid transparent;border-radius:8px;padding:4px 6px;margin-left:-6px;font-weight:700;font-size:16px;width:100%;background:transparent}
+.dev input:hover{border-color:var(--linha)} .dev input:focus{border-color:var(--azul);background:#fff}
+.dev .lin{display:flex;justify-content:space-between;font-size:13px;color:var(--ink2);border-top:1px dashed var(--linha);padding-top:8px}
+.dev .lin b{color:var(--ink);font-weight:600}
+.dev .bts{display:flex;gap:8px;flex-wrap:wrap}
+
+/* mensagens */
+.msgs{display:grid;grid-template-columns:minmax(300px,380px) minmax(0,1fr);gap:18px;align-items:start}
+.campo{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.campo label{font-size:12.5px;font-weight:700;color:var(--ink2)}
+.campo input,.campo textarea,.campo select{border:1px solid var(--linha);border-radius:9px;padding:9px 11px;background:#fff}
+.campo textarea{min-height:110px;resize:vertical}
+.duas{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.msg{display:flex;gap:14px;padding:14px 18px;border-bottom:1px solid #F0F1F3}
+.msg:last-child{border-bottom:none}
+.msg img{width:84px;height:84px;object-fit:cover;border-radius:10px;background:#EEF0F3;flex:none}
+.msg h3{margin:0 0 3px;font-size:14.5px} .msg p{margin:0;color:var(--ink2);white-space:pre-wrap}
+.msg .meta{font-size:12px;color:var(--ink3);margin-top:6px;display:flex;gap:12px;flex-wrap:wrap}
+.msg .rec{margin-left:auto;text-align:right;flex:none;display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.barra{height:6px;border-radius:6px;background:#EEF0F3;overflow:hidden;width:120px}
+.barra span{display:block;height:100%;background:var(--verde)}
+@media(max-width:1100px){.msgs{grid-template-columns:1fr}}
+
+/* ficha da visita */
+#dlg{position:fixed;inset:0;background:rgba(15,16,19,.55);display:none;align-items:stretch;justify-content:flex-end;z-index:20}
+#dlg.on{display:flex}
+#dlg .folha{width:min(560px,100%);background:var(--papel);overflow-y:auto;box-shadow:-10px 0 40px rgba(0,0,0,.2)}
+#dlg .folha .tt{position:sticky;top:0;background:var(--papel);padding:16px 20px;border-bottom:1px solid var(--linha);display:flex;gap:12px;align-items:flex-start}
+#dlg .folha .tt h2{margin:0;font-size:17px} #dlg .folha .tt p{margin:3px 0 0;color:var(--ink2);font-size:13px}
+#dlg .folha .tt button{margin-left:auto}
+#dlg .foto{width:100%;max-height:360px;object-fit:cover;background:#EEF0F3;display:block}
+#dlg dl{display:grid;grid-template-columns:150px 1fr;margin:0;padding:8px 20px 24px}
+#dlg dt{color:var(--ink2);font-size:13px;padding:8px 0;border-bottom:1px solid #F0F1F3}
+#dlg dd{margin:0;padding:8px 0;border-bottom:1px solid #F0F1F3;font-weight:500}
+
+/* modulo em construcao */
+.breve-c{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.breve-c .cartao{padding:18px}
+.breve-c h3{margin:0 0 6px;font-size:15px} .breve-c p{margin:0;color:var(--ink2);line-height:1.5}
+
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;opacity:0;transition:.2s;pointer-events:none;z-index:30;max-width:90vw}
+#toast.on{opacity:1;transform:translateX(-50%)}
+.carregando{display:flex;gap:10px;align-items:center;color:var(--ink2)}
+.carregando::before{content:"";width:16px;height:16px;border-radius:50%;border:2px solid var(--linha);border-top-color:var(--verm);animation:gira .8s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="entrada" class="esc"></div>
+<div class="app esc" id="app">
+  <aside>
+    <div class="marca"><div class="lg">BD</div><div><b>Band Desenvolvedores</b><small>Painel do coordenador</small></div></div>
+    <nav id="nav"></nav>
+    <div class="hoje" id="hoje"></div>
+    <div class="quem" id="quem"></div>
+  </aside>
+  <main id="main"></main>
+</div>
+<div id="dlg" role="dialog" aria-modal="true"><div class="folha" id="folha"></div></div>
+<div id="toast" role="status"></div>
+<input type="file" id="arqBase" accept=".gz,.json,application/gzip,application/json" class="esc">
+
+<script>
+/* ============================================================================
+   Painel Band Desenvolvedores (RTM)
+   Fala com o banco do RTM no Supabase do merch. A chave abaixo é a publicável:
+   o que protege os dados é o login do coordenador e as regras do banco.
+   Tudo o que este painel guarda no navegador usa chaves com o prefixo rtm_painel_.
+   ============================================================================ */
+const VERSAO='1.0.0';
+const SUPA={url:'https://kqpdledhaghuzuwjkvrf.supabase.co',chave:'sb_publishable_dMdB5b_G5X5TnXemexGIXQ_GWXS6cid'};
+const K_SESSAO='rtm_painel_sessao',K_EMAIL='rtm_painel_email';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>Math.round(+n||0).toLocaleString('pt-BR');
+const fmt1=n=>(+n||0).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1});
+function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),3200)}
+
+/* ---------------- servidor ---------------- */
+let SESSAO=null;try{SESSAO=JSON.parse(localStorage.getItem(K_SESSAO)||'null')}catch(e){}
+function guardaSessao(j){
+  SESSAO=j?{access_token:j.access_token,refresh_token:j.refresh_token,expira:Date.now()+((+j.expires_in||3600)*1000)}:null;
+  try{SESSAO?localStorage.setItem(K_SESSAO,JSON.stringify(SESSAO)):localStorage.removeItem(K_SESSAO)}catch(e){}
+}
+function erroDe(j,status){
+  const m=String((j&&(j.message||j.msg||j.error_description||j.error))||('erro '+status));
+  if(/Invalid login credentials|invalid_credentials|invalid_grant/i.test(m))return 'E-mail ou senha incorretos.';
+  return m;
+}
+async function pede(caminho,opc){
+  let r;try{r=await fetch(SUPA.url+caminho,opc)}catch(e){throw new Error('Sem conexão com o servidor.')}
+  const t=r.headers.get('content-type')||'';
+  if(opc&&opc.binario&&r.ok)return {ok:true,status:r.status,buf:await r.arrayBuffer()};
+  const x=await r.text();let j=null;try{j=x?JSON.parse(x):null}catch(e){}
+  return {ok:r.ok,status:r.status,j,t:x};
+}
+function semSessao(){const e=new Error('Sua sessão expirou. Entre de novo.');e.semSessao=true;return e}
+async function autentica(email,senha){
+  const r=await pede('/auth/v1/token?grant_type=password',{method:'POST',
+    headers:{apikey:SUPA.chave,'Content-Type':'application/json'},body:JSON.stringify({email,password:senha})});
+  if(!r.ok)throw new Error(erroDe(r.j,r.status));
+  guardaSessao(r.j);
+}
+let renovando=null;
+function renova(){
+  if(renovando)return renovando;
+  if(!SESSAO||!SESSAO.refresh_token)return Promise.reject(semSessao());
+  renovando=pede('/auth/v1/token?grant_type=refresh_token',{method:'POST',
+      headers:{apikey:SUPA.chave,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:SESSAO.refresh_token})})
+    .then(r=>{if(r.ok){guardaSessao(r.j);return}
+      if(r.status>=400&&r.status<500){guardaSessao(null);throw semSessao()}
+      throw new Error(erroDe(r.j,r.status))})
+    .finally(()=>{renovando=null});
+  return renovando;
+}
+async function token(){if(!SESSAO)throw semSessao();if(Date.now()>SESSAO.expira-60000)await renova();return SESSAO.access_token}
+async function rpc(nome,args,tentou){
+  const tk=await token();
+  const r=await pede('/rest/v1/rpc/'+nome,{method:'POST',headers:{apikey:SUPA.chave,Authorization:'Bearer '+tk,
+    'Content-Type':'application/json','Content-Profile':'rtm','Accept-Profile':'rtm'},body:JSON.stringify(args||{})});
+  if(r.status===401&&!tentou){await renova();return rpc(nome,args,true)}
+  if(r.status===401){guardaSessao(null);throw semSessao()}
+  if(!r.ok)throw new Error(erroDe(r.j,r.status));
+  return r.j;
+}
+const caminhoUrl=c=>String(c).split('/').map(encodeURIComponent).join('/');
+async function sobe(balde,caminho,corpo,tipo,trocar,tentou){
+  const tk=await token();
+  const r=await pede('/storage/v1/object/'+balde+'/'+caminhoUrl(caminho),{method:'POST',
+    headers:{apikey:SUPA.chave,Authorization:'Bearer '+tk,'Content-Type':tipo,'x-upsert':trocar?'true':'false'},body:corpo});
+  if(r.ok)return true;
+  if(!tentou&&r.status===401){await renova();return sobe(balde,caminho,corpo,tipo,trocar,true)}
+  throw new Error(erroDe(r.j,r.status));
+}
+async function baixa(balde,caminho){
+  const tk=await token();
+  const r=await pede('/storage/v1/object/authenticated/'+balde+'/'+caminhoUrl(caminho),
+    {headers:{apikey:SUPA.chave,Authorization:'Bearer '+tk},binario:true});
+  if(!r.ok){const e=new Error(r.status===400||r.status===404?'arquivo não encontrado':erroDe(r.j,r.status));e.status=r.status;throw e}
+  return r.buf;
+}
+/* fotos privadas: link que vale 1 hora */
+const ASSIN={};
+async function linkFoto(cam){
+  const a=ASSIN[cam];if(a&&a.ate>Date.now())return a.url;
+  const tk=await token();
+  const r=await pede('/storage/v1/object/sign/rtm-fotos/'+caminhoUrl(cam),{method:'POST',
+    headers:{apikey:SUPA.chave,Authorization:'Bearer '+tk,'Content-Type':'application/json'},body:JSON.stringify({expiresIn:3600})});
+  const u=r.ok&&r.j&&(r.j.signedURL||r.j.signedUrl);
+  if(!u)return '';
+  const url=/^https?:/.test(u)?u:SUPA.url+'/storage/v1'+u;
+  ASSIN[cam]={url,ate:Date.now()+50*60000};return url;
+}
+function fotoDaVisita(v){
+  if(v.fotoCaminho)return linkFoto(v.fotoCaminho);
+  const t=String(v.fotoUrl||''),m=t.match(/[-\w]{25,}/);
+  if(/drive\.google\.com|googleusercontent/.test(t)&&m)return Promise.resolve('https://drive.google.com/thumbnail?id='+m[0]+'&sz=w1200');
+  return Promise.resolve(t);
+}
+
+/* ---------------- entrada ---------------- */
+function telaEntrada(erro){
+  $('app').classList.add('esc');$('entrada').classList.remove('esc');
+  $('entrada').innerHTML=
+   '<div class="lado"><div class="lg">BD</div>'+
+     '<div><h1>Cada PDV sem cadastro é um <span>cliente esperando</span>.</h1>'+
+     '<p>Roteiros, visitas, fotos e mensagens dos desenvolvedores comerciais num lugar só, '+
+     'ligados à base da Receita e aos clientes BAND de Goiás e Tocantins.</p></div>'+
+     '<small>Painel Band Desenvolvedores · versão '+VERSAO+'</small></div>'+
+   '<div class="form"><h2>Entrar no painel</h2><p class="sub">Use a conta de coordenador.</p>'+
+     (erro?'<div class="erro">'+esc(erro)+'</div>':'')+
+     '<label for="em">E-mail</label><input id="em" type="email" autocomplete="username" value="'+esc(EMAIL_DIGITADO||localStorage.getItem(K_EMAIL)||'')+'">'+
+     '<label for="se">Senha</label><input id="se" type="password" autocomplete="current-password">'+
+     '<button class="bt verm" id="bentra">Entrar</button></div>';
+  $('bentra').onclick=entrar;$('se').onkeydown=e=>{if(e.key==='Enter')entrar()};
+  ($('em').value?$('se'):$('em')).focus();
+}
+let EMAIL_DIGITADO='';
+async function entrar(){
+  const em=$('em').value.trim().toLowerCase(),se=$('se').value;
+  EMAIL_DIGITADO=em;
+  if(!em||!se)return telaEntrada('Preencha e-mail e senha.');
+  const b=$('bentra');b.disabled=true;b.textContent='Entrando…';
+  try{
+    await autentica(em,se);
+    const q=await rpc('quem_sou');
+    if(q.papel!=='coordenador'){await sai();return telaEntrada('Esta conta não é de coordenador. Os desenvolvedores usam o app.')}
+    try{localStorage.setItem(K_EMAIL,em)}catch(e){}
+    EU=q;abreApp();
+  }catch(e){if(SESSAO)await sai();telaEntrada(e.message)}
+}
+async function sai(){
+  const tk=SESSAO&&SESSAO.access_token;guardaSessao(null);
+  if(tk)pede('/auth/v1/logout',{method:'POST',headers:{apikey:SUPA.chave,Authorization:'Bearer '+tk}}).catch(()=>{});
+}
+function sessaoCaiu(){telaEntrada('Sua sessão expirou. Entre de novo.')}
+
+/* ---------------- dados ---------------- */
+let EU=null,MOD=location.hash.slice(1)||'visitas';
+const D={devs:[],visitas:[],visDesde:null,visCnpj:null,msgs:[],roteiros:[],base:null,baseInfo:null,carregou:{}};
+async function carregaDevs(){D.devs=(await rpc('desenvolvedores_lista')).desenvolvedores||[];D.carregou.devs=true}
+async function carregaRoteiros(){D.roteiros=(await rpc('roteiros')).roteiros||[];D.carregou.roteiros=true}
+async function carregaMsgs(){D.msgs=(await rpc('mensagens_painel')).mensagens||[];D.carregou.msgs=true}
+/* visitas em paginas de 5.000; depois da primeira vez, so o que chegou de novo */
+async function carregaVisitas(){
+  const porCnpj={};D.visitas.forEach((v,i)=>porCnpj[v.cnpj]=i);
+  for(let volta=0;volta<200;volta++){
+    const j=await rpc('visitas_todas',{p_desde:D.visDesde,p_cnpj:D.visCnpj});
+    (j.visitas||[]).forEach(v=>{if(porCnpj[v.cnpj]!=null)D.visitas[porCnpj[v.cnpj]]=v;else{porCnpj[v.cnpj]=D.visitas.length;D.visitas.push(v)}});
+    if(j.proximoDesde){D.visDesde=j.proximoDesde;D.visCnpj=j.proximoCnpj}
+    if(!j.temMais)break;
+  }
+  D.carregou.visitas=true;
+}
+async function atualizaTudo(silencioso){
+  try{
+    await Promise.all([carregaDevs(),carregaRoteiros(),carregaVisitas(),carregaMsgs()]);
+    pintaLado();pintaMain();if(!silencioso)toast('Atualizado');
+  }catch(e){if(e.semSessao)return sessaoCaiu();toast('Não consegui atualizar: '+e.message)}
+}
+
+/* ---------------- base (fica fora do arquivo, na pasta privada rtm-base) ---------------- */
+const IDB_NOME='rtm_painel';
+function idb(){return new Promise((ok,erro)=>{const r=indexedDB.open(IDB_NOME,1);
+  r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>ok(r.result);r.onerror=()=>erro(r.error)})}
+async function idbLe(k){const db=await idb();return new Promise(ok=>{const t=db.transaction('kv').objectStore('kv').get(k);t.onsuccess=()=>ok(t.result);t.onerror=()=>ok(null)})}
+async function idbGrava(k,v){const db=await idb();return new Promise(ok=>{const t=db.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=()=>ok(true);t.onerror=()=>ok(false)})}
+async function abreGz(buf){
+  const u8=new Uint8Array(buf);
+  if(u8[0]===0x1f&&u8[1]===0x8b){
+    const s=new Blob([buf]).stream().pipeThrough(new DecompressionStream('gzip'));
+    return JSON.parse(await new Response(s).text());
+  }
+  return JSON.parse(new TextDecoder().decode(u8));
+}
+function resumoBase(b){
+  const est=b.R?b.R.split('\n').filter(Boolean).length:0,cli=b.C?b.C.split('\n').filter(Boolean).length:0;
+  return {versao:b.versao,descricao:b.descricao||'',estabelecimentos:est,clientes:cli,
+    rotas:(b.D&&b.D.rotas||[]).length,municipiosPop:(b.populacao&&b.populacao.municipios||[]).length};
+}
+/* confere a versao no servidor (arquivo pequeno) e so baixa a base se mudou */
+async function carregaBase(forcar){
+  D.baseEstado='carregando';pintaMainSe('base');
+  try{
+    let info=null;
+    try{info=JSON.parse(new TextDecoder().decode(await baixa('rtm-base','versao.json')))}
+    catch(e){if(e.semSessao)throw e;info=null}
+    D.baseInfo=info;
+    if(!info){D.base=null;D.baseEstado='sem';pintaLado();pintaMainSe('base');return}
+    const guardada=await idbLe('base');
+    if(!forcar&&guardada&&guardada.versao===info.versao&&guardada.buf){
+      D.base=await abreGz(guardada.buf);D.baseOrigem='guardada no navegador';
+    }else{
+      const buf=await baixa('rtm-base',info.arquivo||'base.json.gz');
+      D.base=await abreGz(buf);D.baseOrigem='baixada agora';
+      await idbGrava('base',{versao:info.versao,buf});
+    }
+    D.baseResumo=resumoBase(D.base);D.baseEstado='ok';
+  }catch(e){
+    if(e.semSessao)return sessaoCaiu();
+    D.baseEstado='erro';D.baseErro=e.message;
+  }
+  pintaLado();pintaMainSe('base');
+}
+async function enviaBase(arq){
+  if(!arq)return;
+  const buf=await arq.arrayBuffer();
+  let b;try{b=await abreGz(buf)}catch(e){return toast('Este arquivo não é uma base válida.')}
+  if(!b||!b.versao||!b.R||!b.C||!b.D)return toast('Arquivo sem versão, estabelecimentos, clientes ou rotas.');
+  const r=resumoBase(b);
+  if(!confirm('Enviar a base '+r.versao+'?\n\n'+fmt(r.estabelecimentos)+' estabelecimentos, '+fmt(r.clientes)+
+     ' clientes BAND, '+fmt(r.rotas)+' rotas.\n\nEla passa a ser a base do painel.'))return;
+  toast('Enviando a base…');
+  try{
+    const gz=new Uint8Array(buf)[0]===0x1f;
+    const nome='base.json'+(gz?'.gz':'');
+    await sobe('rtm-base',nome,new Blob([buf]),gz?'application/gzip':'application/json',true);
+    const info={versao:b.versao,arquivo:nome,enviadaEm:new Date().toISOString(),enviadaPor:EU&&EU.email,
+      bytes:buf.byteLength,estabelecimentos:r.estabelecimentos,clientes:r.clientes};
+    await sobe('rtm-base','versao.json',new Blob([JSON.stringify(info)]),'application/json',true);
+    toast('Base '+b.versao+' enviada');
+    carregaBase(true);
+  }catch(e){if(e.semSessao)return sessaoCaiu();toast('Não consegui enviar: '+e.message)}
+}
+
+/* ---------------- menu ---------------- */
+const IC={
+ aovivo:'<path d="M3 12h4l3-8 4 16 3-8h4"/>',
+ dash:'<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',
+ mapa:'<path d="M9 3 3 6v15l6-3 6 3 6-3V3l-6 3z"/><path d="M9 3v15M15 6v15"/>',
+ planejar:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M7 13h3M7 17h6"/>',
+ visitas:'<path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/>',
+ msgs:'<path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+ devs:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><circle cx="17.5" cy="9.5" r="2.5"/><path d="M17 14.5c2.4.2 4 1.8 4.5 4.5"/>',
+ base:'<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
+ desemp:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+ funil:'<path d="M3 4h18l-7 8v6l-4 2v-8z"/>',
+ conc:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+ simul:'<path d="M4 4h16v16H4zM8 8h3M8 12h8M8 16h5"/>',
+ sair:'<path d="M15 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4M10 17l5-5-5-5M15 12H3"/>'
+};
+const svg=(k,w=18)=>'<svg width="'+w+'" height="'+w+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(IC[k]||'')+'</svg>';
+const MODULOS=[
+  ['Operação',[['aovivo','Ao vivo',1],['mapa','Mapa de oportunidade',1],['planejar','Planejar campo',1],['visitas','Visitas',0],['msgs','Mensagens',0]]],
+  ['Análise',[['dash','Dashboards',1],['desemp','Desempenho',1],['funil','Funil de conversão',1],['conc','Concorrência e horários',1],['simul','Simulador',1]]],
+  ['Estrutura',[['devs','Desenvolvedores',0],['base','Base de dados',0]]]
+];
+const BREVE={
+  aovivo:['Ao vivo','A trilha do dia: uma faixa por desenvolvedor, das 8h às 18h, com cada visita no horário em que aconteceu e os intervalos parados à vista. Ao lado, o mapa dos check-ins pulsando.'],
+  mapa:['Mapa de oportunidade','O mapa de hoje, Receita × base BAND, com camadas, cobertura e territórios das rotas, agora lendo a base da pasta privada.'],
+  planejar:['Planejar campo','Montar o roteiro por desenvolvedor e por dia, com prévia no mapa, e publicar direto para o app.'],
+  dash:['Dashboards','Começa com "Prospecção de clientes": clientes por mil habitantes contra a meta, por cidade, com a população do IBGE 2025 e modo apresentação.'],
+  desemp:['Desempenho','Visitas por dia, tempo médio, % no prazo, % com foto e GPS e distância do endereço, por desenvolvedor e na evolução semanal.'],
+  funil:['Funil de conversão','Sem cadastro → visitado → existe → vende bebidas → quer cadastro → virou cliente BAND.'],
+  conc:['Concorrência e horários','De quem os PDVs compram hoje, canais, e os dias e horários em que funcionam.'],
+  simul:['Simulador','Conversão da oportunidade e teto de clientes por rota.']
+};
+function pintaLado(){
+  const n={msgs:D.msgs.length,visitas:hojeVis().length};
+  $('nav').innerHTML=MODULOS.map(([g,itens])=>'<div class="grupo">'+g+'</div>'+itens.map(([k,t,breve])=>
+    '<button data-m="'+k+'" class="'+(breve?'breve':'')+'"'+(MOD===k?' aria-current="page"':'')+'>'+svg(k)+'<span>'+t+'</span>'+
+    (breve?'<span class="tag">em breve</span>':(k==='visitas'&&n.visitas?'<span class="n">'+n.visitas+'</span>':''))+'</button>').join('')).join('');
+  $('nav').querySelectorAll('button').forEach(b=>b.onclick=()=>ir(b.dataset.m));
+  const hv=hojeVis(),ativos=D.devs.filter(d=>d.ativo).length,emUso=D.roteiros.find(r=>r.emUso);
+  const comInt=hv.filter(v=>/agora/i.test(v.interesse||'')).length;
+  $('hoje').innerHTML='<div class="top"><span>Hoje</span><span class="pill">'+new Date().toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit'})+'</span></div>'+
+    '<h3>Visitas registradas</h3><div class="big">'+fmt(hv.length)+' <small>de '+fmt(ativos)+' desenvolvedores</small></div>'+
+    '<div class="mini"><div><b>'+fmt(comInt)+'</b><span>querem cadastro</span></div>'+
+    '<div><b>'+fmt(D.visitas.length)+'</b><span>no total</span></div>'+
+    '<div><b>'+(emUso?fmt(emUso.clientes):'—')+'</b><span>no roteiro</span></div></div>';
+  $('quem').innerHTML='<span>'+esc(EU?EU.email:'')+'</span><button id="bsair">Sair</button>';
+  $('bsair').onclick=async()=>{await sai();telaEntrada()};
+}
+function ir(k){MOD=k;try{history.replaceState(null,'','#'+k)}catch(e){}pintaLado();pintaMain();$('main').scrollTop=0}
+function cab(t,sub,acoes){return '<div class="cab"><div><h1>'+t+'</h1><p>'+sub+'</p></div><div class="acoes">'+(acoes||'')+
+  '<button class="bt" onclick="atualizaTudo()">Atualizar</button></div></div>'}
+function pintaMainSe(k){if(MOD===k)pintaMain()}
+function pintaMain(){
+  const f={visitas:mVisitas,msgs:mMsgs,devs:mDevs,base:mBase}[MOD];
+  if(f){$('main').innerHTML=f();try{liga[MOD]&&liga[MOD]()}catch(e){console.error(e)}return}
+  const b=BREVE[MOD]||BREVE.aovivo;
+  $('main').innerHTML=cab(b[0],'Em construção')+'<div class="corpo"><div class="cartao"><div class="cc" style="padding:28px">'+
+    '<p style="margin:0 0 8px;font-size:16px;font-weight:600">'+b[0]+' chega nas próximas entregas.</p>'+
+    '<p style="margin:0;color:var(--ink2);line-height:1.6;max-width:70ch">'+esc(b[1])+'</p></div></div></div>';
+}
+const liga={};
+
+/* ---------------- datas ---------------- */
+const hojeBR=()=>{const d=new Date();return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear()};
+function dataDe(v){const m=String(v.data||'').match(/^(\d{2})\/(\d{2})\/(\d{4})/);return m?new Date(+m[3],+m[2]-1,+m[1]):(v.iso?new Date(v.iso):null)}
+const hojeVis=()=>D.visitas.filter(v=>v.data===hojeBR());
+const nomeDev=v=>{const d=D.devs.find(x=>x.login===v.devLogin);return d?d.nome:(v.dev||v.devLogin||'—')};
+
+/* ---------------- módulo: Visitas ---------------- */
+const FV={dev:'',per:'30',sit:'',q:''};
+function situacao(v){
+  const e=v.existe||'';
+  if(/cancelad/i.test(e))return ['Cancelada','c'];
+  if(/^Sim/i.test(e))return /agora/i.test(v.interesse||'')?['Quer cadastro','v']:['Funcionando','b'];
+  if(/fechad|não existe|nao existe|mudou/i.test(e))return ['Não encontrado','r'];
+  return [e||'Registrada','a'];
+}
+function visitasFiltradas(){
+  const lim=FV.per==='tudo'?null:(()=>{const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-(+FV.per-1));return d})();
+  const q=FV.q.trim().toLowerCase();
+  return D.visitas.filter(v=>{
+    if(FV.dev&&v.devLogin!==FV.dev)return false;
+    if(lim){const d=dataDe(v);if(!d||d<lim)return false}
+    if(FV.sit&&situacao(v)[0]!==FV.sit)return false;
+    if(q&&!((v.nome||'')+' '+v.cnpj+' '+(v.bairro||'')).toLowerCase().includes(q))return false;
+    return true;
+  }).sort((a,b)=>String(b.iso||'').localeCompare(String(a.iso||'')));
+}
+function mVisitas(){
+  if(!D.carregou.visitas)return cab('Visitas','Carregando…')+'<div class="corpo"><div class="carregando">Buscando as visitas</div></div>';
+  const l=visitasFiltradas();
+  const quer=l.filter(v=>situacao(v)[0]==='Quer cadastro').length;
+  const prazo=l.filter(v=>v.noPrazo).length,dists=l.map(v=>+v.dist).filter(x=>x>=0&&isFinite(x)&&v0(x));
+  const comFoto=l.filter(v=>v.fotoCaminho||v.fotoUrl).length;
+  const durs=l.map(v=>v.duracaoMin).filter(x=>x>0);
+  const opDev='<option value="">Todos</option>'+D.devs.map(d=>'<option value="'+esc(d.login)+'"'+(FV.dev===d.login?' selected':'')+'>'+esc(d.nome)+'</option>').join('');
+  const sits=['Quer cadastro','Funcionando','Não encontrado','Cancelada'];
+  return cab('Visitas',fmt(D.visitas.length)+' visitas na base · fotos e localização de cada registro')+
+   '<div class="filtros">'+
+    '<label>Desenvolvedor<select id="fvdev">'+opDev+'</select></label>'+
+    '<label>Período<select id="fvper">'+[['1','Hoje'],['7','Últimos 7 dias'],['30','Últimos 30 dias'],['tudo','Tudo']].map(([k,t])=>'<option value="'+k+'"'+(FV.per===k?' selected':'')+'>'+t+'</option>').join('')+'</select></label>'+
+    '<label>Situação<select id="fvsit"><option value="">Todas</option>'+sits.map(s=>'<option'+(FV.sit===s?' selected':'')+'>'+s+'</option>').join('')+'</select></label>'+
+    '<label>Busca<input id="fvq" type="search" placeholder="Nome, CNPJ ou bairro" value="'+esc(FV.q)+'"></label></div>'+
+   '<div class="corpo"><div class="kpis">'+
+    '<div class="kpi"><b>'+fmt(l.length)+'</b><span>visitas no filtro</span></div>'+
+    '<div class="kpi v"><b>'+fmt(quer)+'</b><span>querem se cadastrar agora</span></div>'+
+    '<div class="kpi g"><b>'+(l.length?Math.round(prazo*100/l.length):0)+'%</b><span>no dia do roteiro</span></div>'+
+    '<div class="kpi a"><b>'+(dists.length?fmtKm(med(dists)):'—')+'</b><span>distância mediana do endereço</span></div>'+
+    '<div class="kpi"><b>'+(durs.length?Math.round(med(durs))+' min':'—')+'</b><span>duração mediana</span></div>'+
+    '<div class="kpi"><b>'+(l.length?Math.round(comFoto*100/l.length):0)+'%</b><span>com foto</span></div></div>'+
+   '<div class="cartao"><div class="rolagem">'+(l.length?'<table class="tab"><thead><tr><th>Quando</th><th>Desenvolvedor</th><th>PDV</th><th>Situação</th><th>Canal</th><th class="num">Distância</th><th class="num">Duração</th><th>Foto</th></tr></thead><tbody>'+
+    l.slice(0,600).map(v=>{const s=situacao(v);return '<tr class="clic" data-c="'+esc(v.cnpj)+'"><td>'+esc(v.data)+'<small>'+esc(v.hora)+'</small></td><td>'+esc(nomeDev(v))+
+     '</td><td><b>'+esc(v.nome||'—')+'</b><small>'+esc(cnpjFmt(v.cnpj))+(v.bairro?' · '+esc(v.bairro):'')+'</small></td><td><span class="selo '+s[1]+'">'+esc(s[0])+'</span></td><td>'+esc(v.canal||'—')+
+     '</td><td class="num">'+(v.dist!=null?fmtKm(v.dist):'—')+'</td><td class="num">'+(v.duracaoMin?v.duracaoMin+' min':'—')+'</td><td>'+(v.fotoCaminho||v.fotoUrl?'Sim':'—')+'</td></tr>'}).join('')+
+    '</tbody></table>'+(l.length>600?'<div class="vazio">Mostrando as 600 mais recentes de '+fmt(l.length)+'. Use os filtros para achar as outras.</div>':''):
+    '<div class="vazio">Nenhuma visita neste filtro.</div>')+'</div></div></div>';
+}
+const v0=x=>x<500;
+const med=a=>{const s=a.slice().sort((x,y)=>x-y),m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2};
+const fmtKm=k=>{k=+k;return k<1?Math.round(k*1000)+' m':fmt1(k)+' km'};
+const cnpjFmt=c=>{const t=String(c||'');return t.length===14?t.replace(/^(.{2})(.{3})(.{3})(.{4})(.{2})$/,'$1.$2.$3/$4-$5'):t};
+liga.visitas=()=>{
+  if(!$('fvdev'))return;   /* ainda carregando */
+  $('fvdev').onchange=e=>{FV.dev=e.target.value;pintaMain()};
+  $('fvper').onchange=e=>{FV.per=e.target.value;pintaMain()};
+  $('fvsit').onchange=e=>{FV.sit=e.target.value;pintaMain()};
+  let t;$('fvq').oninput=e=>{FV.q=e.target.value;clearTimeout(t);t=setTimeout(()=>{pintaMain();const i=$('fvq');i.focus();i.setSelectionRange(i.value.length,i.value.length)},250)};
+  document.querySelectorAll('tr[data-c]').forEach(tr=>tr.onclick=()=>abreFicha(tr.dataset.c));
+};
+function abreFicha(cnpj){
+  const v=D.visitas.find(x=>x.cnpj===cnpj);if(!v)return;
+  const s=situacao(v),g=v.gps||null;
+  const linha=(k,x)=>x==null||x===''?'':'<dt>'+k+'</dt><dd>'+x+'</dd>';
+  $('folha').innerHTML='<div class="tt"><div><h2>'+esc(v.nome||'—')+'</h2><p>'+esc(cnpjFmt(v.cnpj))+' · '+esc(v.data)+' às '+esc(v.hora)+' · '+esc(nomeDev(v))+'</p></div>'+
+    '<button class="bt peq" id="fecha">Fechar</button></div>'+
+    ((v.fotoCaminho||v.fotoUrl)?'<img class="foto" id="ffoto" alt="Foto do PDV">':'<div class="vazio" style="background:#FAFAFB">Visita sem foto</div>')+
+    '<dl>'+linha('Situação','<span class="selo '+s[1]+'">'+esc(s[0])+'</span> '+esc(v.existe||''))+
+    linha('Interesse',esc(v.interesse))+linha('Canal',esc(v.canal))+linha('Vende bebidas',esc(v.vende))+linha('Compra de',esc(v.fornec))+
+    linha('Cadastro BAND',esc(v.cadBand))+linha('Dias de funcionamento',esc(v.diasTexto))+
+    linha('Horário',v.abre?esc(v.abre)+' às '+esc(v.fecha):'')+linha('Telefone',esc(v.tel))+
+    linha('SAC',esc(v.sac)+(v.sacProt?' · protocolo '+esc(v.sacProt):''))+linha('Motivo',esc(v.motivo))+
+    linha('Observação',esc(v.obs))+linha('Endereço',esc([v.endereco,v.bairro].filter(Boolean).join(' · ')))+
+    linha('Rota',esc([v.rota,v.sv,v.consultor].filter(Boolean).join(' · ')))+
+    linha('Roteiro','dia '+esc(v.diaRoteiro)+' ('+esc(v.dataPlan)+') · '+(v.noPrazo?'<span class="selo v">no prazo</span>':'<span class="selo a">fora do dia</span>'))+
+    linha('Tempo da visita',v.duracaoMin?esc(v.inicioHora)+' às '+esc(v.hora)+' · '+v.duracaoMin+' min':'')+
+    linha('Localização',g?'<a href="https://www.google.com/maps?q='+g.lat+','+g.lon+'" target="_blank" rel="noopener">'+g.lat.toFixed(5)+', '+g.lon.toFixed(5)+'</a> · precisão '+fmt(g.acc)+' m':'sem GPS')+
+    linha('Distância do endereço',v.dist!=null?fmtKm(v.dist):'')+'</dl>';
+  $('dlg').classList.add('on');$('fecha').onclick=fechaFicha;
+  if($('ffoto'))fotoDaVisita(v).then(u=>{if(u&&$('ffoto'))$('ffoto').src=u});
+}
+function fechaFicha(){$('dlg').classList.remove('on')}
+$('dlg').onclick=e=>{if(e.target===$('dlg'))fechaFicha()};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')fechaFicha()});
+
+/* ---------------- módulo: Mensagens ---------------- */
+function mMsgs(){
+  const ativos=D.devs.filter(d=>d.ativo);
+  const opDest='<option value="todos">Todos os desenvolvedores</option>'+ativos.map(d=>'<option value="'+esc(d.login)+'">'+esc(d.nome)+'</option>').join('');
+  const lista=D.msgs.map(m=>{
+    const total=m.dev==='todos'?ativos.length:1,leu=+m.leu||0,rec=+m.recebeu||0;
+    const agendada=m.ativarEm&&new Date(m.ativarEm)>new Date(),venc=m.expiraEm&&new Date(m.expiraEm)<new Date();
+    return '<div class="msg">'+((m.imagemCaminho||m.imagem)?'<img data-cam="'+esc(m.imagemCaminho||'')+'" data-url="'+esc(m.imagem||'')+'" alt="">':'')+
+      '<div style="min-width:0"><h3>'+esc(m.titulo||'(sem título)')+'</h3><p>'+esc(m.texto)+'</p>'+
+      '<div class="meta"><span>'+esc(m.data)+'</span><span>Para: '+esc(m.dev==='todos'?'todos':((D.devs.find(d=>d.login===m.dev)||{}).nome||m.dev))+'</span>'+
+      (agendada?'<span class="selo a">aparece em '+new Date(m.ativarEm).toLocaleString('pt-BR')+'</span>':'')+(venc?'<span class="selo c">expirada</span>':'')+'</div></div>'+
+      '<div class="rec"><span style="font-size:12.5px;color:var(--ink2)">Leram <b style="color:var(--ink)">'+leu+'</b> de '+total+' · receberam '+rec+'</span>'+
+      '<div class="barra"><span style="width:'+Math.min(100,Math.round(leu*100/Math.max(1,total)))+'%"></span></div>'+
+      '<button class="bt peq" data-apaga="'+esc(m.id)+'">Apagar</button></div></div>';
+  }).join('');
+  return cab('Mensagens','Recados para o app dos desenvolvedores, com aviso no celular')+
+   '<div class="corpo"><div class="msgs">'+
+    '<div class="cartao"><div class="tt"><h2>Nova mensagem</h2></div><div class="cc">'+
+     '<div class="campo"><label for="mt">Título</label><input id="mt" maxlength="120"></div>'+
+     '<div class="campo"><label for="mx">Texto</label><textarea id="mx"></textarea></div>'+
+     '<div class="campo"><label for="md">Para</label><select id="md">'+opDest+'</select></div>'+
+     '<div class="duas"><div class="campo"><label for="mi">Aparece a partir de</label><input id="mi" type="datetime-local"></div>'+
+     '<div class="campo"><label for="mf">Some depois de</label><input id="mf" type="datetime-local"></div></div>'+
+     '<div class="campo"><label for="mimg">Imagem (opcional)</label><input id="mimg" type="file" accept="image/jpeg,image/png,image/webp"></div>'+
+     '<button class="bt verm" id="menvia" style="width:100%">Enviar mensagem</button></div></div>'+
+    '<div class="cartao"><div class="tt"><h2>Enviadas</h2><span>'+fmt(D.msgs.length)+'</span></div>'+
+     (lista||'<div class="vazio">Nenhuma mensagem ainda.</div>')+'</div></div></div>';
+}
+liga.msgs=()=>{
+  $('menvia').onclick=enviaMsg;
+  document.querySelectorAll('[data-apaga]').forEach(b=>b.onclick=async()=>{
+    if(!confirm('Apagar esta mensagem? Ela some do app; o histórico fica guardado.'))return;
+    try{await rpc('mensagem_apagar',{p_id:b.dataset.apaga});await carregaMsgs();pintaLado();pintaMain();toast('Mensagem apagada')}
+    catch(e){if(e.semSessao)return sessaoCaiu();toast(e.message)}
+  });
+  document.querySelectorAll('.msg img').forEach(i=>{
+    const p=i.dataset.cam?linkFoto(i.dataset.cam):Promise.resolve(/^https?:/.test(i.dataset.url)?i.dataset.url:'');
+    p.then(u=>{if(u)i.src=u})});
+};
+/* imagem da mensagem: reduzida para no máximo 1600 px antes de subir */
+function reduzImagem(arq){return new Promise((ok,erro)=>{
+  const img=new Image();img.onload=()=>{const k=Math.min(1,1600/Math.max(img.width,img.height));
+    const c=document.createElement('canvas');c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height);c.toBlob(b=>b?ok(b):erro(new Error('imagem inválida')),'image/jpeg',.82)};
+  img.onerror=()=>erro(new Error('imagem inválida'));img.src=URL.createObjectURL(arq)})}
+async function enviaMsg(){
+  const titulo=$('mt').value.trim(),texto=$('mx').value.trim();
+  if(!titulo&&!texto)return toast('Escreva um título ou um texto');
+  const iso=id=>$(id).value?new Date($(id).value).toISOString():null;
+  const b=$('menvia');b.disabled=true;b.textContent='Enviando…';
+  try{
+    let cam=null;const arq=$('mimg').files[0];
+    if(arq){const blob=await reduzImagem(arq);
+      cam='mensagens/'+new Date().toISOString().replace(/[^0-9]/g,'').slice(0,14)+'_'+Math.random().toString(36).slice(2,7)+'.jpg';
+      await sobe('rtm-fotos',cam,blob,'image/jpeg',false)}
+    await rpc('mensagem_gravar',{p_msg:{titulo,texto,dev:$('md').value,imagemCaminho:cam,ativarEm:iso('mi'),expiraEm:iso('mf')}});
+    await carregaMsgs();pintaLado();pintaMain();toast('Mensagem enviada');
+  }catch(e){if(e.semSessao)return sessaoCaiu();toast('Não consegui enviar: '+e.message);b.disabled=false;b.textContent='Enviar mensagem'}
+}
+
+/* ---------------- módulo: Desenvolvedores ---------------- */
+function mDevs(){
+  const quando=t=>t?new Date(t).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}):'nunca';
+  const cards=D.devs.map(d=>{
+    const vis=D.visitas.filter(v=>v.devLogin===d.login),hoje=vis.filter(v=>v.data===hojeBR()).length;
+    return '<div class="dev'+(d.ativo?'':' off')+'"><div class="top"><div class="av">'+esc(d.login.toUpperCase())+'</div>'+
+      '<div style="flex:1;min-width:0"><input value="'+esc(d.nome)+'" data-nome="'+esc(d.login)+'" aria-label="Nome do desenvolvedor">'+
+      '<div style="font-size:12.5px;color:var(--ink2)">'+esc(d.email)+'</div></div>'+
+      '<span class="selo '+(d.ativo?'v':'c')+'">'+(d.ativo?'Ativo':'Desativado')+'</span></div>'+
+      '<div class="lin"><span>Conta no Supabase</span><b>'+(d.contaCriada?'criada':'<span style="color:var(--verm)">não criada</span>')+'</b></div>'+
+      '<div class="lin"><span>Primeiro acesso</span><b>'+(d.jaEntrou?(d.senhaPropria?'feito, com senha própria':'entrou, falta criar a senha'):'ainda não')+'</b></div>'+
+      '<div class="lin"><span>Último acesso</span><b>'+quando(d.ultimoAcesso)+'</b></div>'+
+      '<div class="lin"><span>Visitas</span><b>'+fmt(hoje)+' hoje · '+fmt(vis.length)+' no total</b></div>'+
+      '<div class="bts"><button class="bt peq" data-ativo="'+esc(d.login)+'">'+(d.ativo?'Desativar':'Reativar')+'</button>'+
+      '<button class="bt peq" data-senha="'+esc(d.login)+'">Voltar senha para a padrão</button></div></div>';
+  }).join('');
+  return cab('Desenvolvedores','Quem usa o app, o nome que aparece no roteiro e o acesso de cada um')+
+    '<div class="corpo"><div class="info">Para mudar o nome, clique nele, digite e saia do campo. '+
+    '"Voltar senha para a padrão" é para quem esqueceu a senha: no próximo acesso ele cria uma nova.</div>'+
+    '<div class="devs">'+(cards||'<div class="vazio">Nenhum desenvolvedor cadastrado.</div>')+'</div></div>';
+}
+liga.devs=()=>{
+  document.querySelectorAll('[data-nome]').forEach(i=>{
+    i.onkeydown=e=>{if(e.key==='Enter')i.blur()};
+    i.onchange=async()=>{const nome=i.value.trim();if(!nome)return pintaMain();
+      try{await rpc('desenvolvedor_salvar',{p_login:i.dataset.nome,p_nome:nome});await carregaDevs();pintaMain();toast('Nome salvo: '+nome)}
+      catch(e){if(e.semSessao)return sessaoCaiu();toast(e.message)}}});
+  document.querySelectorAll('[data-ativo]').forEach(b=>b.onclick=async()=>{
+    const d=D.devs.find(x=>x.login===b.dataset.ativo);
+    if(d.ativo&&!confirm('Desativar '+d.nome+'? Ele deixa de entrar no app e de receber roteiro e mensagens. As visitas dele continuam guardadas.'))return;
+    try{await rpc('desenvolvedor_salvar',{p_login:d.login,p_ativo:!d.ativo});await carregaDevs();pintaLado();pintaMain();toast(d.nome+(d.ativo?' desativado':' reativado'))}
+    catch(e){if(e.semSessao)return sessaoCaiu();toast(e.message)}});
+  document.querySelectorAll('[data-senha]').forEach(b=>b.onclick=async()=>{
+    const d=D.devs.find(x=>x.login===b.dataset.senha);
+    const s=prompt('Digite a senha padrão para '+d.nome+' (pelo menos 6 caracteres).\nEla não fica guardada no painel.');
+    if(s==null)return;
+    try{await rpc('voltar_senha_padrao',{p_login:d.login,p_senha:s});await carregaDevs();pintaMain();
+      toast('Senha de '+d.nome+' voltou para a padrão')}
+    catch(e){if(e.semSessao)return sessaoCaiu();toast(e.message)}});
+};
+
+/* ---------------- módulo: Base de dados ---------------- */
+function mBase(){
+  const i=D.baseInfo,r=D.baseResumo;
+  let estado='';
+  if(D.baseEstado==='carregando')estado='<div class="carregando">Conferindo a base no servidor…</div>';
+  else if(D.baseEstado==='sem')estado='<div class="aviso"><b>Nenhuma base enviada ainda.</b> Envie o arquivo da base (base-rtm-….json.gz) '+
+    'com o botão "Enviar base". Ela fica na pasta privada do Supabase e só o coordenador consegue baixar.</div>';
+  else if(D.baseEstado==='erro')estado='<div class="aviso">Não consegui abrir a base: '+esc(D.baseErro)+'</div>';
+  else if(D.baseEstado==='ok')estado='<div class="ok">Base <b>'+esc(r.versao)+'</b> pronta ('+esc(D.baseOrigem)+').</div>';
+  const pop=D.base&&D.base.populacao;
+  return cab('Base de dados','Receita Federal × clientes BAND, guardada na pasta privada do Supabase',
+     '<button class="bt escuro" id="benvia">Enviar base</button>')+
+   '<div class="corpo">'+estado+
+   (r?'<div class="kpis"><div class="kpi"><b>'+fmt(r.estabelecimentos)+'</b><span>estabelecimentos da Receita</span></div>'+
+     '<div class="kpi v"><b>'+fmt(r.clientes)+'</b><span>clientes BAND</span></div>'+
+     '<div class="kpi"><b>'+fmt(r.rotas)+'</b><span>rotas com território</span></div>'+
+     '<div class="kpi a"><b>'+fmt(r.municipiosPop)+'</b><span>municípios com população IBGE 2025</span></div></div>':'')+
+   '<div class="cartao"><div class="tt"><h2>Sobre a base em uso</h2></div><div class="cc">'+
+    (i?'<table class="tab"><tbody>'+
+      '<tr><td style="width:240px">Versão</td><td><b>'+esc(i.versao)+'</b></td></tr>'+
+      (r?'<tr><td>Descrição</td><td>'+esc(r.descricao)+'</td></tr>':'')+
+      '<tr><td>Enviada em</td><td>'+(i.enviadaEm?new Date(i.enviadaEm).toLocaleString('pt-BR'):'—')+(i.enviadaPor?' por '+esc(i.enviadaPor):'')+'</td></tr>'+
+      '<tr><td>Tamanho do arquivo</td><td>'+(i.bytes?fmt1(i.bytes/1048576)+' MB':'—')+'</td></tr>'+
+      (pop?'<tr><td>População</td><td>'+esc(pop.fonte||'')+'</td></tr>':'')+
+      '<tr><td>Neste computador</td><td>Guardada no navegador. O painel só baixa de novo quando a versão muda.</td></tr>'+
+     '</tbody></table>':'<div class="vazio">Sem base no servidor.</div>')+
+   '</div></div>'+
+   '<div class="info">A base não fica dentro do painel: o painel é público no GitHub e a base tem nome, telefone e endereço dos PDVs. '+
+   'Ela fica na pasta privada <b>rtm-base</b>, que só a conta de coordenador lê.</div></div>';
+}
+liga.base=()=>{$('benvia').onclick=()=>$('arqBase').click()};
+$('arqBase').onchange=e=>{const f=e.target.files[0];e.target.value='';enviaBase(f)};
+
+/* ---------------- início ---------------- */
+async function abreApp(){
+  $('entrada').classList.add('esc');$('app').classList.remove('esc');
+  pintaLado();pintaMain();
+  await atualizaTudo(true);
+  carregaBase();
+}
+window.addEventListener('hashchange',()=>{const k=location.hash.slice(1);if(k&&k!==MOD)ir(k)});
+setInterval(()=>{if(SESSAO&&!document.hidden&&EU)carregaVisitas().then(()=>{pintaLado();if(MOD==='visitas'&&!$('dlg').classList.contains('on')&&document.activeElement.tagName!=='INPUT')pintaMain()}).catch(()=>{})},60000);
+(async function(){
+  if(!SESSAO)return telaEntrada();
+  try{const q=await rpc('quem_sou');if(q.papel!=='coordenador')throw new Error('Esta conta não é de coordenador.');EU=q;abreApp()}
+  catch(e){if(SESSAO&&!e.semSessao&&!/conex/i.test(e.message))await sai();telaEntrada(e.semSessao?'Sua sessão expirou. Entre de novo.':e.message)}
+})();
+</script>
+</body>
+</html>

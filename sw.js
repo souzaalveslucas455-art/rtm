@@ -3,7 +3,7 @@
    IMPORTANTE: o endereco souzaalveslucas455-art.github.io e dividido com o app
    do merch, e a area de cache e uma so para o endereco inteiro. Por isso este
    arquivo so cria e so apaga caches cujo nome comeca com "rtm-". */
-const VERSAO = 'rtm-2.0.1';
+const VERSAO = 'rtm-2.0.2';
 const LOCAIS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 const DE_FORA = [
   'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css',
@@ -31,8 +31,13 @@ self.addEventListener('fetch', ev => {
   const doApp = u.origin === self.location.origin && u.pathname.indexOf(new URL('./', self.location).pathname) === 0;
   const daLista = DE_FORA.indexOf(req.url) >= 0;
   if (!doApp && !daLista) return;
+  // so a pagina do APP (raiz ou index.html) e guardada; o painel.html, que mora
+  // no mesmo repositorio, sempre vem da rede e nunca entra neste cache
+  const raiz = new URL('./', self.location).pathname;
+  const ehApp = u.pathname === raiz || u.pathname === raiz + 'index.html';
+  if (doApp && !ehApp && !LOCAIS.some(l => u.pathname === raiz + l.replace('./', ''))) return;
   // a pagina: rede primeiro (para receber a versao nova), cache se estiver sem sinal
-  if (req.mode === 'navigate' || /\/(index\.html)?$/.test(u.pathname)) {
+  if (ehApp) {
     ev.respondWith(fetch(req).then(r => {
       if (r.ok) { const cp = r.clone(); caches.open(VERSAO).then(c => c.put('./index.html', cp)); }
       return r;
