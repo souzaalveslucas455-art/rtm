@@ -158,6 +158,8 @@ main{overflow-y:auto;min-width:0}
 .breve-c .cartao{padding:18px}
 .breve-c h3{margin:0 0 6px;font-size:15px} .breve-c p{margin:0;color:var(--ink2);line-height:1.5}
 
+#moldura{position:fixed;left:240px;right:0;top:0;bottom:0;background:#fff;z-index:4}
+#moldura iframe{border:0;width:100%;height:100%;display:block}
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;opacity:0;transition:.2s;pointer-events:none;z-index:30;max-width:90vw}
 #toast.on{opacity:1;transform:translateX(-50%)}
 .carregando{display:flex;gap:10px;align-items:center;color:var(--ink2)}
@@ -177,6 +179,7 @@ main{overflow-y:auto;min-width:0}
   </aside>
   <main id="main"></main>
 </div>
+<div id="moldura" class="esc"><iframe id="mapaif" title="Mapa de oportunidade"></iframe></div>
 <div id="dlg" role="dialog" aria-modal="true"><div class="folha" id="folha"></div></div>
 <div id="toast" role="status"></div>
 <input type="file" id="arqBase" accept=".gz,.json,application/gzip,application/json" class="esc">
@@ -229,12 +232,17 @@ function renova(){
   renovando=pede('/auth/v1/token?grant_type=refresh_token',{method:'POST',
       headers:{apikey:SUPA.chave,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:SESSAO.refresh_token})})
     .then(r=>{if(r.ok){guardaSessao(r.j);return}
+      const g=sessaoGuardada();if(g&&g.expira>Date.now()+60000){SESSAO=g;return}
       if(r.status>=400&&r.status<500){guardaSessao(null);throw semSessao()}
       throw new Error(erroDe(r.j,r.status))})
     .finally(()=>{renovando=null});
   return renovando;
 }
-async function token(){if(!SESSAO)throw semSessao();if(Date.now()>SESSAO.expira-60000)await renova();return SESSAO.access_token}
+function sessaoGuardada(){try{return JSON.parse(localStorage.getItem(K_SESSAO)||'null')}catch(e){return null}}
+async function token(){
+  /* o mapa, aberto dentro do painel, usa a mesma sessão e pode tê-la renovado antes */
+  const g=sessaoGuardada();if(g&&(!SESSAO||g.expira>SESSAO.expira))SESSAO=g;
+  if(!SESSAO)throw semSessao();if(Date.now()>SESSAO.expira-60000)await renova();return SESSAO.access_token}
 async function rpc(nome,args,tentou){
   const tk=await token();
   const r=await pede('/rest/v1/rpc/'+nome,{method:'POST',headers:{apikey:SUPA.chave,Authorization:'Bearer '+tk,
@@ -422,7 +430,7 @@ const IC={
 };
 const svg=(k,w=18)=>'<svg width="'+w+'" height="'+w+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(IC[k]||'')+'</svg>';
 const MODULOS=[
-  ['Operação',[['aovivo','Ao vivo',1],['mapa','Mapa de oportunidade',1],['planejar','Planejar campo',1],['visitas','Visitas',0],['msgs','Mensagens',0]]],
+  ['Operação',[['aovivo','Ao vivo',1],['mapa','Mapa de oportunidade',0],['planejar','Planejar campo',0],['visitas','Visitas',0],['msgs','Mensagens',0]]],
   ['Análise',[['dash','Dashboards',1],['desemp','Desempenho',1],['funil','Funil de conversão',1],['conc','Concorrência e horários',1],['simul','Simulador',1]]],
   ['Estrutura',[['devs','Desenvolvedores',0],['base','Base de dados',0]]]
 ];
@@ -456,7 +464,19 @@ function ir(k){MOD=k;try{history.replaceState(null,'','#'+k)}catch(e){}pintaLado
 function cab(t,sub,acoes){return '<div class="cab"><div><h1>'+t+'</h1><p>'+sub+'</p></div><div class="acoes">'+(acoes||'')+
   '<button class="bt" onclick="atualizaTudo()">Atualizar</button></div></div>'}
 function pintaMainSe(k){if(MOD===k)pintaMain()}
+function mostraMapa(){
+  const m=$('moldura'),usa=MOD==='mapa'||MOD==='planejar';
+  m.classList.toggle('esc',!usa);
+  if(!usa)return false;
+  const ifr=$('mapaif');
+  if(!ifr.src)ifr.src='mapa.html'+(MOD==='planejar'?'#planejar':'');
+  else{try{ifr.contentWindow.location.hash=MOD==='planejar'?'planejar':'mapa'}catch(e){}}
+  return true;
+}
+/* o mapa avisa quando publica um roteiro: o painel atualiza a lista */
+window.addEventListener('message',e=>{if(e.origin===location.origin&&e.data==='roteiro-publicado')carregaRoteiros().then(pintaLado).catch(()=>{})});
 function pintaMain(){
+  if(mostraMapa()){$('main').innerHTML='';return}
   const f={visitas:mVisitas,msgs:mMsgs,devs:mDevs,base:mBase}[MOD];
   if(f){$('main').innerHTML=f();try{liga[MOD]&&liga[MOD]()}catch(e){console.error(e)}return}
   const b=BREVE[MOD]||BREVE.aovivo;
