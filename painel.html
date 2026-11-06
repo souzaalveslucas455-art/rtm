@@ -195,6 +195,46 @@ main{overflow-y:auto;min-width:0}
 .dk:fullscreen{border-radius:0;padding:5vh 6vw;overflow:auto;display:flex;flex-direction:column;justify-content:center}
 .dk:fullscreen h2{font-size:clamp(46px,4.4vw,72px)}
 .dk:fullscreen td{font-size:clamp(16px,1.25vw,22px)}
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.gal button{text-align:left;border:1px solid var(--linha);background:var(--papel);border-radius:14px;padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:3px;min-height:92px}
+.gal button:hover{border-color:#c9ccd3}
+.gal button[aria-pressed="true"]{background:#0B0B0C;border-color:#0B0B0C;color:#fff}
+.gal button[aria-pressed="true"] small{color:#A1A1AA}
+.gal button span{font-size:12.5px;font-weight:700;color:var(--ink2)} .gal button[aria-pressed="true"] span{color:#FF8A95}
+.gal button b{font-size:24px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.gal button small{font-size:12px;color:var(--ink2);line-height:1.3}
+.dk .nav{position:absolute;top:30px;right:34px;display:none;gap:8px;z-index:2}
+.dk:fullscreen .nav{display:flex}
+.dk .nav button{background:#1C1C20;border:1px solid #2E2E33;color:#E4E4E7;border-radius:10px;padding:8px 14px;font-weight:700;cursor:pointer}
+.dk .nav span{align-self:center;color:#71717A;font-size:13px;margin-right:6px}
+.dk .grade2{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px}
+.dk .bloco{background:#111113;border:1px solid #232327;border-radius:16px;padding:18px 22px}
+.dk .bloco h3{margin:0 0 14px;font-size:13px;letter-spacing:.08em;color:#A1A1AA;font-weight:700}
+.dk .hb{display:grid;grid-template-columns:minmax(120px,190px) minmax(0,1fr) 84px;gap:12px;align-items:center;padding:7px 0;border-bottom:1px solid #1C1C20;font-size:15px}
+.dk .hb:last-child{border-bottom:none}
+.dk .hb .nm{font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dk .hb .tr{height:22px;border-radius:6px;background:#26262A;overflow:hidden;display:flex}
+.dk .hb .tr i{display:block;height:100%}
+.dk .hb .vl{text-align:right;font-weight:800;font-variant-numeric:tabular-nums}
+.dk .hb small{display:block;font-weight:500;color:#8E8E96;font-size:12px}
+.dk .rosca{width:190px;height:190px;border-radius:50%;margin:4px auto 16px;position:relative}
+.dk .rosca::after{content:"";position:absolute;inset:34px;border-radius:50%;background:#111113}
+.dk .rosca b{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1;font-size:28px;font-weight:800}
+.dk .rosca b small{font-size:12px;color:#A1A1AA;font-weight:600}
+.dk .leg{display:grid;gap:7px;font-size:14px}
+.dk .leg div{display:flex;gap:9px;align-items:center} .dk .leg i{width:11px;height:11px;border-radius:3px;flex:none}
+.dk .leg span{margin-left:auto;font-weight:800;font-variant-numeric:tabular-nums}
+.dk .devs3{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.dk .dv b.n{font-size:34px;font-weight:800;display:block;line-height:1.1}
+.dk .dv .pr{height:10px;border-radius:6px;background:#26262A;overflow:hidden;margin:10px 0 6px}
+.dk .dv .pr i{display:block;height:100%;background:#22C55E}
+.dk .dv dl{display:grid;grid-template-columns:1fr auto;gap:5px 10px;margin:12px 0 0;font-size:14px}
+.dk .dv dt{color:#A1A1AA} .dk .dv dd{margin:0;font-weight:700;text-align:right}
+.dk .vazio2{border:1px dashed #33333A;border-radius:16px;padding:46px 30px;text-align:center;color:#A1A1AA;font-size:16px;line-height:1.6}
+.dk .vazio2 b{display:block;color:#fff;font-size:20px;margin-bottom:6px}
+.dk .sub2{color:#A1A1AA;font-size:15px;margin:-12px 0 22px;max-width:90ch}
+.dk tr.sv td{font-size:14px;color:#C4C4CC} .dk tr.sv td.cid{font-weight:600;font-size:14px;padding-left:28px;color:#D4D4D8}
+@media(max-width:1100px){.dk .grade2{grid-template-columns:1fr}}
 .ajustes{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
 .ajustes label{display:flex;flex-direction:column;gap:5px;font-size:11.5px;font-weight:700;color:var(--ink2)}
 .ajustes input,.ajustes select{border:1px solid var(--linha);border-radius:9px;padding:7px 10px;background:#fff;width:120px}
@@ -517,7 +557,7 @@ function mostraMapa(){
   return true;
 }
 /* o mapa avisa quando publica um roteiro: o painel atualiza a lista */
-window.addEventListener('message',e=>{if(e.origin===location.origin&&e.data==='roteiro-publicado')carregaRoteiros().then(pintaLado).catch(()=>{})});
+window.addEventListener('message',e=>{if(e.origin===location.origin&&e.data==='roteiro-publicado'){D.rotCompleto=undefined;carregaRoteiros().then(pintaLado).catch(()=>{})}});
 function pintaMain(){
   if(mostraMapa()){$('main').innerHTML='';return}
   const f={visitas:mVisitas,msgs:mMsgs,devs:mDevs,base:mBase,dash:mDash}[MOD];
@@ -762,24 +802,46 @@ function calcula(l,cfg){
     return Object.assign({},c,{pm,pct,gap,st});
   });
 }
-function mDash(){
-  const cfg=dashCfg();
-  if(D.baseEstado!=='ok')return cab('Dashboards','Prospecção de clientes')+'<div class="corpo">'+
-    (D.baseEstado==='carregando'||!D.baseEstado?'<div class="carregando">Abrindo a base…</div>':
-     '<div class="aviso">Os dashboards usam a base. Envie a base em <b>Base de dados</b>.</div>')+'</div>';
-  const dc=dadosCidades();
-  const todas=calcula(dc.cidades,cfg),porNome={};todas.forEach(c=>porNome[c.nome]=c);
+/* ---------- base preparada para os painéis (lida uma vez por versão) ---------- */
+function prep(){
+  const b=D.base;if(!b)return null;
+  if(D._prep&&D._prep.v===b.versao)return D._prep;
+  const L=b.R.split('\n');let n=0;
+  const cad=new Uint8Array(L.length),ex=new Uint8Array(L.length),cn=new Int16Array(L.length),ci=new Int16Array(L.length),po=new Uint8Array(L.length),rt=new Int16Array(L.length),cnpj=new Array(L.length);
+  for(const l of L){if(!l)continue;const p=l.split('|');cnpj[n]=p[0];cad[n]=+p[3];cn[n]=+p[4];ci[n]=+p[5];po[n]=+p[8];rt[n]=+p[11];ex[n]=+p[13];n++}
+  const pop={};(b.populacao&&b.populacao.municipios||[]).forEach(m=>pop[m.chave]=m);
+  const antigos=(b.populacao&&b.populacao.nomes_antigos)||{};
+  const cliCid={};(b.D.cities||[]).forEach(c=>cliCid[semAcento(c[0])]=+c[3]||0);
+  return D._prep={v:b.versao,n,cad,ex,cn,ci,po,rt,cnpj,pop,antigos,cliCid};
+}
+const popDe=(P,nome)=>{const k=semAcento(nome);return P.pop[k]||P.pop[P.antigos[k]]||null};
+const pct=(a,b)=>b?Math.round(a*1000/b)/10:0;
+const fpct=v=>(Math.round(v*10)/10).toLocaleString('pt-BR',{maximumFractionDigits:1})+'%';
+const VERM='#E4002B',VERDE='#22C55E',ROXO='#A855F7',AMB='#F5A524',AZUL='#60A5FA',CINZA='#71717A';
+function barras(itens,tot,cores){/* itens: [{nm,sub,partes:[[valor,cor]],vl}] */
+  const mx=Math.max(1,...itens.map(i=>i.partes.reduce((s,p)=>s+p[0],0)));
+  return itens.map(i=>'<div class="hb"'+(i.dado?' data-mapa="'+esc(i.dado)+'" style="cursor:pointer"':'')+'><div class="nm" title="'+esc(i.nm)+'">'+esc(i.nm)+(i.sub?'<small>'+esc(i.sub)+'</small>':'')+'</div>'+
+    '<div class="tr">'+i.partes.map(p=>'<i style="width:'+(p[0]/mx*100)+'%;background:'+p[1]+'"></i>').join('')+'</div><div class="vl">'+i.vl+'</div></div>').join('');
+}
+function rosca(fatias,centro,rot){
+  const tot=fatias.reduce((s,f)=>s+f[1],0)||1;let a=0;
+  const g=fatias.map(f=>{const a0=a;a+=f[1]/tot*360;return f[2]+' '+a0+'deg '+a+'deg'}).join(',');
+  return '<div class="rosca" style="background:conic-gradient('+g+')"><b>'+centro+'<small>'+rot+'</small></b></div>'+
+    '<div class="leg">'+fatias.map(f=>'<div><i style="background:'+f[2]+'"></i>'+esc(f[0])+'<span>'+fmt(f[1])+' · '+fpct(f[1]*100/tot)+'</span></div>').join('')+'</div>';
+}
+const vazioDk=(t,x)=>'<div class="vazio2"><b>'+t+'</b>'+x+'</div>';
+
+/* ---------- os painéis ---------- */
+function dProsp(){
+  const cfg=dashCfg(),dc=dadosCidades(),todas=calcula(dc.cidades,cfg),porNome={};todas.forEach(c=>porNome[c.nome]=c);
   let l=cfg.cidades.map(n=>porNome[n]).filter(Boolean);
   l.sort(cfg.ordem==='gap'?(a,b)=>b.gap-a.gap:cfg.ordem==='pm'?(a,b)=>a.pm-b.pm:(a,b)=>a.nome.localeCompare(b.nome,'pt-BR'));
-  const tot=l.reduce((s,c)=>s+c.gap,0),mx=Math.max(1,...l.map(c=>c.gap));
-  const metaMil=cfg.ref*cfg.meta/100;
+  const tot=l.reduce((s,c)=>s+c.gap,0),mx=Math.max(1,...l.map(c=>c.gap)),metaMil=cfg.ref*cfg.meta/100;
   const f2=n=>(+n).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
   const marcados=new Set(cfg.cidades);
   const lista=todas.slice().sort((a,b)=>a.nome.localeCompare(b.nome,'pt-BR')).map(c=>'<label><input type="checkbox" data-cid="'+esc(c.nome)+'"'+(marcados.has(c.nome)?' checked':'')+'> '+esc(c.nome)+' <small>'+c.uf+'</small></label>').join('');
-  return cab('Dashboards','Prospecção de clientes · base '+esc(D.baseResumo.versao)+' · população IBGE 2025',
-      '<button class="bt escuro" id="dapres">Modo apresentação</button>')+
-   '<div class="corpo">'+
-   '<div class="cartao"><div class="cc"><div class="ajustes">'+
+  return {num:fmt(tot),sub:'clientes de gap nas '+l.length+' cidades',
+   ajustes:'<div class="ajustes">'+
      '<label>Referência Brasil (estab./mil hab.)<input id="dref" type="number" step="0.1" min="0.1" value="'+cfg.ref+'"></label>'+
      '<label>Meta (% da referência)<input id="dmeta" type="number" step="1" min="1" max="100" value="'+cfg.meta+'"></label>'+
      '<label>Faixa "Baixo" abaixo de (%)<input id="df1" type="number" step="1" value="'+cfg.f1+'"></label>'+
@@ -791,12 +853,10 @@ function mDash(){
      '<label>Cidades<select id="dpre"><option value="">'+l.length+' escolhidas</option><option value="slide">As 8 do slide (Grande Goiânia)</option>'+
        '<option value="gap10">As 10 de maior gap</option><option value="gap20">As 20 de maior gap</option><option value="gr">Acima de 100 mil habitantes</option></select></label>'+
      '<button class="bt" id="dlista">'+(cfg.lista?'Fechar a lista de cidades':'Escolher cidades')+'</button></div>'+
-     (cfg.lista?'<div class="cidlista">'+lista+'</div>':'')+
-   '</div></div>'+
-   '<div class="dk" id="dkart">'+
-     '<div class="pill"><b contenteditable="true" spellcheck="false" id="dtit">'+esc(cfg.titulo)+'</b><span contenteditable="true" spellcheck="false" id="dsub">'+esc(cfg.subtitulo)+'</span></div>'+
+     (cfg.lista?'<div class="cidlista">'+lista+'</div>':''),
+   html:'<div class="pill"><b contenteditable="true" spellcheck="false" id="dtit">'+esc(cfg.titulo)+'</b><span contenteditable="true" spellcheck="false" id="dsub">'+esc(cfg.subtitulo)+'</span></div>'+
      '<div class="topo"><h2>Ainda há <em>'+fmt(tot)+' clientes</em> para cadastrar '+(cfg.cidades.join()===SLIDE.join()?'nos grandes centros':'nestas cidades')+'</h2>'+
-       '<div class="ks"><div class="k"><b>'+fmt1(cfg.ref).replace(/,0$/,',0')+'</b><span>estab. por mil hab. (Brasil)</span></div>'+
+       '<div class="ks"><div class="k"><b>'+fmt1(cfg.ref)+'</b><span>estab. por mil hab. (Brasil)</span></div>'+
        '<div class="k meta"><b>'+f2(metaMil)+'</b><span>nossa meta ('+cfg.meta+'%)</span></div></div></div>'+
      '<div class="tb"><table><thead><tr><th>CIDADE</th><th class="n">POPULAÇÃO (IBGE 2025)</th><th class="n">CLIENTES BAND</th><th class="n">CLIENTES POR MIL HAB.</th><th>GAP PARA A META</th><th>STATUS</th></tr></thead><tbody>'+
      l.map(c=>'<tr class="lin" data-mapa="'+esc(c.nomeMapa)+'" title="Abrir '+esc(c.nome)+' no mapa"><td class="cid">'+esc(c.nome)+'</td><td class="n">'+fmt(c.pop)+'</td><td class="n">'+fmt(c.cli)+'</td>'+
@@ -804,33 +864,189 @@ function mDash(){
        '<td><span class="st '+c.st[0]+'">'+c.st[1]+'</span></td></tr>').join('')+
      '</tbody><tfoot><tr><td colspan="4">Total da oportunidade</td><td class="tot">'+fmt(tot)+' clientes</td><td></td></tr></tfoot></table></div>'+
      '<div class="rod"><span>Clientes: base '+esc(D.baseResumo.versao)+'. População: IBGE, estimativa de 1º/07/2025. Gap = população ÷ 1.000 × '+f2(metaMil)+' − clientes.</span>'+
-       '<span>Clique numa cidade para ver a oportunidade no mapa</span></div>'+
-   '</div>'+
-   (dc.sem.length?'<div class="info">'+dc.sem.length+' localidades da base não têm população no IBGE, porque são distritos (por exemplo '+
-     esc(dc.sem.slice(0,4).map(x=>x.nome).join(', '))+'). Os '+fmt(dc.sem.reduce((s,x)=>s+x.cli,0))+' clientes delas não entram nesta conta.</div>':'')+
-   '</div>';
+       '<span>Clique numa cidade para ver a oportunidade no mapa</span></div>',
+   depois:dc.sem.length?'<div class="info">'+dc.sem.length+' localidades da base não têm população no IBGE, porque são distritos ou nomes antigos (por exemplo '+
+     esc(dc.sem.slice(0,4).map(x=>x.nome).join(', '))+'). Os '+fmt(dc.sem.reduce((s,x)=>s+x.cli,0))+' clientes delas não entram nesta conta.</div>':''};
 }
-liga.dash=()=>{
-  if(!$('dref'))return;
+function dMun(){
+  const P=prep(),b=D.base,uf=dashCfg().munUf||'',top=dashCfg().munTop||15;
+  const ag={};
+  for(let i=0;i<P.n;i++){const k=P.ci[i];const o=ag[k]||(ag[k]={t:0,c:0,ex:0});o.t++;if(P.cad[i])o.c++;else if(P.ex[i])o.ex++}
+  let l=Object.keys(ag).map(k=>{const nome=b.D.cidr[k],m=popDe(P,nome),o=ag[k];
+    return {nome:m?m.nome:nome,mapa:nome,uf:m?m.uf:'',pop:m?m.pop:0,t:o.t,c:o.c,sem:o.t-o.c,ex:o.ex,cli:P.cliCid[semAcento(m?m.nome:nome)]||0}});
+  if(uf)l=l.filter(c=>c.uf===uf);
+  const totSem=l.reduce((s,c)=>s+c.sem,0);l.sort((a,b)=>b.sem-a.sem);
+  const dez=l.slice(0,10).reduce((s,c)=>s+c.sem,0),ls=l.slice(0,top);
+  return {num:fmt(totSem),sub:'PDVs sem cadastro, por cidade',
+   ajustes:'<div class="ajustes"><label>Estado<select id="dmuf"><option value="">Goiás e Tocantins</option><option value="GO"'+(uf==='GO'?' selected':'')+'>Goiás</option><option value="TO"'+(uf==='TO'?' selected':'')+'>Tocantins</option></select></label>'+
+     '<label>Mostrar<select id="dmtop">'+[10,15,25,40].map(n=>'<option'+(n===top?' selected':'')+'>'+n+'</option>').join('')+'</select></label></div>',
+   html:'<div class="pill"><b>ONDE ESTÁ A OPORTUNIDADE</b><span>estabelecimentos da Receita sem cadastro BAND</span></div>'+
+    '<div class="topo"><h2><em>'+fmt(totSem)+'</em> PDVs sem cadastro; <em>'+fpct(totSem?dez*100/totSem:0)+'</em> deles em 10 cidades</h2>'+
+    '<div class="ks"><div class="k"><b>'+fmt(l.length)+'</b><span>cidades com PDV na Receita</span></div><div class="k meta"><b>'+fmt(l.reduce((s,c)=>s+c.ex,0))+'</b><span>ex-clientes entre eles</span></div></div></div>'+
+    '<div class="tb"><table><thead><tr><th>CIDADE</th><th class="n">NA RECEITA</th><th class="n">JÁ CLIENTES</th><th class="n">COBERTURA</th><th>SEM CADASTRO</th><th class="n">EX-CLIENTES</th></tr></thead><tbody>'+
+    ls.map(c=>{const mx=ls[0].sem||1,cb=pct(c.c,c.t);return '<tr class="lin" data-mapa="'+esc(c.mapa)+'"><td class="cid">'+esc(c.nome)+' <span style="color:#71717A;font-weight:600;font-size:13px">'+c.uf+'</span></td><td class="n">'+fmt(c.t)+'</td><td class="n">'+fmt(c.c)+'</td>'+
+      '<td class="n pm" style="color:'+(cb>=30?VERDE:cb>=15?AMB:'#FF6B6B')+'">'+fpct(cb)+'</td><td><div class="gap"><i style="width:'+Math.max(3,c.sem/mx*100)+'%"></i><b>'+fmt(c.sem)+'</b></div></td><td class="n">'+fmt(c.ex)+'</td></tr>'}).join('')+
+    '</tbody></table></div><div class="rod"><span>Cobertura = estabelecimentos da Receita que já são clientes ÷ estabelecimentos da Receita na cidade. Base '+esc(D.baseResumo.versao)+'.</span><span>Clique numa cidade para abrir no mapa</span></div>'};
+}
+function dEstr(){
+  const P=prep(),b=D.base,META=b.D.meta,ROT=b.D.rotas,aberto=dashCfg().estrAberto||'';
+  const gc={},sv={};
+  for(let i=0;i<P.n;i++){const r=ROT[P.rt[i]],m=r&&META[r];if(!m||m.adm)continue;
+    const g=gc[m.gc]||(gc[m.gc]={t:0,c:0,ex:0,cli:0,rotas:new Set()}),s2=sv[m.sv]||(sv[m.sv]={gc:m.gc,t:0,c:0,ex:0,cli:0,rotas:new Set()});
+    for(const o of [g,s2]){o.t++;if(P.cad[i])o.c++;else if(P.ex[i])o.ex++}}
+  Object.keys(META).forEach(r=>{const m=META[r];if(m.adm)return;const n=(b.D.cliRota||{})[r]||0;
+    if(gc[m.gc]){gc[m.gc].cli+=n;gc[m.gc].rotas.add(r)}if(sv[m.sv]){sv[m.sv].cli+=n;sv[m.sv].rotas.add(r)}});
+  const lg=Object.keys(gc).map(k=>Object.assign({nome:k},gc[k])).sort((a,b)=>(b.t-b.c)-(a.t-a.c));
+  const topo=lg[0],mx=Math.max(1,...lg.map(g=>g.t-g.c));
+  const linha=(o,classe,dado)=>{const sem=o.t-o.c,cb=pct(o.c,o.t);return '<tr class="'+classe+'"'+(dado?' data-gc="'+esc(dado)+'"':'')+'><td class="cid">'+(classe==='lin'?(aberto===o.nome?'▾ ':'▸ '):'')+esc(o.nome)+'</td><td class="n">'+fmt(o.rotas.size)+'</td><td class="n">'+fmt(o.cli)+'</td><td class="n">'+fmt(o.t)+'</td>'+
+    '<td><div class="gap"><i style="width:'+Math.max(3,sem/mx*100)+'%"></i><b>'+fmt(sem)+'</b></div></td><td class="n">'+fmt(o.ex)+'</td><td class="n pm" style="color:'+(cb>=30?VERDE:cb>=15?AMB:'#FF6B6B')+'">'+fpct(cb)+'</td></tr>'};
+  return {num:topo?esc(topo.nome):'—',sub:'gerência com mais PDVs sem cadastro',
+   html:'<div class="pill"><b>COBERTURA POR ESTRUTURA</b><span>gerências, supervisões e rotas</span></div>'+
+    '<div class="topo"><h2>A <em>'+esc(topo?topo.nome:'—')+'</em> tem a maior oportunidade: <em>'+fmt(topo?topo.t-topo.c:0)+'</em> PDVs sem cadastro no território</h2>'+
+    '<div class="ks"><div class="k"><b>'+fmt(lg.length)+'</b><span>gerências</span></div><div class="k"><b>'+fmt(lg.reduce((s,g)=>s+g.rotas.size,0))+'</b><span>rotas de venda</span></div></div></div>'+
+    '<div class="tb"><table><thead><tr><th>ESTRUTURA</th><th class="n">ROTAS</th><th class="n">CLIENTES BAND</th><th class="n">RECEITA NO TERRITÓRIO</th><th>SEM CADASTRO</th><th class="n">EX-CLIENTES</th><th class="n">COBERTURA</th></tr></thead><tbody>'+
+    lg.map(g=>linha(g,'lin',g.nome)+(aberto===g.nome?Object.keys(sv).filter(k=>sv[k].gc===g.nome).map(k=>Object.assign({nome:k},sv[k])).sort((a,b)=>(b.t-b.c)-(a.t-a.c)).map(o=>linha(o,'sv')).join(''):'')).join('')+
+    '</tbody></table></div><div class="rod"><span>Clique numa gerência para abrir as supervisões. Cada PDV entra na rota que a base atribuiu a ele (critério proporcional). Rotas administrativas ficam de fora.</span></div>'};
+}
+const FAMILIA=['Outros','Bares','Bares','Outros','Restaurantes e cantinas','Bebidas (atacado e varejo)','Atacado de alimentos','Bebidas (atacado e varejo)','Super e hipermercados','Mercearias e minimercados','Super e hipermercados','Conveniência','Outros alimentos','Restaurantes e cantinas','Lanchonetes','Outros','Padarias','Restaurantes e cantinas'];
+function dAtiv(){
+  const P=prep(),ag={};
+  for(let i=0;i<P.n;i++){const f=FAMILIA[P.cn[i]]||'Outros',o=ag[f]||(ag[f]={t:0,c:0,p1:0,p3:0,p5:0});o.t++;
+    if(P.cad[i])o.c++;else{if(P.po[i]===1)o.p1++;else if(P.po[i]===3)o.p3++;else o.p5++}}
+  const l=Object.keys(ag).map(k=>Object.assign({nm:k},ag[k])).sort((a,b)=>(b.t-b.c)-(a.t-a.c));
+  const tot=l.reduce((s,o)=>s+o.t-o.c,0),bl=l.filter(o=>o.nm==='Bares'||o.nm==='Lanchonetes').reduce((s,o)=>s+o.t-o.c,0);
+  const p1=l.reduce((s,o)=>s+o.p1,0);
+  return {num:fpct(tot?bl*100/tot:0),sub:'da oportunidade é bar ou lanchonete',
+   html:'<div class="pill"><b>ATIVIDADE E PORTE</b><span>que tipo de PDV está sem cadastro</span></div>'+
+    '<div class="topo"><h2>Bares e lanchonetes são <em>'+fpct(tot?bl*100/tot:0)+'</em> da oportunidade; <em>'+fpct(tot?p1*100/tot:0)+'</em> são microempresas</h2></div>'+
+    '<div class="grade2"><div class="bloco"><h3>SEM CADASTRO POR ATIVIDADE · PORTE</h3>'+
+      barras(l.map(o=>({nm:o.nm,sub:'cobertura '+fpct(pct(o.c,o.t)),partes:[[o.p1,VERM],[o.p3,AMB],[o.p5,ROXO]],vl:fmt(o.t-o.c)})))+
+      '<div class="leg" style="grid-template-columns:repeat(3,auto);justify-content:start;gap:16px;margin-top:12px"><div><i style="background:'+VERM+'"></i>Micro</div><div><i style="background:'+AMB+'"></i>Pequeno porte</div><div><i style="background:'+ROXO+'"></i>Demais</div></div></div>'+
+    '<div class="bloco"><h3>PORTE DOS PDVS SEM CADASTRO</h3>'+rosca([['Microempresa',p1,VERM],['Pequeno porte',l.reduce((s,o)=>s+o.p3,0),AMB],['Demais',l.reduce((s,o)=>s+o.p5,0),ROXO]],fmt(tot),'sem cadastro')+'</div></div>'+
+    '<div class="rod"><span>Atividade pelo CNAE principal da Receita, agrupado em famílias. Porte pela Receita.</span></div>'};
+}
+function dEx(){
+  const b=D.base,ex=b.D.ex||{},ks=Object.keys(ex),porCanal={},porRota={},porGc={};
+  ks.forEach(k=>{const e=ex[k];porCanal[e.canal||'Sem canal']=(porCanal[e.canal||'Sem canal']||0)+1;
+    const r=e.rota||'sem rota';(porRota[r]=porRota[r]||{n:0,gc:e.gc||''}).n++;porGc[e.gc||'Sem gerência']=(porGc[e.gc||'Sem gerência']||0)+1});
+  const can=Object.keys(porCanal).sort((a,b)=>porCanal[b]-porCanal[a]),cores=[VERM,AMB,ROXO,AZUL,VERDE,'#EC4899',CINZA];
+  const fat=can.slice(0,6).map((c,i)=>[c,porCanal[c],cores[i]]);const resto=can.slice(6).reduce((s,c)=>s+porCanal[c],0);if(resto)fat.push(['Outros canais',resto,CINZA]);
+  const rotas=Object.keys(porRota).sort((a,b)=>porRota[b].n-porRota[a].n).slice(0,12);
+  return {num:fmt(ks.length),sub:'PDVs já foram clientes e saíram',
+   html:'<div class="pill"><b>EX-CLIENTES PARA RECUPERAR</b><span>quem já comprou da BAND e parou</span></div>'+
+    '<div class="topo"><h2><em>'+fmt(ks.length)+'</em> PDVs já compraram da BAND e saíram: o caminho mais curto para crescer</h2></div>'+
+    '<div class="grade2"><div class="bloco"><h3>AS 12 ROTAS COM MAIS EX-CLIENTES</h3>'+
+      barras(rotas.map(r=>({nm:'Rota '+r,sub:porRota[r].gc,partes:[[porRota[r].n,ROXO]],vl:fmt(porRota[r].n)})))+'</div>'+
+    '<div class="bloco"><h3>CANAL EM QUE ESTAVAM</h3>'+rosca(fat,fmt(ks.length),'ex-clientes')+'</div></div>'+
+    '<div class="bloco" style="margin-top:16px"><h3>POR GERÊNCIA</h3>'+barras(Object.keys(porGc).sort((a,b)=>porGc[b]-porGc[a]).map(g=>({nm:g,partes:[[porGc[g],ROXO]],vl:fmt(porGc[g])})))+'</div>'+
+    '<div class="rod"><span>Ex-cliente: CNPJ que está na Receita e consta como cliente bloqueado ou inativo no cadastro BAND. No mapa, são os pontos roxos.</span></div>'};
+}
+function dRot(){
+  const rc=D.rotCompleto;
+  if(rc===undefined){carregaRotCompleto();return {num:'…',sub:'carregando o roteiro',html:'<div class="carregando" style="color:#A1A1AA">Lendo o roteiro em uso…</div>'}}
+  const pl=rc&&rc.plano;
+  if(!pl)return {num:'—',sub:'nenhum roteiro publicado',html:'<div class="pill"><b>RAIO-X DO ROTEIRO</b><span>a carteira de cada desenvolvedor</span></div>'+
+    '<div style="margin-top:24px">'+vazioDk('Nenhum roteiro publicado ainda','Publique em <b style="display:inline;font-size:16px">Planejar campo</b>. O raio-x aparece aqui na hora.')+'</div>'};
+  const vis=new Set(D.visitas.map(v=>v.cnpj)),devs={};
+  (pl.clientes||[]).forEach(c=>{const d=devs[c.dev]||(devs[c.dev]={n:0,dias:new Set(),datas:[],cid:{},feitos:0});d.n++;d.dias.add(c.dia);if(c.data)d.datas.push(c.data);d.cid[c.cidade||'—']=(d.cid[c.cidade||'—']||0)+1;if(vis.has(c.cnpj))d.feitos++});
+  const tot=(pl.clientes||[]).length,feitos=Object.values(devs).reduce((s,d)=>s+d.feitos,0),dias=Math.max(0,...Object.values(devs).map(d=>d.dias.size));
+  const br=x=>x?x.split('-').reverse().join('/'):'—';
+  return {num:fmt(tot),sub:'clientes no roteiro em uso',
+   html:'<div class="pill"><b>RAIO-X DO ROTEIRO</b><span>versão '+esc(pl.versao)+'</span></div>'+
+    '<div class="topo"><h2><em>'+fmt(tot)+'</em> clientes em <em>'+fmt(dias)+'</em> dias de campo; <em>'+fpct(pct(feitos,tot))+'</em> já visitados</h2>'+
+    '<div class="ks"><div class="k"><b>'+fmt(pl.porDia||0)+'</b><span>clientes por dia, cada um</span></div><div class="k meta"><b>'+br(pl.inicio)+'</b><span>início do roteiro</span></div></div></div>'+
+    '<div class="devs3">'+Object.keys(devs).sort().map(k=>{const d=devs[k],ds=d.datas.slice().sort(),cids=Object.keys(d.cid).sort((a,b)=>d.cid[b]-d.cid[a]);
+      return '<div class="bloco dv"><h3>'+esc(((pl.devs||[])[k]||('Parte '+(+k+1))).toUpperCase())+' · '+esc((pl.logins||[])[k]||'')+'</h3><b class="n">'+fmt(d.n)+'</b><span style="color:#A1A1AA">clientes na carteira</span>'+
+        '<div class="pr"><i style="width:'+pct(d.feitos,d.n)+'%"></i></div><span style="color:#A1A1AA;font-size:13px">'+fmt(d.feitos)+' visitados · '+fpct(pct(d.feitos,d.n))+'</span>'+
+        '<dl><dt>Dias de trabalho</dt><dd>'+d.dias.size+'</dd><dt>Primeiro dia</dt><dd>'+br(ds[0])+'</dd><dt>Último dia</dt><dd>'+br(ds[ds.length-1])+'</dd>'+
+        '<dt>Cidade principal</dt><dd>'+esc(cids[0]||'—')+'</dd></dl></div>'}).join('')+'</div>'+
+    '<div class="rod"><span>Escopo: '+esc(pl.escopo||'—')+'. Visitado = o CNPJ do roteiro já tem visita registrada no app.</span></div>'};
+}
+async function carregaRotCompleto(){
+  if(D._lendoRot)return;D._lendoRot=true;
+  try{const j=await rpc('roteiro_completo',{});D.rotCompleto=j}catch(e){if(e.semSessao)return sessaoCaiu();D.rotCompleto=null}
+  finally{D._lendoRot=false}
+  if(MOD==='dash')trocaDash(dashCfg().atual||'prosp',true);
+}
+function fornecDe(v){const f=v.fornec;if(!f)return [];if(Array.isArray(f))return f;
+  const t=String(f);if(t[0]==='['){try{return JSON.parse(t)}catch(e){}}return t.split(/[,;]/).map(x=>x.trim()).filter(Boolean)}
+function dCampo(){
+  const l=D.visitas;
+  if(!l.length)return {num:'0',sub:'visitas: começa no dia da troca',html:'<div class="pill"><b>RESULTADO DO CAMPO</b><span>o que os desenvolvedores encontraram</span></div>'+
+    '<div style="margin-top:24px">'+vazioDk('Ainda sem visitas no app novo','Este painel se monta sozinho a partir da primeira visita registrada no Band Desenvolvedores: '+
+      'visitas por semana, quem quer cadastro, quem não existe mais, por desenvolvedor.')+'</div>'};
+  const st={},porDev={},sem={};
+  l.forEach(v=>{const s=situacao(v)[0];st[s]=(st[s]||0)+1;const d=nomeDev(v);const o=porDev[d]||(porDev[d]={n:0,q:0,f:0});o.n++;if(s==='Quer cadastro')o.q++;if(s==='Funcionando'||s==='Quer cadastro')o.f++;
+    const dt=dataDe(v);if(dt){const w=new Date(dt);w.setDate(w.getDate()-((w.getDay()+6)%7));const k=w.toISOString().slice(0,10);sem[k]=(sem[k]||0)+1}});
+  const q=st['Quer cadastro']||0,sems=Object.keys(sem).sort().slice(-8);
+  return {num:fmt(q),sub:'querem se cadastrar agora',
+   html:'<div class="pill"><b>RESULTADO DO CAMPO</b><span>o que os desenvolvedores encontraram</span></div>'+
+    '<div class="topo"><h2><em>'+fmt(l.length)+'</em> visitas e <em>'+fmt(q)+'</em> PDVs querendo se cadastrar agora</h2>'+
+    '<div class="ks"><div class="k"><b>'+fpct(pct(q,l.length))+'</b><span>das visitas viram interesse</span></div><div class="k meta"><b>'+fmt(st['Não encontrado']||0)+'</b><span>não existem mais</span></div></div></div>'+
+    '<div class="grade2"><div class="bloco"><h3>POR DESENVOLVEDOR</h3>'+barras(Object.keys(porDev).sort((a,b)=>porDev[b].n-porDev[a].n).map(d=>({nm:d,sub:porDev[d].q+' querem cadastro',partes:[[porDev[d].q,VERDE],[porDev[d].n-porDev[d].q,'#3F3F46']],vl:fmt(porDev[d].n)})))+
+      '<h3 style="margin-top:22px">VISITAS POR SEMANA</h3>'+barras(sems.map(k=>({nm:'Semana de '+k.split('-').reverse().slice(0,2).join('/'),partes:[[sem[k],AZUL]],vl:fmt(sem[k])})))+'</div>'+
+    '<div class="bloco"><h3>O QUE FOI ENCONTRADO</h3>'+rosca([['Quer cadastro',st['Quer cadastro']||0,VERDE],['Funcionando',st['Funcionando']||0,AZUL],['Não encontrado',st['Não encontrado']||0,CINZA],['Cancelada',st['Cancelada']||0,AMB]],fmt(l.length),'visitas')+'</div></div>'};
+}
+function dConc(){
+  const l=D.visitas.filter(v=>fornecDe(v).length||v.canal);
+  if(!l.length)return {num:'—',sub:'fornecedores: começa no dia da troca',html:'<div class="pill"><b>CONCORRÊNCIA E CANAIS</b><span>de quem os PDVs compram hoje</span></div>'+
+    '<div style="margin-top:24px">'+vazioDk('Ainda sem respostas de campo','Cada visita registra de quem o PDV compra e qual o canal. Com as primeiras visitas, aparece aqui o mapa da concorrência.')+'</div>'};
+  const fo={},ca={};l.forEach(v=>{fornecDe(v).forEach(f=>fo[f]=(fo[f]||0)+1);if(v.canal)ca[v.canal]=(ca[v.canal]||0)+1});
+  const fs=Object.keys(fo).sort((a,b)=>fo[b]-fo[a]),cs=Object.keys(ca).sort((a,b)=>ca[b]-ca[a]),cores=[VERM,AMB,ROXO,AZUL,VERDE,'#EC4899',CINZA];
+  return {num:fs[0]?esc(fs[0]):'—',sub:'fornecedor mais citado nas visitas',
+   html:'<div class="pill"><b>CONCORRÊNCIA E CANAIS</b><span>de quem os PDVs compram hoje</span></div>'+
+    '<div class="topo"><h2><em>'+esc(fs[0]||'—')+'</em> é o fornecedor mais citado, em <em>'+fpct(pct(fo[fs[0]]||0,l.length))+'</em> das visitas</h2></div>'+
+    '<div class="grade2"><div class="bloco"><h3>FORNECEDORES CITADOS</h3>'+barras(fs.slice(0,12).map(f=>({nm:f,partes:[[fo[f],VERM]],vl:fmt(fo[f])})))+'</div>'+
+    '<div class="bloco"><h3>CANAL DOS PDVS VISITADOS</h3>'+rosca(cs.slice(0,6).map((c,i)=>[c,ca[c],cores[i]]),fmt(l.length),'visitas')+'</div></div>'};
+}
+const DASHES=[['prosp','Prospecção',dProsp],['mun','Por município',dMun],['estr','Por estrutura',dEstr],['ativ','Atividade e porte',dAtiv],
+  ['ex','Ex-clientes',dEx],['rot','Raio-X do roteiro',dRot],['campo','Resultado do campo',dCampo],['conc','Concorrência',dConc]];
+function montaDash(id){const d=DASHES.find(x=>x[0]===id)||DASHES[0];try{return Object.assign({id:d[0],t:d[1]},d[2]())}catch(e){console.error(e);return {id:d[0],t:d[1],num:'!',sub:'erro',html:vazioDk('Não consegui montar este painel',esc(e.message))}}}
+function navDk(id){const i=DASHES.findIndex(x=>x[0]===id);
+  return '<div class="nav"><span>'+(i+1)+' de '+DASHES.length+'</span><button data-ir="-1" aria-label="Painel anterior">←</button><button data-ir="1" aria-label="Próximo painel">→</button></div>'}
+function mDash(){
   const cfg=dashCfg();
-  const num=(id,k)=>{$(id).onchange=e=>{const v=parseFloat(String(e.target.value).replace(',','.'));if(isFinite(v)&&v>0){cfg[k]=v;salvaDash();pintaMain()}}};
-  num('dref','ref');num('dmeta','meta');num('df1','f1');num('df2','f2');num('df3','f3');
-  $('dord').onchange=e=>{cfg.ordem=e.target.value;salvaDash();pintaMain()};
-  $('dlista').onclick=()=>{cfg.lista=!cfg.lista;salvaDash();pintaMain()};
-  $('dpre').onchange=e=>{
-    const v=e.target.value;if(!v)return;
-    const todas=calcula(dadosCidades().cidades,cfg);
-    if(v==='slide')cfg.cidades=SLIDE.slice();
-    else if(v==='gr')cfg.cidades=todas.filter(c=>c.pop>=100000).map(c=>c.nome);
-    else cfg.cidades=todas.slice().sort((a,b)=>b.gap-a.gap).slice(0,v==='gap10'?10:20).map(c=>c.nome);
-    salvaDash();pintaMain();
-  };
-  document.querySelectorAll('[data-cid]').forEach(x=>x.onchange=()=>{
-    const n=x.dataset.cid;cfg.cidades=x.checked?cfg.cidades.concat(n):cfg.cidades.filter(c=>c!==n);salvaDash();pintaMain()});
-  const txt=(id,k)=>{$(id).onblur=()=>{cfg[k]=$(id).textContent.trim()||cfg[k];salvaDash()};$(id).onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();$(id).blur()}}};
+  if(D.baseEstado!=='ok')return cab('Dashboards','Painéis de apresentação')+'<div class="corpo">'+
+    (D.baseEstado==='carregando'||!D.baseEstado?'<div class="carregando">Abrindo a base…</div>':
+     '<div class="aviso">Os dashboards usam a base. Envie a base em <b>Base de dados</b>.</div>')+'</div>';
+  const atual=cfg.atual||'prosp',todos=DASHES.map(d=>montaDash(d[0])),dd=todos.find(x=>x.id===atual);
+  return cab('Dashboards','Base '+esc(D.baseResumo.versao)+' · população IBGE 2025 · visitas do app',
+      '<button class="bt escuro" id="dapres">Modo apresentação</button>')+
+   '<div class="corpo"><div class="gal" role="tablist">'+todos.map(d=>'<button role="tab" data-dash="'+d.id+'" aria-pressed="'+(d.id===atual)+'"><span>'+esc(d.t)+'</span><b>'+d.num+'</b><small>'+esc(d.sub)+'</small></button>').join('')+'</div>'+
+   (dd.ajustes?'<div class="cartao"><div class="cc">'+dd.ajustes+'</div></div>':'')+
+   '<div class="dk" id="dkart">'+navDk(atual)+dd.html+'</div>'+(dd.depois||'')+'</div>';
+}
+/* trocar de painel: dentro do modo apresentação só o cartão muda (senão a tela cheia fecha) */
+function trocaDash(id,forcar){
+  const cfg=dashCfg();cfg.atual=id;salvaDash();
+  if(document.fullscreenElement&&$('dkart')){const dd=montaDash(id);$('dkart').innerHTML=navDk(id)+dd.html;ligaDk();return}
+  if(MOD==='dash'||forcar)pintaMain();
+}
+function ligaDk(){
+  document.querySelectorAll('#dkart [data-mapa]').forEach(tr=>tr.onclick=()=>abreNoMapa(tr.dataset.mapa));
+  document.querySelectorAll('#dkart [data-gc]').forEach(tr=>tr.onclick=()=>{const c=dashCfg();c.estrAberto=c.estrAberto===tr.dataset.gc?'':tr.dataset.gc;salvaDash();trocaDash('estr')});
+  document.querySelectorAll('#dkart [data-ir]').forEach(b=>b.onclick=()=>passaDash(+b.dataset.ir));
+  const txt=(id,k)=>{const el=$(id);if(!el)return;el.onblur=()=>{const c=dashCfg();c[k]=el.textContent.trim()||c[k];salvaDash()};el.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();el.blur()}}};
   txt('dtit','titulo');txt('dsub','subtitulo');
-  $('dapres').onclick=()=>{const el=$('dkart');(el.requestFullscreen?el.requestFullscreen():Promise.reject()).catch(()=>toast('O navegador não deixou abrir em tela cheia'))};
-  document.querySelectorAll('tr[data-mapa]').forEach(tr=>tr.onclick=()=>abreNoMapa(tr.dataset.mapa));
+}
+function passaDash(d){const i=DASHES.findIndex(x=>x[0]===(dashCfg().atual||'prosp'));trocaDash(DASHES[(i+d+DASHES.length)%DASHES.length][0])}
+document.addEventListener('keydown',e=>{if(document.fullscreenElement&&document.fullscreenElement.id==='dkart'){if(e.key==='ArrowRight')passaDash(1);if(e.key==='ArrowLeft')passaDash(-1)}});
+liga.dash=()=>{
+  document.querySelectorAll('[data-dash]').forEach(b=>b.onclick=()=>trocaDash(b.dataset.dash));
+  if($('dapres'))$('dapres').onclick=()=>{const el=$('dkart');(el.requestFullscreen?el.requestFullscreen():Promise.reject()).catch(()=>toast('O navegador não deixou abrir em tela cheia'))};
+  ligaDk();
+  const cfg=dashCfg();
+  if($('dref')){
+    const num=(id,k)=>{$(id).onchange=e=>{const v=parseFloat(String(e.target.value).replace(',','.'));if(isFinite(v)&&v>0){cfg[k]=v;salvaDash();pintaMain()}}};
+    num('dref','ref');num('dmeta','meta');num('df1','f1');num('df2','f2');num('df3','f3');
+    $('dord').onchange=e=>{cfg.ordem=e.target.value;salvaDash();pintaMain()};
+    $('dlista').onclick=()=>{cfg.lista=!cfg.lista;salvaDash();pintaMain()};
+    $('dpre').onchange=e=>{const v=e.target.value;if(!v)return;const todas=calcula(dadosCidades().cidades,cfg);
+      if(v==='slide')cfg.cidades=SLIDE.slice();else if(v==='gr')cfg.cidades=todas.filter(c=>c.pop>=100000).map(c=>c.nome);
+      else cfg.cidades=todas.slice().sort((a,b)=>b.gap-a.gap).slice(0,v==='gap10'?10:20).map(c=>c.nome);salvaDash();pintaMain()};
+    document.querySelectorAll('[data-cid]').forEach(x=>x.onchange=()=>{const n=x.dataset.cid;cfg.cidades=x.checked?cfg.cidades.concat(n):cfg.cidades.filter(c=>c!==n);salvaDash();pintaMain()});
+  }
+  if($('dmuf')){$('dmuf').onchange=e=>{cfg.munUf=e.target.value;salvaDash();pintaMain()};$('dmtop').onchange=e=>{cfg.munTop=+e.target.value;salvaDash();pintaMain()}}
 };
 /* abre o mapa já filtrado na cidade */
 function abreNoMapa(nome){
