@@ -6,6 +6,8 @@
 <title>Painel Band Desenvolvedores</title>
 <meta name="theme-color" content="#1F2023">
 <link rel="icon" href="icon-192.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
 :root{
   --verm:#E4002B; --verm-esc:#B80022; --verm-bg:#FDE7EC;
@@ -160,6 +162,47 @@ main{overflow-y:auto;min-width:0}
 
 #moldura{position:fixed;left:240px;right:0;top:0;bottom:0;background:#fff;z-index:4}
 #moldura iframe{border:0;width:100%;height:100%;display:block}
+/* ---------- Ao vivo ---------- */
+.av{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(340px,1fr);gap:18px;align-items:start}
+.trilha{background:#0F1012;color:#E4E4E7;border-radius:18px;padding:18px 20px 16px}
+.trilha .eixo{position:relative;height:22px;margin-left:150px;margin-right:70px;font-size:11.5px;color:#8E8E96}
+.trilha .eixo span{position:absolute;transform:translateX(-50%)}
+.faixa{display:grid;grid-template-columns:140px minmax(0,1fr) 60px;gap:10px;align-items:center;padding:10px 0;border-top:1px solid #1E1F23}
+.faixa .qm b{display:block;color:#fff;font-size:14.5px} .faixa .qm small{color:#8E8E96;font-size:12px}
+.faixa .nn{text-align:right;font-weight:800;font-size:22px;color:#fff;font-variant-numeric:tabular-nums}
+.faixa .nn small{display:block;font-size:11px;color:#8E8E96;font-weight:600}
+.pista{position:relative;height:46px;border-radius:10px;background:repeating-linear-gradient(90deg,#17181B 0,#17181B calc(100%/12 - 1px),#222327 calc(100%/12 - 1px),#222327 calc(100%/12))}
+.pista .bl{position:absolute;top:7px;bottom:7px;border-radius:6px;min-width:7px;cursor:pointer;box-shadow:0 0 0 1px rgba(0,0,0,.35);transition:transform .12s}
+.pista .bl:hover{transform:scaleY(1.18)}
+.pista .bl.ult{box-shadow:0 0 0 2px #fff,0 0 14px 2px currentColor;animation:pulso 1.8s ease-in-out infinite}
+@keyframes pulso{50%{box-shadow:0 0 0 2px #fff,0 0 2px 0 currentColor}}
+.pista .par{position:absolute;top:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:700;color:#FBBF24;white-space:nowrap;background:#0F1012;padding:1px 6px;border:1px dashed #6B5310;border-radius:6px}
+.pista .agora{position:absolute;top:-6px;bottom:-6px;width:2px;background:#E4002B}
+.pista .agora::after{content:"agora";position:absolute;top:-14px;left:-14px;font-size:10px;color:#FF5A6E;font-weight:700}
+.legav{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#A1A1AA;margin-top:12px}
+.legav i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+#avmapa{height:460px;border-radius:18px;overflow:hidden;background:#E9EAEC}
+.pulsa{border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 0 currentColor;animation:radar 1.6s ease-out infinite}
+@keyframes radar{0%{box-shadow:0 0 0 0 currentColor}100%{box-shadow:0 0 0 18px transparent}}
+.diasel{display:flex;gap:6px;align-items:center}
+@media(max-width:1200px){.av{grid-template-columns:1fr}}
+/* barras claras dos módulos */
+.lb{display:grid;grid-template-columns:minmax(110px,180px) minmax(0,1fr) 70px;gap:10px;align-items:center;padding:6px 0;font-size:13.5px}
+.lb .tr{height:16px;border-radius:5px;background:#EEF0F3;overflow:hidden;display:flex}
+.lb .tr i{display:block;height:100%}
+.lb .vl{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.funil{display:flex;flex-direction:column;gap:10px}
+.fn{display:grid;grid-template-columns:200px minmax(0,1fr) 150px;gap:14px;align-items:center}
+.fn .nm{font-weight:700} .fn .nm small{display:block;color:var(--ink2);font-weight:500;font-size:12px}
+.fn .tr{height:44px;display:flex;justify-content:center}
+.fn .tr i{display:flex;align-items:center;justify-content:center;height:100%;border-radius:10px;color:#fff;font-weight:800;font-size:16px;min-width:46px}
+.fn .pc{font-size:13px;color:var(--ink2)} .fn .pc b{color:var(--ink);font-size:15px;display:block}
+.grade2c{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+@media(max-width:1100px){.grade2c{grid-template-columns:1fr}}
+.hist{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;align-items:end;height:150px;padding-top:6px}
+.hist div{background:var(--azul);border-radius:4px 4px 0 0;position:relative;min-height:2px}
+.hist div span{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:10.5px;color:var(--ink2)}
+.hist div b{position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:10.5px;color:var(--ink2);font-weight:600}
 /* ---------- Dashboards: visual escuro de apresentação ---------- */
 .dk{background:#0B0B0C;color:#F4F4F5;border-radius:18px;padding:34px 38px 30px;position:relative;overflow:hidden}
 .dk::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 70% at 100% 0%,rgba(228,0,43,.16),transparent 60%);pointer-events:none}
@@ -408,7 +451,7 @@ async function sai(){
 function sessaoCaiu(){telaEntrada('Sua sessão expirou. Entre de novo.')}
 
 /* ---------------- dados ---------------- */
-let EU=null,MOD=location.hash.slice(1)||'visitas';
+let EU=null,MOD=location.hash.slice(1)||'aovivo';
 const D={devs:[],visitas:[],visDesde:null,visCnpj:null,msgs:[],roteiros:[],base:null,baseInfo:null,carregou:{}};
 async function carregaDevs(){D.devs=(await rpc('desenvolvedores_lista')).desenvolvedores||[];D.carregou.devs=true}
 async function carregaRoteiros(){D.roteiros=(await rpc('roteiros')).roteiros||[];D.carregou.roteiros=true}
@@ -513,8 +556,8 @@ const IC={
 };
 const svg=(k,w=18)=>'<svg width="'+w+'" height="'+w+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(IC[k]||'')+'</svg>';
 const MODULOS=[
-  ['Operação',[['aovivo','Ao vivo',1],['mapa','Mapa de oportunidade',0],['planejar','Planejar campo',0],['visitas','Visitas',0],['msgs','Mensagens',0]]],
-  ['Análise',[['dash','Dashboards',0],['desemp','Desempenho',1],['funil','Funil de conversão',1],['conc','Concorrência e horários',1],['simul','Simulador',1]]],
+  ['Operação',[['aovivo','Ao vivo',0],['mapa','Mapa de oportunidade',0],['planejar','Planejar campo',0],['visitas','Visitas',0],['msgs','Mensagens',0]]],
+  ['Análise',[['dash','Dashboards',0],['desemp','Desempenho',0],['funil','Funil de conversão',0],['conc','Concorrência e horários',0],['simul','Simulador',0]]],
   ['Estrutura',[['devs','Desenvolvedores',0],['base','Base de dados',0]]]
 ];
 const BREVE={
@@ -548,19 +591,20 @@ function cab(t,sub,acoes){return '<div class="cab"><div><h1>'+t+'</h1><p>'+sub+'
   '<button class="bt" onclick="atualizaTudo()">Atualizar</button></div></div>'}
 function pintaMainSe(k){if(MOD===k)pintaMain()}
 function mostraMapa(){
-  const m=$('moldura'),usa=MOD==='mapa'||MOD==='planejar';
+  const m=$('moldura'),usa=MOD==='mapa'||MOD==='planejar'||MOD==='simul';
   m.classList.toggle('esc',!usa);
   if(!usa)return false;
   const ifr=$('mapaif');
-  if(!ifr.src)ifr.src='mapa.html'+(MOD==='planejar'?'#planejar':'');
-  else{try{ifr.contentWindow.location.hash=MOD==='planejar'?'planejar':'mapa'}catch(e){}}
+  const h=MOD==='planejar'?'planejar':MOD==='simul'?'simulador':'mapa';
+  if(!ifr.src)ifr.src='mapa.html#'+h;
+  else{try{ifr.contentWindow.location.hash=h}catch(e){}}
   return true;
 }
 /* o mapa avisa quando publica um roteiro: o painel atualiza a lista */
 window.addEventListener('message',e=>{if(e.origin===location.origin&&e.data==='roteiro-publicado'){D.rotCompleto=undefined;carregaRoteiros().then(pintaLado).catch(()=>{})}});
 function pintaMain(){
   if(mostraMapa()){$('main').innerHTML='';return}
-  const f={visitas:mVisitas,msgs:mMsgs,devs:mDevs,base:mBase,dash:mDash}[MOD];
+  const f={visitas:mVisitas,msgs:mMsgs,devs:mDevs,base:mBase,dash:mDash,aovivo:mAoVivo,desemp:mDesemp,funil:mFunil,conc:mConc}[MOD];
   if(f){$('main').innerHTML=f();try{liga[MOD]&&liga[MOD]()}catch(e){console.error(e)}return}
   const b=BREVE[MOD]||BREVE.aovivo;
   $('main').innerHTML=cab(b[0],'Em construção')+'<div class="corpo"><div class="cartao"><div class="cc" style="padding:28px">'+
@@ -660,6 +704,201 @@ function abreFicha(cnpj){
 function fechaFicha(){$('dlg').classList.remove('on')}
 $('dlg').onclick=e=>{if(e.target===$('dlg'))fechaFicha()};
 document.addEventListener('keydown',e=>{if(e.key==='Escape')fechaFicha()});
+
+/* ---------------- tempo das visitas ---------------- */
+const hm=t=>{const m=String(t||'').match(/^(\d{1,2}):(\d{2})/);return m?(+m[1])*60+(+m[2]):null};
+const hmTxt=m=>String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+function janela(v){
+  const fim=hm(v.hora);if(fim==null)return null;
+  let ini=hm(v.inicioHora);
+  if(ini==null||ini>fim)ini=v.duracaoMin?fim-v.duracaoMin:fim-8;
+  return [ini,fim];
+}
+const COR_SIT={'Quer cadastro':'#22C55E','Funcionando':'#60A5FA','Não encontrado':'#9CA3AF','Cancelada':'#F5A524'};
+const corSit=v=>COR_SIT[situacao(v)[0]]||'#A78BFA';
+const PAL_DEV=['#E4002B','#2563EB','#16A34A','#9333EA','#EA580C','#0891B2'];
+const corDev=l=>{const i=D.devs.findIndex(d=>d.login===l);return PAL_DEV[(i<0?0:i)%PAL_DEV.length]};
+const durMin=v=>v.duracaoMin||(v.duracaoSeg?Math.round(v.duracaoSeg/60):null);
+
+/* ---------------- módulo: Ao vivo ---------------- */
+const FA={dia:null};
+let avMapa=null;
+function mAoVivo(){
+  if(!D.carregou.visitas)return cab('Ao vivo','Carregando…')+'<div class="corpo"><div class="carregando">Buscando as visitas</div></div>';
+  const dia=FA.dia||hojeBR(),ehHoje=dia===hojeBR();
+  const l=D.visitas.filter(v=>v.data===dia);
+  const devs=D.devs.filter(d=>d.ativo||l.some(v=>v.devLogin===d.login));
+  let h0=7*60,h1=19*60;l.forEach(v=>{const j=janela(v);if(j){h0=Math.min(h0,Math.floor(j[0]/60)*60);h1=Math.max(h1,Math.ceil(j[1]/60)*60)}});
+  const pos=m=>(m-h0)/(h1-h0)*100;
+  const agora=new Date(),agoraM=agora.getHours()*60+agora.getMinutes();
+  const emCampo=ehHoje?devs.filter(d=>l.some(v=>v.devLogin===d.login&&hm(v.hora)!=null&&agoraM-hm(v.hora)<=60)).length:null;
+  const quer=l.filter(v=>situacao(v)[0]==='Quer cadastro').length,durs=l.map(durMin).filter(x=>x>0),dists=l.map(v=>+v.dist).filter(x=>isFinite(x)&&x>=0&&x<500);
+  const marcas=[];for(let m=h0;m<=h1;m+=60)marcas.push('<span style="left:'+pos(m)+'%">'+(m/60)+'h</span>');
+  const faixas=devs.map(d=>{
+    const vs=l.filter(v=>v.devLogin===d.login).map(v=>({v,j:janela(v)})).filter(x=>x.j).sort((a,b)=>a.j[0]-b.j[0]);
+    let blocos='',ant=null;
+    vs.forEach((x,i)=>{
+      if(ant!=null&&x.j[0]-ant>=60){const meio=(ant+x.j[0])/2,par=x.j[0]-ant;
+        blocos+='<span class="par" style="left:'+pos(meio)+'%">parado '+Math.floor(par/60)+'h'+String(par%60).padStart(2,'0')+'</span>'}
+      const c=corSit(x.v),ult=ehHoje&&i===vs.length-1;
+      blocos+='<span class="bl'+(ult?' ult':'')+'" data-c="'+esc(x.v.cnpj)+'" title="'+esc((x.v.nome||'')+' · '+hmTxt(x.j[0])+'–'+hmTxt(x.j[1])+' · '+situacao(x.v)[0])+'" style="left:'+pos(x.j[0])+'%;width:'+Math.max(.6,pos(x.j[1])-pos(x.j[0]))+'%;background:'+c+';color:'+c+'"></span>';
+      ant=Math.max(ant||0,x.j[1]);
+    });
+    if(ehHoje&&agoraM>h0&&agoraM<h1)blocos+='<span class="agora" style="left:'+pos(agoraM)+'%"></span>';
+    const ult=vs.length?vs[vs.length-1].j[1]:null;
+    const sub=vs.length?hmTxt(vs[0].j[0])+' às '+hmTxt(ult)+(ehHoje?' · há '+Math.max(0,agoraM-ult)+' min':''):'sem visita '+(ehHoje?'hoje':'neste dia');
+    return '<div class="faixa"><div class="qm"><b><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:'+corDev(d.login)+';margin-right:6px"></span>'+esc(d.nome)+'</b><small>'+esc(sub)+'</small></div>'+
+      '<div class="pista">'+blocos+'</div><div class="nn">'+vs.length+'<small>visitas</small></div></div>';
+  }).join('');
+  return cab('Ao vivo','A trilha do dia: cada visita no horário em que aconteceu',
+     '<div class="diasel"><button class="bt peq" id="avant" aria-label="Dia anterior">←</button><b style="min-width:92px;text-align:center">'+(ehHoje?'Hoje':esc(dia))+'</b>'+
+     '<button class="bt peq" id="avprox" aria-label="Próximo dia"'+(ehHoje?' disabled':'')+'>→</button></div>')+
+   '<div class="corpo"><div class="kpis">'+
+    '<div class="kpi"><b>'+fmt(l.length)+'</b><span>visitas '+(ehHoje?'hoje':'no dia')+'</span></div>'+
+    (ehHoje?'<div class="kpi g"><b>'+emCampo+' de '+devs.length+'</b><span>em campo agora (visita na última hora)</span></div>':'')+
+    '<div class="kpi v"><b>'+fmt(quer)+'</b><span>querem se cadastrar agora</span></div>'+
+    '<div class="kpi"><b>'+(durs.length?Math.round(med(durs))+' min':'—')+'</b><span>duração mediana</span></div>'+
+    '<div class="kpi a"><b>'+(dists.length?fmtKm(med(dists)):'—')+'</b><span>distância mediana do endereço</span></div></div>'+
+   '<div class="av"><div class="trilha"><div class="eixo">'+marcas.join('')+'</div>'+(faixas||'<div class="vazio" style="color:#8E8E96">Nenhum desenvolvedor ativo.</div>')+
+    '<div class="legav">'+Object.keys(COR_SIT).map(k=>'<span><i style="background:'+COR_SIT[k]+'"></i>'+k+'</span>').join('')+
+     '<span style="color:#FBBF24">▭ intervalo de 1 hora ou mais sem visita</span></div></div>'+
+   '<div id="avmapa"></div></div>'+
+   (l.length?'':'<div class="info">Sem visitas '+(ehHoje?'hoje ainda':'neste dia')+'. A trilha se preenche sozinha a cada minuto conforme o app envia.</div>')+'</div>';
+}
+liga.aovivo=()=>{
+  if(!$('avant'))return;
+  const muda=d=>{const m=(FA.dia||hojeBR()).split('/'),dt=new Date(+m[2],+m[1]-1,+m[0]+d);
+    FA.dia=String(dt.getDate()).padStart(2,'0')+'/'+String(dt.getMonth()+1).padStart(2,'0')+'/'+dt.getFullYear();if(FA.dia===hojeBR())FA.dia=null;pintaMain()};
+  $('avant').onclick=()=>muda(-1);$('avprox').onclick=()=>muda(1);
+  document.querySelectorAll('.pista .bl').forEach(b=>b.onclick=()=>abreFicha(b.dataset.c));
+  desenhaAvMapa();
+};
+function desenhaAvMapa(){
+  const el=$('avmapa');if(!el)return;
+  if(typeof L==='undefined'){el.innerHTML='<div class="vazio">O mapa não carregou (sem internet?).</div>';return}
+  if(avMapa){try{avMapa.remove()}catch(e){}avMapa=null}
+  avMapa=L.map(el,{zoomControl:true,attributionControl:true});
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',{maxZoom:18,attribution:'Esri, HERE, Garmin'}).addTo(avMapa);
+  const dia=FA.dia||hojeBR(),ehHoje=dia===hojeBR(),pts=[];
+  D.devs.forEach(d=>{
+    const vs=D.visitas.filter(v=>v.data===dia&&v.devLogin===d.login&&v.gps&&isFinite(v.gps.lat)).sort((a,b)=>(hm(a.hora)||0)-(hm(b.hora)||0));
+    if(!vs.length)return;const cor=corDev(d.login);
+    L.polyline(vs.map(v=>[v.gps.lat,v.gps.lon]),{color:cor,weight:3,opacity:.55,dashArray:'6 6'}).addTo(avMapa);
+    vs.forEach((v,i)=>{pts.push([v.gps.lat,v.gps.lon]);const ult=i===vs.length-1;
+      const mk=ult&&ehHoje?L.marker([v.gps.lat,v.gps.lon],{icon:L.divIcon({className:'',iconSize:[18,18],iconAnchor:[9,9],
+          html:'<div class="pulsa" style="width:18px;height:18px;background:'+cor+';color:'+cor+'"></div>'})})
+        :L.circleMarker([v.gps.lat,v.gps.lon],{radius:7,color:'#fff',weight:2,fillColor:corSit(v),fillOpacity:1});
+      mk.bindTooltip('<b>'+esc(d.nome)+'</b> · '+esc(v.hora)+'<br>'+esc(v.nome||'')+'<br>'+esc(situacao(v)[0]));
+      mk.on('click',()=>abreFicha(v.cnpj));mk.addTo(avMapa)});
+  });
+  if(pts.length)avMapa.fitBounds(pts,{padding:[30,30],maxZoom:15});else avMapa.setView([-16.68,-49.26],10);
+}
+
+/* ---------------- módulo: Desempenho ---------------- */
+const FDP={per:'30'};
+function noPeriodo(per){
+  if(per==='tudo')return D.visitas.slice();
+  const lim=new Date();lim.setHours(0,0,0,0);lim.setDate(lim.getDate()-(+per-1));
+  return D.visitas.filter(v=>{const d=dataDe(v);return d&&d>=lim});
+}
+function lbar(nm,val,mx,cor,txt){return '<div class="lb"><div>'+nm+'</div><div class="tr"><i style="width:'+(mx?val/mx*100:0)+'%;background:'+cor+'"></i></div><div class="vl">'+txt+'</div></div>'}
+function mDesemp(){
+  if(!D.carregou.visitas)return cab('Desempenho','Carregando…')+'<div class="corpo"><div class="carregando">Buscando as visitas</div></div>';
+  const l=noPeriodo(FDP.per);
+  const linhas=D.devs.map(d=>{
+    const vs=l.filter(v=>v.devLogin===d.login),dias=new Set(vs.map(v=>v.data)).size;
+    const durs=vs.map(durMin).filter(x=>x>0),dists=vs.map(v=>+v.dist).filter(x=>isFinite(x)&&x>=0&&x<500);
+    const func=vs.filter(v=>/^Sim/i.test(v.existe||'')).length,quer=vs.filter(v=>situacao(v)[0]==='Quer cadastro').length;
+    return {d,n:vs.length,dias,porDia:dias?vs.length/dias:0,dur:durs.length?med(durs):null,prazo:pct(vs.filter(v=>v.noPrazo).length,vs.length),
+      foto:pct(vs.filter(v=>v.fotoCaminho||v.fotoUrl).length,vs.length),gps:pct(vs.filter(v=>v.gps).length,vs.length),
+      dist:dists.length?med(dists):null,longe:vs.filter(v=>+v.dist>0.3).length,quer,conv:pct(quer,func)};
+  });
+  const melhor=(k,maior)=>{const vs=linhas.filter(x=>x.n&&x[k]!=null).map(x=>x[k]);return vs.length?(maior?Math.max(...vs):Math.min(...vs)):null};
+  const dest=(x,k,maior,txt)=>{const b=melhor(k,maior);return '<td class="num"'+(x.n&&x[k]!=null&&x[k]===b&&linhas.filter(y=>y.n).length>1?' style="color:var(--verde);font-weight:800"':'')+'>'+txt+'</td>'};
+  /* semanas */
+  const sem={};l.forEach(v=>{const dt=dataDe(v);if(!dt)return;const w=new Date(dt);w.setDate(w.getDate()-((w.getDay()+6)%7));const k=w.toISOString().slice(0,10);
+    (sem[k]=sem[k]||{})[v.devLogin]=(sem[k][v.devLogin]||0)+1});
+  const ks=Object.keys(sem).sort().slice(-8),mxs=Math.max(1,...ks.map(k=>Object.values(sem[k]).reduce((a,b)=>a+b,0)));
+  const alertas=l.filter(v=>+v.dist>1||!v.gps||!(v.fotoCaminho||v.fotoUrl)).sort((a,b)=>String(b.iso||'').localeCompare(String(a.iso||''))).slice(0,15);
+  return cab('Desempenho','Ritmo e qualidade de cada desenvolvedor',
+     '<select id="dpper" class="bt">'+[['7','Últimos 7 dias'],['30','Últimos 30 dias'],['tudo','Tudo']].map(([k,t])=>'<option value="'+k+'"'+(FDP.per===k?' selected':'')+'>'+t+'</option>').join('')+'</select>')+
+   '<div class="corpo">'+(l.length?'':'<div class="info">Sem visitas no período. O desempenho aparece com as primeiras visitas do app novo.</div>')+
+   '<div class="cartao"><div class="rolagem" style="max-height:none"><table class="tab"><thead><tr><th>Desenvolvedor</th><th class="num">Visitas</th><th class="num">Dias em campo</th><th class="num">Por dia</th><th class="num">Duração mediana</th><th class="num">No dia do roteiro</th><th class="num">Com foto</th><th class="num">Com GPS</th><th class="num">Distância mediana</th><th class="num">Mais de 300 m</th><th class="num">Querem cadastro</th><th class="num">Conversão</th></tr></thead><tbody>'+
+    linhas.map(x=>'<tr><td><b>'+esc(x.d.nome)+'</b><small>'+esc(x.d.login)+(x.d.ativo?'':' · desativado')+'</small></td>'+dest(x,'n',1,fmt(x.n))+'<td class="num">'+x.dias+'</td>'+dest(x,'porDia',1,x.n?fmt1(x.porDia):'—')+
+      dest(x,'dur',1,x.dur?Math.round(x.dur)+' min':'—')+dest(x,'prazo',1,x.n?fpct(x.prazo):'—')+dest(x,'foto',1,x.n?fpct(x.foto):'—')+dest(x,'gps',1,x.n?fpct(x.gps):'—')+
+      dest(x,'dist',0,x.dist!=null?fmtKm(x.dist):'—')+'<td class="num"'+(x.longe?' style="color:var(--verm-esc);font-weight:700"':'')+'>'+fmt(x.longe)+'</td>'+dest(x,'quer',1,fmt(x.quer))+dest(x,'conv',1,x.n?fpct(x.conv):'—')+'</tr>').join('')+
+   '</tbody></table></div></div>'+
+   '<div class="grade2c"><div class="cartao"><div class="tt"><h2>Visitas por semana</h2><span>'+D.devs.map(d=>'<span style="color:'+corDev(d.login)+'">●</span> '+esc(d.nome)).join(' &nbsp; ')+'</span></div><div class="cc">'+
+     (ks.length?ks.map(k=>{const t=Object.values(sem[k]).reduce((a,b)=>a+b,0);return '<div class="lb"><div>Semana de '+k.split('-').reverse().slice(0,2).join('/')+'</div><div class="tr">'+
+       D.devs.map(d=>'<i title="'+esc(d.nome)+': '+(sem[k][d.login]||0)+'" style="width:'+((sem[k][d.login]||0)/mxs*100)+'%;background:'+corDev(d.login)+'"></i>').join('')+'</div><div class="vl">'+t+'</div></div>'}).join(''):'<div class="vazio">Sem visitas.</div>')+'</div></div>'+
+    '<div class="cartao"><div class="tt"><h2>Para conferir</h2><span>longe do endereço, sem GPS ou sem foto</span></div>'+
+     (alertas.length?'<table class="tab"><tbody>'+alertas.map(v=>'<tr class="clic" data-c="'+esc(v.cnpj)+'"><td>'+esc(v.data)+'<small>'+esc(v.hora)+'</small></td><td><b>'+esc(v.nome||'—')+'</b><small>'+esc(nomeDev(v))+'</small></td><td>'+
+       [+v.dist>1?'<span class="selo r">'+fmtKm(v.dist)+' do endereço</span>':'',!v.gps?'<span class="selo a">sem GPS</span>':'',!(v.fotoCaminho||v.fotoUrl)?'<span class="selo c">sem foto</span>':''].join(' ')+'</td></tr>').join('')+'</tbody></table>':'<div class="vazio">Nada para conferir no período.</div>')+'</div></div>'+
+   '<div class="info">Distância = entre o GPS do celular na hora da visita e o endereço do PDV. Conversão = querem cadastro ÷ PDVs encontrados funcionando. Em verde, o melhor de cada coluna.</div></div>';
+}
+liga.desemp=()=>{if(!$('dpper'))return;$('dpper').onchange=e=>{FDP.per=e.target.value;pintaMain()};document.querySelectorAll('tr[data-c]').forEach(tr=>tr.onclick=()=>abreFicha(tr.dataset.c))};
+
+/* ---------------- módulo: Funil de conversão ---------------- */
+const FFN={per:'tudo',dev:''};
+function mFunil(){
+  if(!D.carregou.visitas)return cab('Funil de conversão','Carregando…')+'<div class="corpo"><div class="carregando">Buscando as visitas</div></div>';
+  if(D.rotCompleto===undefined&&!D._lendoRot)carregaRotCompleto();
+  const pl=D.rotCompleto&&D.rotCompleto.plano;
+  let l=noPeriodo(FFN.per);if(FFN.dev)l=l.filter(v=>v.devLogin===FFN.dev);
+  let noRot=null;
+  if(pl){const idx=(pl.logins||[]).indexOf(FFN.dev);noRot=(pl.clientes||[]).filter(c=>!FFN.dev||c.dev===idx).length}
+  const P=D.base?prep():null,cad=new Set();if(P)for(let i=0;i<P.n;i++)if(P.cad[i])cad.add(P.cnpj[i]);
+  const exist=l.filter(v=>/^Sim/i.test(v.existe||'')),vende=exist.filter(v=>/^Sim/i.test(v.vende||'')),quer=vende.filter(v=>/agora/i.test(v.interesse||''));
+  const virou=l.filter(v=>cad.has(String(v.cnpj)));
+  const et=[];
+  if(noRot!=null)et.push(['No roteiro em uso','clientes sem cadastro escolhidos',noRot,'#52525B']);
+  et.push(['Visitados','visitas registradas no app',l.length,'#2563EB'],['Existem','encontrados funcionando',exist.length,'#0891B2'],
+    ['Vendem bebidas','responderam que vendem',vende.length,'#7C3AED'],['Querem cadastro agora','interesse imediato',quer.length,'#16A34A'],
+    ['Viraram cliente BAND','já aparecem como cliente na base em uso',virou.length,'#E4002B']);
+  const topo=Math.max(1,et[0][2]);
+  const opDev='<option value="">Todos</option>'+D.devs.map(d=>'<option value="'+esc(d.login)+'"'+(FFN.dev===d.login?' selected':'')+'>'+esc(d.nome)+'</option>').join('');
+  return cab('Funil de conversão','Do roteiro ao cadastro: onde a oportunidade se perde',
+     '<select id="fnper" class="bt">'+[['7','Últimos 7 dias'],['30','Últimos 30 dias'],['tudo','Tudo']].map(([k,t])=>'<option value="'+k+'"'+(FFN.per===k?' selected':'')+'>'+t+'</option>').join('')+'</select>'+
+     '<select id="fndev" class="bt">'+opDev+'</select>')+
+   '<div class="corpo"><div class="cartao"><div class="cc"><div class="funil">'+
+    et.map((e,i)=>{const ant=i?et[i-1][2]:null;return '<div class="fn"><div class="nm">'+e[0]+'<small>'+e[1]+'</small></div>'+
+      '<div class="tr"><i style="width:'+Math.max(4,e[2]/topo*100)+'%;background:'+e[3]+'">'+fmt(e[2])+'</i></div>'+
+      '<div class="pc">'+(i?'<b>'+fpct(pct(e[2],ant))+'</b>da etapa anterior':'<b>100%</b>ponto de partida')+'</div></div>'}).join('')+
+   '</div></div></div>'+
+   (l.length?'':'<div class="info">O funil se enche com as visitas do app novo, a partir do dia da troca.</div>')+
+   '<div class="info">"Viraram cliente BAND" cruza os CNPJs visitados com a base em uso (versão '+esc(D.baseResumo?D.baseResumo.versao:'—')+'). Ele cresce cada vez que você envia uma base nova com os cadastros feitos.</div></div>';
+}
+liga.funil=()=>{if(!$('fnper'))return;$('fnper').onchange=e=>{FFN.per=e.target.value;pintaMain()};$('fndev').onchange=e=>{FFN.dev=e.target.value;pintaMain()}};
+
+/* ---------------- módulo: Concorrência e horários ---------------- */
+const FCC={per:'tudo'};
+function mConc(){
+  if(!D.carregou.visitas)return cab('Concorrência e horários','Carregando…')+'<div class="corpo"><div class="carregando">Buscando as visitas</div></div>';
+  const l=noPeriodo(FCC.per).filter(v=>/^Sim/i.test(v.existe||''));
+  const fo={},ca={},hor=new Array(24).fill(0),dias=new Array(7).fill(0);let comHora=0;
+  l.forEach(v=>{fornecDe(v).forEach(f=>fo[f]=(fo[f]||0)+1);if(v.canal)ca[v.canal]=(ca[v.canal]||0)+1;
+    const a=hm(v.abre),f=hm(v.fecha);if(a!=null&&f!=null){comHora++;for(let h=0;h<24;h++){const m=h*60+30;if(f>a?(m>=a&&m<f):(m>=a||m<f))hor[h]++}}
+    (Array.isArray(v.dias)?v.dias:[]).forEach(d=>{if(d>=0&&d<7)dias[d]++})});
+  const fs=Object.keys(fo).sort((a,b)=>fo[b]-fo[a]),cs=Object.keys(ca).sort((a,b)=>ca[b]-ca[a]);
+  const mxf=fo[fs[0]]||1,mxc=ca[cs[0]]||1,mxh=Math.max(1,...hor),mxd=Math.max(1,...dias);
+  const DN=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+  return cab('Concorrência e horários','De quem os PDVs compram e quando estão abertos',
+     '<select id="ccper" class="bt">'+[['7','Últimos 7 dias'],['30','Últimos 30 dias'],['tudo','Tudo']].map(([k,t])=>'<option value="'+k+'"'+(FCC.per===k?' selected':'')+'>'+t+'</option>').join('')+'</select>')+
+   '<div class="corpo">'+(l.length?'':'<div class="info">Sem PDVs encontrados funcionando no período. Os dados chegam com as visitas do app novo.</div>')+
+   '<div class="kpis"><div class="kpi"><b>'+fmt(l.length)+'</b><span>PDVs funcionando visitados</span></div>'+
+    '<div class="kpi v"><b>'+esc(fs[0]||'—')+'</b><span>fornecedor mais citado'+(fs[0]?' ('+fpct(pct(fo[fs[0]],l.length))+')':'')+'</span></div>'+
+    '<div class="kpi a"><b>'+(comHora?(hor.indexOf(mxh))+'h':'—')+'</b><span>horário com mais PDVs abertos</span></div></div>'+
+   '<div class="grade2c"><div class="cartao"><div class="tt"><h2>Fornecedores citados</h2><span>um PDV pode citar mais de um</span></div><div class="cc">'+
+     (fs.length?fs.slice(0,12).map(f=>lbar(esc(f),fo[f],mxf,'#E4002B',fmt(fo[f]))).join(''):'<div class="vazio">Sem respostas.</div>')+'</div></div>'+
+    '<div class="cartao"><div class="tt"><h2>Canal dos PDVs</h2></div><div class="cc">'+
+     (cs.length?cs.slice(0,10).map(c=>lbar(esc(c),ca[c],mxc,'#7C3AED',fmt(ca[c]))).join(''):'<div class="vazio">Sem respostas.</div>')+'</div></div></div>'+
+   '<div class="grade2c"><div class="cartao"><div class="tt"><h2>PDVs abertos por hora</h2><span>'+fmt(comHora)+' com horário informado</span></div><div class="cc" style="padding-bottom:30px">'+
+     '<div class="hist">'+hor.map((n,h)=>'<div style="height:'+(n/mxh*100)+'%;background:'+(n===mxh&&n?'#E4002B':'var(--azul)')+'" title="'+h+'h: '+n+' abertos">'+(h%3===0?'<span>'+h+'h</span>':'')+'</div>').join('')+'</div></div></div>'+
+    '<div class="cartao"><div class="tt"><h2>Dias de funcionamento</h2></div><div class="cc">'+
+     DN.map((n,i)=>lbar(n,dias[i],mxd,'#16A34A',fmt(dias[i]))).join('')+'</div></div></div>'+
+   '<div class="info">Use os horários para planejar: visitar quando o dono está, e não quando o PDV está fechado.</div></div>';
+}
+liga.conc=()=>{if(!$('ccper'))return;$('ccper').onchange=e=>{FCC.per=e.target.value;pintaMain()}};
 
 /* ---------------- módulo: Mensagens ---------------- */
 function mMsgs(){
@@ -1107,7 +1346,7 @@ async function abreApp(){
   carregaBase();
 }
 window.addEventListener('hashchange',()=>{const k=location.hash.slice(1);if(k&&k!==MOD)ir(k)});
-setInterval(()=>{if(SESSAO&&!document.hidden&&EU)carregaVisitas().then(()=>{pintaLado();if(MOD==='visitas'&&!$('dlg').classList.contains('on')&&document.activeElement.tagName!=='INPUT')pintaMain()}).catch(()=>{})},60000);
+setInterval(()=>{if(SESSAO&&!document.hidden&&EU)carregaVisitas().then(()=>{pintaLado();if(['visitas','aovivo','desemp','funil','conc'].includes(MOD)&&!$('dlg').classList.contains('on')&&!['INPUT','SELECT'].includes(document.activeElement.tagName))pintaMain()}).catch(()=>{})},60000);
 (async function(){
   if(!SESSAO)return telaEntrada();
   try{const q=await rpc('quem_sou');if(q.papel!=='coordenador')throw new Error('Esta conta não é de coordenador.');EU=q;abreApp()}

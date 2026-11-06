@@ -653,8 +653,13 @@ window.RTM=(function(){
     PL.logins=DEVS.filter(d=>d.ativo).map(d=>d.login);
     PL.nomes=PL.logins.map(nomeDe);PL.devs=Math.max(1,PL.logins.length);
     coleta(true);setInterval(()=>coleta(true),60000);
-    if(location.hash==='#planejar')abrePlano();
-    window.addEventListener('hashchange',()=>{if(location.hash==='#planejar')abrePlano()});
+    const porHash=()=>{
+      if(location.hash==='#planejar')abrePlano();
+      const sim=document.getElementById('btnsim');
+      if(sim){const ligado=sim.getAttribute('aria-pressed')==='true',quer=location.hash==='#simulador';
+        if(quer!==ligado&&(quer||location.hash==='#mapa'))sim.click()}
+    };
+    porHash();window.addEventListener('hashchange',porHash);
   }
   async function inicia(){
     const busy=document.getElementById('busy');
