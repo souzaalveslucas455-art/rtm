@@ -160,6 +160,49 @@ main{overflow-y:auto;min-width:0}
 
 #moldura{position:fixed;left:240px;right:0;top:0;bottom:0;background:#fff;z-index:4}
 #moldura iframe{border:0;width:100%;height:100%;display:block}
+/* ---------- Dashboards: visual escuro de apresentação ---------- */
+.dk{background:#0B0B0C;color:#F4F4F5;border-radius:18px;padding:34px 38px 30px;position:relative;overflow:hidden}
+.dk::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 70% at 100% 0%,rgba(228,0,43,.16),transparent 60%);pointer-events:none}
+.dk>*{position:relative}
+.dk .pill{display:inline-flex;align-items:baseline;gap:12px;background:#C8102E;border-radius:8px;padding:8px 16px}
+.dk .pill b{font-weight:800;letter-spacing:.06em;font-size:17px}
+.dk .pill span{font-size:14px;color:#FFE3E8}
+.dk .topo{display:flex;gap:24px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;margin:16px 0 26px}
+.dk h2{margin:0;font-size:46px;line-height:1.08;font-weight:800;letter-spacing:-.025em;max-width:20ch}
+.dk h2 em{font-style:normal;color:#FF5A5F}
+.dk .ks{display:flex;gap:12px}
+.dk .k{background:#141416;border:1px solid #26262A;border-radius:14px;padding:14px 20px;text-align:right;min-width:150px}
+.dk .k b{display:block;font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}
+.dk .k span{font-size:13px;color:#A1A1AA}
+.dk .k.meta{border-color:#5B1220;background:#160A0D} .dk .k.meta b{color:#4ADE80}
+.dk .tb{background:#111113;border:1px solid #232327;border-radius:16px;padding:6px 22px 10px}
+.dk table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.dk th{font-size:12px;letter-spacing:.08em;color:#A1A1AA;text-align:left;font-weight:700;padding:16px 10px 12px;border-bottom:1px solid #27272A}
+.dk th.n,.dk td.n{text-align:right}
+.dk td{padding:13px 10px;border-bottom:1px solid #1F1F23;font-size:16px;color:#E4E4E7}
+.dk td.cid{font-weight:800;font-size:17px;color:#fff}
+.dk td.pm{font-weight:800;color:#fff}
+.dk tr.lin{cursor:pointer} .dk tr.lin:hover td{background:#18181B}
+.dk .gap{position:relative;height:26px;border-radius:7px;background:#2A2A2E;overflow:hidden;min-width:200px}
+.dk .gap i{position:absolute;left:0;top:0;bottom:0;background:#C00000;border-radius:7px}
+.dk .gap b{position:absolute;right:9px;top:50%;transform:translateY(-50%);font-size:14px;font-weight:800;color:#fff}
+.dk .st{display:block;text-align:center;border:1px solid;border-radius:7px;padding:5px 8px;font-size:13px;font-weight:700;white-space:nowrap}
+.dk .st.baixo{color:#FF6B6B;border-color:#B42318} .dk .st.ab{color:#F5A524;border-color:#B45309}
+.dk .st.ac{color:#7CB4FF;border-color:#1D4ED8} .dk .st.top{color:#4ADE80;border-color:#15803D}
+.dk tfoot td{border-bottom:none;font-weight:800;font-size:17px;padding-top:16px}
+.dk tfoot .tot{color:#FF5A5F;font-size:24px;text-align:right}
+.dk .rod{margin-top:14px;font-size:12.5px;color:#71717A;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.dk:fullscreen{border-radius:0;padding:5vh 6vw;overflow:auto;display:flex;flex-direction:column;justify-content:center}
+.dk:fullscreen h2{font-size:clamp(46px,4.4vw,72px)}
+.dk:fullscreen td{font-size:clamp(16px,1.25vw,22px)}
+.ajustes{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
+.ajustes label{display:flex;flex-direction:column;gap:5px;font-size:11.5px;font-weight:700;color:var(--ink2)}
+.ajustes input,.ajustes select{border:1px solid var(--linha);border-radius:9px;padding:7px 10px;background:#fff;width:120px}
+.ajustes select{width:auto}
+.cidlista{columns:4 220px;margin-top:12px;max-height:340px;overflow:auto;border:1px solid var(--linha);border-radius:10px;padding:10px 12px;font-size:13px}
+.cidlista label{display:flex;gap:7px;align-items:center;padding:3px 0;break-inside:avoid;font-weight:500;color:var(--ink)}
+.cidlista small{color:var(--ink3);margin-left:auto}
+@media(max-width:1100px){.dk h2{font-size:34px}.dk .gap{min-width:120px}}
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;opacity:0;transition:.2s;pointer-events:none;z-index:30;max-width:90vw}
 #toast.on{opacity:1;transform:translateX(-50%)}
 .carregando{display:flex;gap:10px;align-items:center;color:var(--ink2)}
@@ -389,7 +432,7 @@ async function carregaBase(forcar){
     if(e.semSessao)return sessaoCaiu();
     D.baseEstado='erro';D.baseErro=e.message;
   }
-  pintaLado();pintaMainSe('base');
+  pintaLado();pintaMainSe('base');pintaMainSe('dash');
 }
 async function enviaBase(arq){
   if(!arq)return;
@@ -431,7 +474,7 @@ const IC={
 const svg=(k,w=18)=>'<svg width="'+w+'" height="'+w+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(IC[k]||'')+'</svg>';
 const MODULOS=[
   ['Operação',[['aovivo','Ao vivo',1],['mapa','Mapa de oportunidade',0],['planejar','Planejar campo',0],['visitas','Visitas',0],['msgs','Mensagens',0]]],
-  ['Análise',[['dash','Dashboards',1],['desemp','Desempenho',1],['funil','Funil de conversão',1],['conc','Concorrência e horários',1],['simul','Simulador',1]]],
+  ['Análise',[['dash','Dashboards',0],['desemp','Desempenho',1],['funil','Funil de conversão',1],['conc','Concorrência e horários',1],['simul','Simulador',1]]],
   ['Estrutura',[['devs','Desenvolvedores',0],['base','Base de dados',0]]]
 ];
 const BREVE={
@@ -477,7 +520,7 @@ function mostraMapa(){
 window.addEventListener('message',e=>{if(e.origin===location.origin&&e.data==='roteiro-publicado')carregaRoteiros().then(pintaLado).catch(()=>{})});
 function pintaMain(){
   if(mostraMapa()){$('main').innerHTML='';return}
-  const f={visitas:mVisitas,msgs:mMsgs,devs:mDevs,base:mBase}[MOD];
+  const f={visitas:mVisitas,msgs:mMsgs,devs:mDevs,base:mBase,dash:mDash}[MOD];
   if(f){$('main').innerHTML=f();try{liga[MOD]&&liga[MOD]()}catch(e){console.error(e)}return}
   const b=BREVE[MOD]||BREVE.aovivo;
   $('main').innerHTML=cab(b[0],'Em construção')+'<div class="corpo"><div class="cartao"><div class="cc" style="padding:28px">'+
@@ -678,6 +721,134 @@ liga.devs=()=>{
       toast('Senha de '+d.nome+' voltou para a padrão')}
     catch(e){if(e.semSessao)return sessaoCaiu();toast(e.message)}});
 };
+
+/* ---------------- módulo: Dashboards ---------------- */
+/* "Prospecção de clientes": clientes BAND por mil habitantes contra a meta.
+   Meta por mil = referência do Brasil × meta (%). Gap = população/1000 × meta por mil − clientes (mínimo 0).
+   Status: clientes por mil ÷ referência, nas faixas (padrão 40%, 60% e 80%). */
+const K_DASH='rtm_painel_dash';
+const SLIDE=['Aparecida de Goiânia','Bela Vista de Goiás','Goiânia','Goianira','Hidrolândia','Inhumas','Senador Canedo','Trindade'];
+let DS=null;
+function dashCfg(){
+  if(DS)return DS;
+  let g=null;try{g=JSON.parse(localStorage.getItem(K_DASH)||'null')}catch(e){}
+  DS=Object.assign({ref:6.4,meta:80,f1:40,f2:60,f3:80,ordem:'nome',cidades:SLIDE.slice(),
+    titulo:'PROSPECÇÃO DE CLIENTES',subtitulo:'por que o novo RTM precisa de vocês',lista:false},g||{});
+  return DS;
+}
+function salvaDash(){try{localStorage.setItem(K_DASH,JSON.stringify(DS))}catch(e){}}
+const semAcento=t=>String(t||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/['-]/g,' ').trim();
+function dadosCidades(){
+  const b=D.base;if(!b||!b.D||!b.populacao)return null;
+  const pop={};(b.populacao.municipios||[]).forEach(m=>pop[m.chave]=m);
+  const antigos=b.populacao.nomes_antigos||{};
+  const out=[],sem=[];
+  (b.D.cities||[]).forEach(c=>{
+    const k=semAcento(c[0]),m=pop[k]||pop[antigos[k]];
+    if(m)out.push({nome:m.nome,uf:m.uf,pop:m.pop,cli:+c[3]||0,nomeMapa:c[0]});
+    else sem.push({nome:c[0],cli:+c[3]||0});
+  });
+  /* municípios com população e sem nenhum cliente também entram (gap cheio) */
+  const tem=new Set(out.map(x=>semAcento(x.nome)));
+  (b.populacao.municipios||[]).forEach(m=>{if(!tem.has(m.chave))out.push({nome:m.nome,uf:m.uf,pop:m.pop,cli:0,nomeMapa:m.nome})});
+  return {cidades:out,sem};
+}
+function calcula(l,cfg){
+  const metaMil=cfg.ref*cfg.meta/100;
+  return l.map(c=>{
+    const pm=c.pop?c.cli*1000/c.pop:0,pct=cfg.ref?pm/cfg.ref*100:0;
+    const gap=Math.max(0,Math.round(c.pop/1000*metaMil-c.cli));
+    const st=pct<cfg.f1?['baixo','Baixo']:pct<cfg.f2?['ab','Abaixo da meta '+cfg.f2+'%']:pct<cfg.f3?['ac','Acima da meta '+cfg.f2+'%']:['top','Acima da meta '+cfg.f3+'%'];
+    return Object.assign({},c,{pm,pct,gap,st});
+  });
+}
+function mDash(){
+  const cfg=dashCfg();
+  if(D.baseEstado!=='ok')return cab('Dashboards','Prospecção de clientes')+'<div class="corpo">'+
+    (D.baseEstado==='carregando'||!D.baseEstado?'<div class="carregando">Abrindo a base…</div>':
+     '<div class="aviso">Os dashboards usam a base. Envie a base em <b>Base de dados</b>.</div>')+'</div>';
+  const dc=dadosCidades();
+  const todas=calcula(dc.cidades,cfg),porNome={};todas.forEach(c=>porNome[c.nome]=c);
+  let l=cfg.cidades.map(n=>porNome[n]).filter(Boolean);
+  l.sort(cfg.ordem==='gap'?(a,b)=>b.gap-a.gap:cfg.ordem==='pm'?(a,b)=>a.pm-b.pm:(a,b)=>a.nome.localeCompare(b.nome,'pt-BR'));
+  const tot=l.reduce((s,c)=>s+c.gap,0),mx=Math.max(1,...l.map(c=>c.gap));
+  const metaMil=cfg.ref*cfg.meta/100;
+  const f2=n=>(+n).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const marcados=new Set(cfg.cidades);
+  const lista=todas.slice().sort((a,b)=>a.nome.localeCompare(b.nome,'pt-BR')).map(c=>'<label><input type="checkbox" data-cid="'+esc(c.nome)+'"'+(marcados.has(c.nome)?' checked':'')+'> '+esc(c.nome)+' <small>'+c.uf+'</small></label>').join('');
+  return cab('Dashboards','Prospecção de clientes · base '+esc(D.baseResumo.versao)+' · população IBGE 2025',
+      '<button class="bt escuro" id="dapres">Modo apresentação</button>')+
+   '<div class="corpo">'+
+   '<div class="cartao"><div class="cc"><div class="ajustes">'+
+     '<label>Referência Brasil (estab./mil hab.)<input id="dref" type="number" step="0.1" min="0.1" value="'+cfg.ref+'"></label>'+
+     '<label>Meta (% da referência)<input id="dmeta" type="number" step="1" min="1" max="100" value="'+cfg.meta+'"></label>'+
+     '<label>Faixa "Baixo" abaixo de (%)<input id="df1" type="number" step="1" value="'+cfg.f1+'"></label>'+
+     '<label>Faixa do meio (%)<input id="df2" type="number" step="1" value="'+cfg.f2+'"></label>'+
+     '<label>Faixa de cima (%)<input id="df3" type="number" step="1" value="'+cfg.f3+'"></label>'+
+     '<label>Ordem<select id="dord"><option value="nome"'+(cfg.ordem==='nome'?' selected':'')+'>Cidade (A–Z)</option>'+
+       '<option value="gap"'+(cfg.ordem==='gap'?' selected':'')+'>Maior gap primeiro</option>'+
+       '<option value="pm"'+(cfg.ordem==='pm'?' selected':'')+'>Menos clientes por mil</option></select></label>'+
+     '<label>Cidades<select id="dpre"><option value="">'+l.length+' escolhidas</option><option value="slide">As 8 do slide (Grande Goiânia)</option>'+
+       '<option value="gap10">As 10 de maior gap</option><option value="gap20">As 20 de maior gap</option><option value="gr">Acima de 100 mil habitantes</option></select></label>'+
+     '<button class="bt" id="dlista">'+(cfg.lista?'Fechar a lista de cidades':'Escolher cidades')+'</button></div>'+
+     (cfg.lista?'<div class="cidlista">'+lista+'</div>':'')+
+   '</div></div>'+
+   '<div class="dk" id="dkart">'+
+     '<div class="pill"><b contenteditable="true" spellcheck="false" id="dtit">'+esc(cfg.titulo)+'</b><span contenteditable="true" spellcheck="false" id="dsub">'+esc(cfg.subtitulo)+'</span></div>'+
+     '<div class="topo"><h2>Ainda há <em>'+fmt(tot)+' clientes</em> para cadastrar '+(cfg.cidades.join()===SLIDE.join()?'nos grandes centros':'nestas cidades')+'</h2>'+
+       '<div class="ks"><div class="k"><b>'+fmt1(cfg.ref).replace(/,0$/,',0')+'</b><span>estab. por mil hab. (Brasil)</span></div>'+
+       '<div class="k meta"><b>'+f2(metaMil)+'</b><span>nossa meta ('+cfg.meta+'%)</span></div></div></div>'+
+     '<div class="tb"><table><thead><tr><th>CIDADE</th><th class="n">POPULAÇÃO (IBGE 2025)</th><th class="n">CLIENTES BAND</th><th class="n">CLIENTES POR MIL HAB.</th><th>GAP PARA A META</th><th>STATUS</th></tr></thead><tbody>'+
+     l.map(c=>'<tr class="lin" data-mapa="'+esc(c.nomeMapa)+'" title="Abrir '+esc(c.nome)+' no mapa"><td class="cid">'+esc(c.nome)+'</td><td class="n">'+fmt(c.pop)+'</td><td class="n">'+fmt(c.cli)+'</td>'+
+       '<td class="n pm">'+f2(c.pm)+'</td><td><div class="gap"><i style="width:'+(c.gap?Math.max(4,c.gap/mx*100):0)+'%"></i><b>'+fmt(c.gap)+'</b></div></td>'+
+       '<td><span class="st '+c.st[0]+'">'+c.st[1]+'</span></td></tr>').join('')+
+     '</tbody><tfoot><tr><td colspan="4">Total da oportunidade</td><td class="tot">'+fmt(tot)+' clientes</td><td></td></tr></tfoot></table></div>'+
+     '<div class="rod"><span>Clientes: base '+esc(D.baseResumo.versao)+'. População: IBGE, estimativa de 1º/07/2025. Gap = população ÷ 1.000 × '+f2(metaMil)+' − clientes.</span>'+
+       '<span>Clique numa cidade para ver a oportunidade no mapa</span></div>'+
+   '</div>'+
+   (dc.sem.length?'<div class="info">'+dc.sem.length+' localidades da base não têm população no IBGE, porque são distritos (por exemplo '+
+     esc(dc.sem.slice(0,4).map(x=>x.nome).join(', '))+'). Os '+fmt(dc.sem.reduce((s,x)=>s+x.cli,0))+' clientes delas não entram nesta conta.</div>':'')+
+   '</div>';
+}
+liga.dash=()=>{
+  if(!$('dref'))return;
+  const cfg=dashCfg();
+  const num=(id,k)=>{$(id).onchange=e=>{const v=parseFloat(String(e.target.value).replace(',','.'));if(isFinite(v)&&v>0){cfg[k]=v;salvaDash();pintaMain()}}};
+  num('dref','ref');num('dmeta','meta');num('df1','f1');num('df2','f2');num('df3','f3');
+  $('dord').onchange=e=>{cfg.ordem=e.target.value;salvaDash();pintaMain()};
+  $('dlista').onclick=()=>{cfg.lista=!cfg.lista;salvaDash();pintaMain()};
+  $('dpre').onchange=e=>{
+    const v=e.target.value;if(!v)return;
+    const todas=calcula(dadosCidades().cidades,cfg);
+    if(v==='slide')cfg.cidades=SLIDE.slice();
+    else if(v==='gr')cfg.cidades=todas.filter(c=>c.pop>=100000).map(c=>c.nome);
+    else cfg.cidades=todas.slice().sort((a,b)=>b.gap-a.gap).slice(0,v==='gap10'?10:20).map(c=>c.nome);
+    salvaDash();pintaMain();
+  };
+  document.querySelectorAll('[data-cid]').forEach(x=>x.onchange=()=>{
+    const n=x.dataset.cid;cfg.cidades=x.checked?cfg.cidades.concat(n):cfg.cidades.filter(c=>c!==n);salvaDash();pintaMain()});
+  const txt=(id,k)=>{$(id).onblur=()=>{cfg[k]=$(id).textContent.trim()||cfg[k];salvaDash()};$(id).onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();$(id).blur()}}};
+  txt('dtit','titulo');txt('dsub','subtitulo');
+  $('dapres').onclick=()=>{const el=$('dkart');(el.requestFullscreen?el.requestFullscreen():Promise.reject()).catch(()=>toast('O navegador não deixou abrir em tela cheia'))};
+  document.querySelectorAll('tr[data-mapa]').forEach(tr=>tr.onclick=()=>abreNoMapa(tr.dataset.mapa));
+};
+/* abre o mapa já filtrado na cidade */
+function abreNoMapa(nome){
+  if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
+  ir('mapa');
+  const alvo=semAcento(nome);
+  let tent=0;
+  const tenta=()=>{
+    let w=null;try{w=$('mapaif').contentWindow}catch(e){}
+    const pronto=w&&w.document&&w.document.getElementById('fcid')&&!w.document.getElementById('busy')&&w.RTM&&w.eval("typeof E!=='undefined'&&E.length>0");
+    if(!pronto){if(++tent<240)setTimeout(tenta,250);return}
+    const s=w.document.getElementById('fcid');
+    const o=[...s.options].find(o=>semAcento(o.textContent).startsWith(alvo)||semAcento(o.value)===alvo);
+    if(!o)return toast('Não achei '+nome+' no filtro do mapa');
+    s.value=o.value;s.dispatchEvent(new Event('change',{bubbles:true}));
+  };
+  tenta();
+}
 
 /* ---------------- módulo: Base de dados ---------------- */
 function mBase(){
