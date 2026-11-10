@@ -3040,7 +3040,7 @@ function pintaPlano(){
    <div class="pacoes">
      <button class="p" id="pcalc">Calcular roteiro</button>
      ${p?'<button id="pjson">Baixar roteiro para o app</button>':''}
-     ${p?'<button id="pcsv">Baixar em CSV</button>':''}
+     ${p?'<button id="pcsv">Baixar em Excel</button>':''}
      ${p?'<button id="ppub">Publicar para os desenvolvedores</button>':''}
    </div>`;
   if(p){
@@ -3092,7 +3092,7 @@ function pintaPlano(){
   else {
     h+='<table><thead><tr><th>Publicado</th><th>Escopo</th><th>Equipe</th>'+
       '<th class="n">Clientes</th><th class="n">Por dia</th><th>Início</th>'+
-      '<th>Situação</th></tr></thead><tbody>'+
+      '<th>Situação</th><th></th></tr></thead><tbody>'+
       HIST.lista.slice(0,12).map(r=>{
         const q=(r.publicadoEm||'').slice(0,10).split('-').reverse().join('/');
         const hora=(r.publicadoEm||'').slice(11,16);
@@ -3101,7 +3101,8 @@ function pintaPlano(){
           <td class="n">${fmt(r.clientes)}</td><td class="n">${fmt(r.porDia)}</td>
           <td>${(r.inicio||'').split('-').reverse().join('/')}</td>
           <td>${r.emUso?'<span class="tag t-ok">em uso</span>'
-                      :'<span class="tag t-nu">substituído</span>'}</td></tr>`;
+                      :'<span class="tag t-nu">substituído</span>'}</td>
+          <td><button class="pxls" data-v="${esc(r.versao)}" title="Baixar este roteiro em Excel">Excel</button></td></tr>`;
       }).join('')+'</tbody></table>';
     const atual=HIST.lista.filter(r=>r.emUso)[0];
     if(atual)h+='<div class="pnota">Os desenvolvedores estão com o roteiro de <b>'+
@@ -3138,6 +3139,7 @@ function pintaPlano(){
     $('pcsv').onclick=()=>baixaPlano('csv');
     $('ppub').onclick=publicaPlano;
   }
+  $('pbody').querySelectorAll('.pxls').forEach(b=>b.onclick=()=>baixaPublicado(b.dataset.v,b));
 }
 
 /* Para cada par desenvolvedor+dia, acha os clientes BAND ativos dentro de 1 km
@@ -3201,14 +3203,83 @@ function baixaPlano(f){
   const o=planoParaEnvio();if(!o)return;
   if(f==='json'){
     baixarArq('roteiro-campo.json',JSON.stringify(o),'application/json');
-    return avisa(`${fmt(o.clientes.length)} clientes no arquivo. No app, use Base de dados > Carregar roteiro.`,9000);
+    return avisa(fmt(o.clientes.length)+' clientes no arquivo.',9000);
   }
-  const cols=['dev','nomeDev','dia','data','seq','cnpj','nome','bairro','cidade','tel','cnae',
-    'rota','sv','gc','consultor','lat','lon'];
-  const linhas=o.clientes.map(c=>[c.dev+1,o.devs[c.dev],c.dia,c.data,c.seq,c.cnpj,c.nome,
-    c.bairro,c.cidade,c.tel,c.cnae,c.rota,c.sv,c.gc,c.consultor,c.lat,c.lon]
-    .map(x=>String(x==null?'':x).replace(/;/g,',')).join(';'));
-  baixarArq('roteiro-campo.csv',cols.join(';')+'\n'+linhas.join('\n'),'text/csv');
+  o.logins=(PL.logins||[]).slice(0,o.devs.length);
+  o.devs=o.devs.map((n,i)=>window.RTM.nomeDe(o.logins[i])||n);
+  exportaExcel(o,'roteiro-planejado');
+}
+/* um roteiro ja publicado, lido do Supabase */
+function baixaPublicado(versao,bt){
+  if(bt){bt.disabled=true;bt.textContent='…'}
+  window.RTM.rpc('roteiro_completo',{p_versao:String(versao)})
+   .then(j=>{if(!j||!j.plano)throw new Error('roteiro nao encontrado');exportaExcel(j.plano,'roteiro-'+versao)})
+   .catch(e=>avisa('Não consegui baixar o roteiro: '+(e.message||''),9000))
+   .finally(()=>{if(bt){bt.disabled=false;bt.textContent='Excel'}});
+}
+let XLSX_PROMESSA=null;
+function carregaXlsx(){
+  if(window.XLSX)return Promise.resolve();
+  if(!XLSX_PROMESSA)XLSX_PROMESSA=new Promise((ok,erro)=>{const s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';s.onload=ok;
+    s.onerror=()=>{XLSX_PROMESSA=null;erro(new Error('não consegui carregar o gerador de Excel (sem internet?)'))};
+    document.head.appendChild(s)});
+  return XLSX_PROMESSA;
+}
+let IDX_CNPJ=null;
+function estDe(cnpj){if(!IDX_CNPJ){IDX_CNPJ=new Map();E.forEach(e=>IDX_CNPJ.set(String(e.cnpj),e))}return IDX_CNPJ.get(String(cnpj))}
+const cnpjBonito=c=>{const t=String(c||'');return t.length===14?t.replace(/^(.{2})(.{3})(.{3})(.{4})(.{2})$/,'$1.$2.$3/$4-$5'):t};
+const dataBR=d=>d?String(d).split('-').reverse().join('/'):'';
+/* O Excel do roteiro: 4 abas. A base nao tem o nome da rua: o endereco vai como
+   bairro + cidade, e cada linha leva o link do Google Maps pela coordenada. */
+function exportaExcel(o,nomeArq){
+  avisa('Montando o Excel…',4000);
+  carregaXlsx().then(()=>{
+    const devs=o.devs||[],logins=o.logins||[],cli=(o.clientes||[]).slice()
+      .sort((a,b)=>(a.dev-b.dev)||(a.dia-b.dia)||((a.seq||0)-(b.seq||0)));
+    const linhas=cli.map(c=>{
+      const e=estDe(c.cnpj)||{},lat=+c.lat,lon=+c.lon;
+      return {'Desenvolvedor':devs[c.dev]||('Parte '+(c.dev+1)),'Login':logins[c.dev]||'','Dia':c.dia,'Data':dataBR(c.data),
+        'Ordem no dia':c.seq,'CNPJ':cnpjBonito(c.cnpj),'Nome':c.nome||e.nm||'','Bairro':c.bairro||'','Cidade':c.cidade||'',
+        'Telefone':c.tel||'','Atividade (CNAE)':c.cnae||'','Porte':PORTEN[e.po]||'',
+        'Prioridade':PRION[c.prioridade!=null?c.prioridade:e.pr]||'',
+        'Precisão do endereço':FONTEN[c.precisao!=null?c.precisao:e.fo]||'',
+        'Já foi cliente':e.ex?'Sim':'Não','Latitude':lat,'Longitude':lon,
+        'Google Maps':isFinite(lat)&&isFinite(lon)?'https://www.google.com/maps?q='+lat+','+lon:'',
+        'Rota':c.rota||'','Supervisão':c.sv||'','Gerência':c.gc||'','Consultor':c.consultor||''};
+    });
+    const wb=XLSX.utils.book_new();
+    const aba=(dados,larg,nome)=>{const ws=XLSX.utils.json_to_sheet(dados);
+      ws['!cols']=larg.map(w=>({wch:w}));
+      if(dados.length)ws['!autofilter']={ref:ws['!ref']};
+      XLSX.utils.book_append_sheet(wb,ws,nome);return ws};
+    const ws=aba(linhas,[22,8,5,11,7,20,36,22,22,15,40,14,13,22,9,11,11,18,8,10,10,22],'Roteiro');
+    /* o link do Google Maps vira clicavel */
+    const colMaps=Object.keys(linhas[0]||{}).indexOf('Google Maps');
+    if(colMaps>=0)linhas.forEach((l,i)=>{const ref=XLSX.utils.encode_cell({r:i+1,c:colMaps});
+      if(ws[ref]&&l['Google Maps'])ws[ref].l={Target:l['Google Maps'],Tooltip:'Abrir no Google Maps'}});
+    /* resumo por desenvolvedor */
+    const porDev={};cli.forEach(c=>{const d=porDev[c.dev]||(porDev[c.dev]={n:0,dias:new Set(),datas:[],cid:{}});
+      d.n++;d.dias.add(c.dia);if(c.data)d.datas.push(c.data);d.cid[c.cidade||'—']=(d.cid[c.cidade||'—']||0)+1});
+    aba(Object.keys(porDev).map(k=>{const d=porDev[k],ds=d.datas.sort();
+      return {'Desenvolvedor':devs[k]||('Parte '+(+k+1)),'Login':logins[k]||'','Clientes':d.n,'Dias de trabalho':d.dias.size,
+        'Primeiro dia':dataBR(ds[0]),'Último dia':dataBR(ds[ds.length-1]),
+        'Cidades':Object.keys(d.cid).sort((a,b)=>d.cid[b]-d.cid[a]).map(c=>c+' ('+d.cid[c]+')').join(', ')}}),
+      [24,8,10,16,13,13,60],'Resumo');
+    /* cada dia de cada um */
+    const porDia={};cli.forEach(c=>{const k=c.dev+'|'+c.dia,d=porDia[k]||(porDia[k]={dev:c.dev,dia:c.dia,data:c.data,n:0,b:{}});
+      d.n++;d.b[c.bairro||'—']=(d.b[c.bairro||'—']||0)+1});
+    aba(Object.values(porDia).sort((a,b)=>(a.dev-b.dev)||(a.dia-b.dia)).map(d=>({'Desenvolvedor':devs[d.dev]||'','Dia':d.dia,'Data':dataBR(d.data),
+      'Clientes':d.n,'Bairros':Object.keys(d.b).sort((a,b)=>d.b[b]-d.b[a]).map(b=>b+' ('+d.b[b]+')').join(', ')})),[24,5,11,9,80],'Por dia');
+    /* clientes BAND perto do trabalho de cada dia */
+    const viz=[];Object.keys(o.vizinhos||{}).forEach(k=>{const [dv,dia]=k.split('|').map(Number);
+      (o.vizinhos[k]||[]).forEach(v=>viz.push({'Desenvolvedor':devs[dv]||'','Dia':dia,'Código BAND':v.cod,'Nome':v.nome||'',
+        'Rota':v.rota||'','Bairro':v.bairro||'','Distância (km)':v.km!=null?+(+v.km).toFixed(2):'','Latitude':+v.lat,'Longitude':+v.lon}))});
+    viz.sort((a,b)=>a.Desenvolvedor.localeCompare(b.Desenvolvedor)||a.Dia-b.Dia||a['Distância (km)']-b['Distância (km)']);
+    aba(viz,[24,5,12,36,8,22,13,11,11],'Clientes BAND próximos');
+    XLSX.writeFile(wb,(nomeArq||'roteiro')+'.xlsx');
+    avisa('Excel baixado: '+fmt(linhas.length)+' clientes em 4 abas (Roteiro, Resumo, Por dia, Clientes BAND próximos).',9000);
+  }).catch(e=>avisa(e.message||String(e),9000));
 }
 function baixarArq(nome,txt,tipo){
   const a=document.createElement('a');
