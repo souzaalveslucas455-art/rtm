@@ -149,7 +149,7 @@ tr:last-child td{border-bottom:0}
    o que protege os dados e o login de administrador e as regras do banco.
    Tudo o que esta pagina guarda no navegador usa chaves com o prefixo aud_.
    ============================================================================ */
-const VERSAO='1.0.0';
+const VERSAO='1.1.0';
 const SUPA={url:'https://kqpdledhaghuzuwjkvrf.supabase.co',chave:'sb_publishable_dMdB5b_G5X5TnXemexGIXQ_GWXS6cid'};
 const K_SESSAO='aud_sessao',K_EMAIL='aud_email',K_DIAS='aud_dias';
 const $=id=>document.getElementById(id);
@@ -236,8 +236,37 @@ const CONF={
      cols:[['data','Dia','data'],['dev','Login'],['pdv','PDV','larga'],['vezes','Alterações','n'],['ultima_alteracao','Última alteração','data']]}
   ]
 };
-const LADOS={rep:{t:'Repositores',sub:'App do merch',fn:'repositores'},dev:{t:'Desenvolvedores',sub:'App do RTM',fn:'desenvolvedores'}};
+/* erros que os apps mandam do celular, e os aparelhos */
+const COLS_APAR=[['app','App','app'],['quem','Quem','larga'],['versao','Versão'],['desatualizado','Versão em dia?','okno'],
+  ['ultimo','Última abertura','dh'],['dias_sem_abrir','Dias sem abrir','n'],['pendentes','Visitas na fila','n'],
+  ['fotos_pendentes','Fotos na fila','n'],['ultimo_erro','Último erro','dh'],['agente','Aparelho','agente']];
+CONF.err=[
+  {id:'grupos',nivel:d=>((d.grupos&&d.grupos.linhas)||[]).some(x=>x.nivel==='erro')?'erro':'aviso',t:'Erros agrupados',
+   oque:'Cada linha é um erro diferente que aconteceu no celular, com quantas vezes aconteceu e com quantas pessoas.',
+   fazer:'Comece pelos que atingem mais pessoas ou que se repetem mais. Para investigar, baixe a lista e mande a linha do erro.',
+   cols:[['ultima','Última vez','dh'],['app','App','app'],['nivel','Gravidade','nivel'],['tipo','Onde','tipo'],['mensagem','Mensagem','larga'],
+     ['vezes','Vezes','n'],['pessoas','Pessoas','n'],['quem','Quem','larga'],['versoes','Versões'],['primeira','Primeira vez','dh']]},
+  {id:'recentes',nivel:'info',t:'Últimos registros, um a um',
+   oque:'Os registros na ordem em que chegaram, com a tela em que a pessoa estava e o detalhe técnico.',
+   fazer:'Use para ver a sequência do que aconteceu com uma pessoa. "Aconteceu em" é a hora no celular; "Chegou em" é quando o app conseguiu mandar.',
+   cols:[['recebido','Chegou em','dh'],['quando','Aconteceu em','dh'],['app','App','app'],['nivel','Gravidade','nivel'],['tipo','Onde','tipo'],
+     ['mensagem','Mensagem','larga'],['tela','Tela'],['quem','Quem'],['versao','Versão'],['vezes','Vezes','n'],['detalhe','Detalhe técnico','larga']]}
+];
+CONF.apa=[
+  {id:'fila_presa',nivel:'aviso',t:'Aparelhos com visita ou foto presa há 1 dia ou mais',
+   oque:'Da última vez que o app abriu, havia visita ou foto na fila, e ele não abriu mais desde então.',
+   fazer:'Pedir para a pessoa abrir o app com internet. O que está na fila sobe sozinho.',cols:COLS_APAR},
+  {id:'desatualizados',nivel:'aviso',t:'Aparelhos com versão antiga do app',
+   oque:'O aparelho está numa versão mais antiga que a mais nova que já apareceu no mesmo app.',
+   fazer:'Pedir para a pessoa fechar o app por completo e abrir de novo com internet, para ele se atualizar.',cols:COLS_APAR},
+  {id:'lista',nivel:'info',t:'Todos os aparelhos vistos no período',
+   oque:'Um registro por aparelho: quem usa, a versão do app, a última abertura e o que estava na fila.',
+   fazer:'Só acompanhar. Uma pessoa com dois aparelhos aparece duas vezes.',cols:COLS_APAR}
+];
+const LADOS={rep:{t:'Repositores',sub:'App do merch',fn:'repositores'},dev:{t:'Desenvolvedores',sub:'App do RTM',fn:'desenvolvedores'},
+  err:{t:'Erros dos apps',sub:'O que deu errado nos celulares',fn:'erros'},apa:{t:'Aparelhos',sub:'Versão do app e último acesso',fn:'aparelhos'}};
 const ROTULO={erro:'Corrigir',aviso:'Conferir',info:'Saber'};
+const nivelDe=(c,d)=>typeof c.nivel==='function'?c.nivel(d||{}):c.nivel;
 
 /* ---------------- servidor ---------------- */
 let SESSAO=null;try{SESSAO=JSON.parse(le(K_SESSAO)||'null')}catch(e){}
@@ -252,7 +281,7 @@ function erroDe(j,status){
   if(cod==='PGRST106'||/schema must be one of/i.test(m))
     return 'O esquema "auditoria" ainda não foi liberado no Supabase. Em Project Settings > Data API > Exposed schemas, acrescente "auditoria".';
   if(cod==='PGRST202'||/Could not find the function/i.test(m))
-    return 'As funções de auditoria ainda não existem no banco. Falta aplicar o arquivo sql/a01-auditoria.sql.';
+    return 'Esta parte da auditoria ainda não existe no banco. Falta aplicar o arquivo mais novo da pasta sql/ (a01 ou a02).';
   return m;
 }
 async function pede(caminho,opc){
@@ -293,8 +322,8 @@ async function rpc(nome,args,tentou){
 /* ---------------- estado ---------------- */
 let EU=null,ABA='geral',DIAS=+le(K_DIAS)||30,CARREGANDO=false,ATUALIZADO=null;
 if([7,30,90].indexOf(DIAS)<0)DIAS=30;
-const DADOS={rep:null,dev:null},FALHA={rep:null,dev:null};
-const ABERTAS={},BUSCA={};
+const DADOS={rep:null,dev:null,err:null,apa:null},FALHA={rep:null,dev:null,err:null,apa:null};
+const ABERTAS={'err.grupos':true,'apa.lista':true},BUSCA={};
 
 /* ---------------- entrada ---------------- */
 function telaEntrada(erro){
@@ -331,7 +360,7 @@ async function abre(){
   $('dias').value=String(DIAS);
   desenha();carrega();
 }
-function sai(){guardaSessao(null);EU=null;DADOS.rep=DADOS.dev=null;telaEntrada('')}
+function sai(){guardaSessao(null);EU=null;Object.keys(DADOS).forEach(l=>{DADOS[l]=null;FALHA[l]=null});telaEntrada('')}
 
 /* ---------------- dados ---------------- */
 async function carrega(){
@@ -340,21 +369,30 @@ async function carrega(){
   const r=await Promise.allSettled(lados.map(l=>rpc(LADOS[l].fn,{p_dias:DIAS})));
   let caiu=false;
   r.forEach((x,i)=>{const l=lados[i];
-    if(x.status==='fulfilled'){DADOS[l]=x.value;FALHA[l]=null}
+    if(x.status==='fulfilled'){DADOS[l]=l==='apa'?preparaAparelhos(x.value):x.value;FALHA[l]=null}
     else{FALHA[l]=x.reason.message;if(x.reason.semSessao)caiu=true}});
   CARREGANDO=false;$('batualiza').disabled=false;ATUALIZADO=new Date();
   if(caiu){telaEntrada('Sua sessão expirou. Entre de novo.');return}
   desenha();
 }
+/* da lista de aparelhos saem duas conferências: fila presa e versão antiga */
+function preparaAparelhos(d){
+  const l=(d&&d.lista&&d.lista.linhas)||[];
+  const presa=l.filter(x=>((+x.pendentes||0)+(+x.fotos_pendentes||0))>0&&(+x.dias_sem_abrir||0)>=1);
+  const velha=l.filter(x=>x.desatualizado);
+  d.fila_presa={total:presa.length,linhas:presa};
+  d.desatualizados={total:velha.length,linhas:velha};
+  return d;
+}
 const total=(d,c)=>d&&d[c.id]?(+d[c.id].total||0):0;
 function farol(l){
   const d=DADOS[l];if(!d)return FALHA[l]?'falha':'';
   let f='ok';
-  CONF[l].forEach(c=>{const n=total(d,c);if(!n)return;
-    if(c.nivel==='erro')f='erro';else if(c.nivel==='aviso'&&f!=='erro')f='aviso'});
+  CONF[l].forEach(c=>{const n=total(d,c);if(!n)return;const nv=nivelDe(c,d);
+    if(nv==='erro')f='erro';else if(nv==='aviso'&&f!=='erro')f='aviso'});
   return f;
 }
-function pendencias(l,nivel){const d=DADOS[l];if(!d)return 0;return CONF[l].filter(c=>c.nivel===nivel&&total(d,c)>0).length}
+function pendencias(l,nivel){const d=DADOS[l];if(!d)return 0;return CONF[l].filter(c=>nivelDe(c,d)===nivel&&total(d,c)>0).length}
 
 /* ---------------- formatos ---------------- */
 function data(v){const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(String(v||''));return m?m[3]+'/'+m[2]+'/'+m[1]:(v==null?'':String(v))}
@@ -364,7 +402,26 @@ function celula(v,f){
   if(f==='m')return metros(v);
   if(f==='n')return v==null?'':fmt(v);
   if(f==='okno')return v?'Não':'Sim';
+  if(f==='dh')return dataHora(v);
+  if(f==='app')return APPS[v]||String(v||'');
+  if(f==='nivel')return NIVEIS[v]||String(v||'');
+  if(f==='tipo')return TIPOS[v]||String(v||'');
+  if(f==='agente')return aparelhoDe(v);
   return v==null?'':(ACENTO[v]||String(v));
+}
+function dataHora(v){const m=/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}:\d{2})/.exec(String(v||''));return m?m[3]+'/'+m[2]+'/'+m[1]+' '+m[4]:(v==null?'':String(v))}
+const APPS={desenvolvedor:'Desenvolvedores',repositor:'Repositores',lider:'Liderança',painel:'Painel'};
+const NIVEIS={erro:'Erro',aviso:'Aviso',info:'Informação'};
+const TIPOS={codigo:'Código do app',promessa:'Código do app',servidor:'Resposta do servidor',envio:'Envio de visitas',
+  foto:'Envio de foto',tela:'Montagem da tela',armazenamento:'Memória do aparelho',sessao:'Sessão (login)',outro:'Outro'};
+/* resume o "user agent": sistema e navegador */
+function aparelhoDe(v){
+  const t=String(v||'');if(!t)return '';
+  let so=(/Android [\d.]+/.exec(t)||/iPhone OS [\d_]+/.exec(t)||/Windows NT [\d.]+/.exec(t)||/Mac OS X [\d_]+/.exec(t)||[''])[0]
+    .replace('iPhone OS','iPhone iOS').replace('Windows NT','Windows').replace(/_/g,'.');
+  const nav=(/(SamsungBrowser|Edg|Chrome|Firefox|Version)\/(\d+)/.exec(t)||[]);
+  const nome={SamsungBrowser:'Samsung Internet',Edg:'Edge',Version:'Safari'}[nav[1]]||nav[1]||'';
+  return [so,nome?nome+' '+nav[2]:''].filter(Boolean).join(' · ')||t.slice(0,40);
 }
 /* o SQL so tem ASCII; os rotulos que vem do banco ganham o acento aqui */
 const ACENTO={'Vendas diarias':'Vendas diárias','Cargas com falha no periodo':'Cargas com falha no período',
@@ -374,15 +431,32 @@ function periodo(d){return d&&d.desde?'de '+data(d.desde)+' a '+data(d.hoje):''}
 
 /* ---------------- telas ---------------- */
 function desenha(){
-  const abas=[['geral','Visão geral'],['rep','Repositores'],['dev','Desenvolvedores'],['erros','Erros dos apps']];
+  const abas=[['geral','Visão geral'],['rep','Repositores'],['dev','Desenvolvedores'],['err','Erros dos apps'],['apa','Aparelhos']];
   $('abas').innerHTML=abas.map(a=>{
     let c='';
     if(LADOS[a[0]]&&DADOS[a[0]]){const e=pendencias(a[0],'erro'),w=pendencias(a[0],'aviso');
       if(e+w)c='<span class="cont '+(e?'erro-c':'aviso-c')+'">'+(e+w)+'</span>'}
     return '<button role="tab" data-aba="'+a[0]+'" aria-selected="'+(ABA===a[0])+'">'+a[1]+c+'</button>'}).join('');
   const m=$('main');
-  if(CARREGANDO&&!DADOS.rep&&!DADOS.dev){m.innerHTML='<div class="carreg">Conferindo os dados dos dois apps…</div>';return}
-  m.innerHTML=ABA==='geral'?telaGeral():ABA==='erros'?telaErros():telaLado(ABA);
+  if(CARREGANDO&&!Object.keys(DADOS).some(l=>DADOS[l])){m.innerHTML='<div class="carreg">Conferindo os dados dos dois apps…</div>';return}
+  m.innerHTML=ABA==='geral'?telaGeral():telaLado(ABA);
+}
+/* os números do topo de cada cartão da visão geral */
+function numeros(l,d){
+  const n=(v,t)=>'<div><b>'+v+'</b><span>'+t+'</span></div>';
+  if(l==='err'){
+    const r=d.resumo||[],soma=k=>r.reduce((s,x)=>s+(+x[k]||0),0);
+    return n(fmt(soma('erros')),'erros no período')+n(fmt(soma('avisos')),'avisos')+n(fmt(soma('pessoas')),'pessoas atingidas');
+  }
+  if(l==='apa'){
+    const li=(d.lista&&d.lista.linhas)||[],v=d.versoes||{};
+    return n(fmt(li.length),'aparelhos no período')+
+      Object.keys(v).map(a=>n(esc(v[a]),'versão mais nova · '+esc(APPS[a]||a))).join('');
+  }
+  const r=d.resumo||{};
+  return n(fmt(r.visitas),'visitas no período')+
+    (l==='rep'?n(fmt(r.repositores),'repositores')+n(fmt(r.lojas),'lojas'):n(fmt(r.desenvolvedores),'desenvolvedores com visita'))+
+    n(r.ultima_visita?data(r.ultima_visita).slice(0,5):'–','última visita');
 }
 function telaGeral(){
   let h='<h1 class="tit">Visão geral</h1><p class="sub">Conferências automáticas dos últimos '+DIAS+' dias. '+
@@ -393,24 +467,16 @@ function telaGeral(){
     const estado=f==='erro'?'Tem coisa para corrigir':f==='aviso'?'Tem coisa para conferir':f==='ok'?'Tudo certo nas conferências':f==='falha'?'Não consegui ler':'Carregando…';
     h+='<section class="cartao"><div class="cab"><span class="farol '+f+'"></span><div><h2>'+L.t+'</h2><div class="estado">'+L.sub+' · '+estado+'</div></div></div>';
     if(!d){h+=FALHA[l]?'<div class="alerta" role="alert">'+esc(FALHA[l])+'</div>':'<div class="vazio">Carregando…</div>';h+='</section>';return}
-    const r=d.resumo||{};
-    h+='<div class="nums"><div><b>'+fmt(r.visitas)+'</b><span>visitas no período</span></div>'+
-       (l==='rep'?'<div><b>'+fmt(r.repositores)+'</b><span>repositores</span></div><div><b>'+fmt(r.lojas)+'</b><span>lojas</span></div>'
-                 :'<div><b>'+fmt(r.desenvolvedores)+'</b><span>desenvolvedores com visita</span></div>')+
-       '<div><b>'+(r.ultima_visita?data(r.ultima_visita).slice(0,5):'–')+'</b><span>última visita</span></div></div>';
+    h+='<div class="nums">'+numeros(l,d)+'</div>';
     h+='<ul class="lista">'+CONF[l].map(c=>{const n=total(d,c);
       return '<li><button data-ir="'+l+'" data-conf="'+c.id+'"><span class="nome">'+esc(c.t)+'</span>'+
-        '<span class="selo '+(n?c.nivel:'ok')+'">'+(n?fmt(n):'ok')+'</span></button></li>'}).join('')+'</ul></section>';
+        '<span class="selo '+(n?nivelDe(c,d):'ok')+'">'+(n?fmt(n):'ok')+'</span></button></li>'}).join('')+'</ul></section>';
   });
-  h+='</div><div class="nota"><b>Erros dos apps e aparelhos:</b> ainda não aparecem aqui. Hoje os apps não registram o erro que acontece no celular. '+
-     'Isso chega na fase 2 (app dos desenvolvedores) e na fase 3 (apps do merch).</div>';
+  h+='</div><div class="nota">'+NOTA_APPS+'</div>';
   return h;
 }
-function telaErros(){
-  return '<h1 class="tit">Erros dos apps</h1><p class="sub">Erros que acontecem no celular, versão do app e último acesso de cada aparelho.</p>'+
-    '<div class="nota"><b>Ainda não disponível.</b> Hoje nenhum dos apps registra o erro que acontece no celular: ele aparece só no próprio aparelho. '+
-    'Esta tela passa a funcionar quando os apps começarem a mandar esses registros: fase 2 para o app dos desenvolvedores e fase 3 para os apps do merch.</div>';
-}
+const NOTA_APPS='<b>Quem manda erros e versão:</b> o app dos desenvolvedores, a partir da versão 2.3.0. '+
+  'Os apps do merch (repositores e liderança) ainda não mandam; isso é a fase 3.';
 function telaLado(l){
   const d=DADOS[l],L=LADOS[l];
   let h='<h1 class="tit">'+L.t+'</h1><p class="sub">'+L.sub+' · '+(d?periodo(d):'')+(CARREGANDO?' · atualizando…':'')+'</p>';
@@ -418,6 +484,7 @@ function telaLado(l){
   if(FALHA[l])h+='<div class="alerta" role="alert">Não consegui atualizar: '+esc(FALHA[l])+' Mostrando a última leitura.</div>';
   if(l==='dev'&&d.roteiro)h+='<div class="nota"><b>Roteiro em uso:</b> publicado em '+data(d.roteiro.publicado_em)+', com '+fmt(d.roteiro.clientes)+
     ' clientes; '+fmt(d.roteiro.visitados)+' já têm visita.</div>';
+  if(l==='err'||l==='apa')h+='<div class="nota">'+NOTA_APPS+'</div>';
   CONF[l].forEach(c=>{h+=blocoConf(l,c,d)});
   return h;
 }
@@ -431,8 +498,8 @@ function blocoConf(l,c,d){
   const ch=l+'.'+c.id,n=total(d,c),aberta=!!ABERTAS[ch];
   const todas=(d[c.id]&&d[c.id].linhas)||[];
   let h='<section class="conf'+(aberta?' aberta':'')+'" id="conf-'+l+'-'+c.id+'">'+
-    '<button data-abre="'+ch+'" aria-expanded="'+aberta+'"><span class="selo '+(n?c.nivel:'ok')+'">'+(n?fmt(n):'ok')+'</span>'+
-    '<span class="t"><b>'+esc(c.t)+'</b><small>'+(n?ROTULO[c.nivel]:'Nada encontrado')+'</small></span><span class="seta" aria-hidden="true">▶</span></button>';
+    '<button data-abre="'+ch+'" aria-expanded="'+aberta+'"><span class="selo '+(n?nivelDe(c,d):'ok')+'">'+(n?fmt(n):'ok')+'</span>'+
+    '<span class="t"><b>'+esc(c.t)+'</b><small>'+(n?ROTULO[nivelDe(c,d)]:'Nada encontrado')+'</small></span><span class="seta" aria-hidden="true">▶</span></button>';
   if(!aberta)return h+'</section>';
   const oque=typeof c.oque==='function'?c.oque(d):c.oque;
   h+='<div class="corpo"><div class="exp"><div><b>O que é</b>'+esc(oque)+'</div><div><b>O que fazer</b>'+esc(c.fazer)+'</div></div>';

@@ -549,7 +549,93 @@ body.comacao #toast{bottom:calc(env(safe-area-inset-bottom) + 108px)}
    A base vem embutida e funciona sem internet. As respostas ficam no aparelho
    e sobem para a planilha assim que houver sinal.
    =========================================================================== */
-const VERSAO='2.2.0';
+const VERSAO='2.3.0';
+
+/* ---------------- auditoria: erros do app e "estou vivo" ----------------
+   Guarda no aparelho os erros que acontecem e manda para o painel de auditoria,
+   junto com a versão do app e quantas visitas e fotos estão na fila.
+   Não leva dado de cliente, senha nem o que foi digitado no formulário: só a
+   mensagem do erro, a tela e a versão. Se a auditoria falhar, o app segue igual.
+   Fica no começo do arquivo para pegar também o erro que acontece na partida. */
+const K_AUD_FILA='rtm_aud_fila',K_AUD_APAR='rtm_aud_aparelho',K_AUD_ULT='rtm_aud_ultimo';
+const AUD={fila:[],enviando:false,ultimo:0,parada:0};
+try{const f=JSON.parse(localStorage.getItem(K_AUD_FILA)||'[]');if(Array.isArray(f))AUD.fila=f.slice(-60)}catch(e){}
+try{AUD.ultimo=+localStorage.getItem(K_AUD_ULT)||0}catch(e){}
+function audAparelho(){
+  let a='';try{a=localStorage.getItem(K_AUD_APAR)||''}catch(e){}
+  if(!a){a='a'+Date.now().toString(36)+Math.random().toString(36).slice(2,10);
+    try{localStorage.setItem(K_AUD_APAR,a)}catch(e){}}
+  return a;
+}
+function audGuarda(){try{localStorage.setItem(K_AUD_FILA,JSON.stringify(AUD.fila))}catch(e){}}
+/* tira do texto o que pode identificar um cliente: CNPJ e números longos (telefone) */
+function audLimpa(t,max){
+  return String(t==null?'':t).replace(/\b[0-9A-Z]{12}[0-9]{2}\b/g,'[cnpj]').replace(/\d{8,}/g,'[n]').slice(0,max||500);
+}
+/* nivel: erro, aviso ou info. O mesmo erro repetido vira um registro só, com contador. */
+function audita(nivel,tipo,mensagem,detalhe){
+  try{
+    const msg=audLimpa(mensagem).trim();if(!msg)return;
+    const igual=AUD.fila.filter(x=>x.nivel===nivel&&x.tipo===tipo&&x.mensagem===msg)[0];
+    if(igual){igual.vezes=Math.min(9999,(+igual.vezes||1)+1);audGuarda();return}
+    let t='';try{t=String(tela_||'')}catch(e){}
+    const ev={nivel:nivel,tipo:tipo,mensagem:msg,tela:t,quando:new Date().toISOString(),vezes:1};
+    if(detalhe&&typeof detalhe==='object'){
+      const d={};
+      Object.keys(detalhe).slice(0,8).forEach(k=>{const v=detalhe[k];
+        if(typeof v==='number'||typeof v==='boolean')d[k]=v;
+        else if(v!=null)d[k]=audLimpa(v,1200)});
+      ev.detalhe=d;
+    }
+    AUD.fila.push(ev);
+    if(AUD.fila.length>60)AUD.fila.splice(0,AUD.fila.length-60);
+    audGuarda();
+  }catch(e){}
+}
+/* Manda a fila e o "estou vivo". Com erro na fila, manda no máximo 1 vez por
+   minuto; sem erro, 1 vez a cada "intervalo" (30 minutos se não for dito). */
+function audEnvia(intervalo){
+  try{
+    if(AUD.enviando||!SESSAO||!DESBLOQ||!navigator.onLine)return;
+    const t=Date.now();
+    if(t<AUD.parada)return;
+    const desde=t-AUD.ultimo;
+    if(!(AUD.fila.length&&desde>60000)&&desde<(intervalo||30*60000))return;
+    AUD.enviando=true;
+    const lote=AUD.fila.slice(0,50);
+    let fotos=0;try{fotos=Object.keys(S.vis).filter(k=>S.vis[k].temFoto&&!S.vis[k].fotoEnviada).length}catch(e){}
+    let fila=0;try{fila=pendentes().length}catch(e){}
+    const corpo={p:{app:'desenvolvedor',versao:VERSAO,aparelho:audAparelho(),
+      agente:String(navigator.userAgent||'').slice(0,200),pendentes:fila,fotos:fotos,eventos:lote}};
+    token().then(tk=>fetch(SUPA.url+'/rest/v1/rpc/registrar',{method:'POST',
+        headers:{apikey:SUPA.chave,Authorization:'Bearer '+tk,'Content-Type':'application/json',
+          'Content-Profile':'auditoria','Accept-Profile':'auditoria'},body:JSON.stringify(corpo)}))
+     .then(r=>{
+       if(r.ok){
+         AUD.fila=AUD.fila.filter(x=>lote.indexOf(x)<0);audGuarda();
+         AUD.ultimo=Date.now();try{localStorage.setItem(K_AUD_ULT,String(AUD.ultimo))}catch(e){}
+       }
+       /* a auditoria ainda não existe no banco (404/406): tenta de novo só daqui a 6 horas */
+       else AUD.parada=Date.now()+((r.status===404||r.status===406)?6*3600000:10*60000);
+     })
+     .catch(()=>{AUD.parada=Date.now()+5*60000})
+     .finally(()=>{AUD.enviando=false});
+  }catch(e){AUD.enviando=false}
+}
+/* erro de código que ninguém tratou */
+window.addEventListener('error',ev=>{
+  /* imagem ou pedaço de mapa que não carregou não é erro do app */
+  if(!ev||(!ev.error&&!ev.message))return;
+  const arq=String(ev.filename||'').replace(/^.*\//,'');
+  audita('erro','codigo',ev.message||String(ev.error),{arquivo:arq,linha:ev.lineno||0,coluna:ev.colno||0,
+    pilha:ev.error&&ev.error.stack?String(ev.error.stack):''});
+});
+window.addEventListener('unhandledrejection',ev=>{
+  const r=ev&&ev.reason,m=String((r&&r.message)||r||'');
+  if(!m||/Sem conexão|Failed to fetch|NetworkError|Load failed/i.test(m))return;   /* sem sinal é rotina no campo */
+  audita('erro','promessa',m,{pilha:r&&r.stack?String(r.stack):''});
+});
+
 const M=JSON.parse(document.getElementById('M').textContent);
 const DEVS=M.devs,CNAES=M.cnaes,BAIRROS=M.bairros,ROTAS=M.rotas,SVS=M.svs,CONS=M.cons;
 
@@ -747,7 +833,8 @@ try{
 let avisouSave=false;
 function save(){
   try{localStorage.setItem(CHAVE,JSON.stringify(S))}
-  catch(e){ if(!avisouSave){avisouSave=true;
+  catch(e){ audita('erro','armazenamento','O aparelho não gravou as visitas: '+((e&&e.name)||'falha'));
+    if(!avisouSave){avisouSave=true;
       alert('ATENÇÃO: o navegador não está gravando as visitas neste aparelho.\n\n'+
         'Abra o app pelo endereço https que o gestor enviou, não pelo arquivo baixado.');}
     toast('Não foi possível salvar no aparelho'); }
@@ -913,7 +1000,12 @@ async function rpc(nome,args,tentou){
     'Content-Profile':'rtm','Accept-Profile':'rtm'},body:JSON.stringify(args||{})});
   if(r.status===401&&!tentou){await renova();return rpc(nome,args,true)}
   if(r.status===401){guardaSessao(null);throw semSessao()}
-  if(!r.ok)throw new Error(erroDe(r.j,r.status));
+  if(!r.ok){
+    const m=erroDe(r.j,r.status);
+    /* o servidor respondeu com erro: vai para a auditoria (5xx é erro; o resto, aviso) */
+    audita(r.status>=500?'erro':'aviso','servidor',nome+': '+m,{funcao:nome,status:r.status,codigo:(r.j&&r.j.code)||''});
+    throw new Error(m);
+  }
   return r.j;
 }
 const caminhoUrl=c=>String(c).split('/').map(encodeURIComponent).join('/');
@@ -1143,11 +1235,13 @@ function entraNoApp(){
   sincroniza(true);
   enviar(true);
   setTimeout(()=>reenviaFotos(true),1500);
+  setTimeout(()=>audEnvia(5*60000),4000);   /* auditoria: avisa que o app abriu (no máximo a cada 5 min) */
 }
 /* a sessão caiu (senha trocada pelo coordenador, por exemplo): as visitas
    continuam guardadas; ao sair do formulário, pede a senha de novo */
 function sessaoPerdida(){
   guardaSessao(null);
+  audita('aviso','sessao','A sessão no servidor expirou e o app pediu a senha de novo');
   anota('envio','Entre de novo com a senha',
     'Sua sessão no servidor expirou. As visitas continuam guardadas no aparelho e '+
     'sobem assim que você entrar de novo.');
@@ -1203,6 +1297,10 @@ function enviar(silencioso){
     ids.forEach(k=>{const v=S.vis[k];if(!v)return;
       if(rec[k]){v.recusada=rec[k]}else{v.enviado=true;ok++}});
     const nr=Object.keys(rec).length;
+    if(nr)audita('erro','envio',nr+' visita(s) não aceitas pelo servidor: '+
+      Object.keys(rec).slice(0,3).map(k=>rec[k]).join('; '));
+    if((j.avisos||[]).length)audita('aviso','envio','Campo não reconhecido pelo servidor: '+
+      j.avisos.slice(0,3).map(a=>(a.campos||[]).join(', ')).join('; '));
     if(nr)anota('envio','Visita não aceita pelo servidor',
       nr+' visita(s) não entraram ('+Object.keys(rec).slice(0,3).map(k=>k+': '+rec[k]).join('; ')+
       '). Mostre este aviso ao coordenador.');
@@ -1369,6 +1467,7 @@ function sincroniza(silencioso,restaurar){
      if(!silencioso)
        toast(novidade.length?novidade.join(' e '):'Tudo em dia ('+(Date.now()-t0)+' ms)');
      atualizaTela(!!novidade.length);
+     audEnvia();   /* auditoria: aproveita que há sinal */
    })
    .catch(e=>{
      if(e.semSessao)return sessaoPerdida();
@@ -1389,7 +1488,7 @@ document.addEventListener('visibilitychange',()=>{
   /* voltando ao app, busca na hora em vez de esperar o próximo ciclo */
   if(DESBLOQ)sincroniza(true);
 });
-setInterval(()=>{if(!DESBLOQ)return;if(pendentes().length)enviar(true);reenviaFotos(true)},45000);
+setInterval(()=>{if(!DESBLOQ)return;if(pendentes().length)enviar(true);reenviaFotos(true);audEnvia()},45000);
 /* procura mensagens novas de minuto em minuto com o app aberto */
 /* enquanto o app está aberto, procura novidade a cada 25 segundos */
 setInterval(()=>{if(DESBLOQ&&!document.hidden)sincroniza(true)},25000);
@@ -1441,6 +1540,8 @@ function render(){
   try{ renderInterno() }
   catch(err){
     console.error(err);
+    audita('erro','tela','Não consegui montar a tela: '+(err&&err.message||'erro desconhecido'),
+      {pilha:err&&err.stack?String(err.stack):''});
     $('app').className='';
     $('app').innerHTML='<div class="erro" style="margin-top:16px">'+
       '<b>Não consegui montar esta tela.</b><br>'+esc(err&&err.message||'erro desconhecido')+
@@ -2485,7 +2586,8 @@ function salvar(){
 }
 function guardaFoto(cnpj,dataUrl){
   try{localStorage.setItem('rtm_foto_'+cnpj,dataUrl)}
-  catch(e){toast('Sem espaço para guardar a foto no aparelho')}
+  catch(e){audita('erro','armazenamento','Sem espaço para guardar a foto no aparelho');
+    toast('Sem espaço para guardar a foto no aparelho')}
 }
 function leFoto(cnpj){try{return localStorage.getItem('rtm_foto_'+cnpj)}catch(e){return null}}
 /* A foto sobe para a pasta privada rtm-fotos, em visitas/<login>/. O nome é
@@ -2513,7 +2615,10 @@ function enviaFoto(cnpj,dataUrl,aoTerminar){
        enviar(true)}
      fim(true,cam);
    })
-   .catch(e=>{if(e.semSessao)sessaoPerdida();fim(false,e.message||'falhou')});
+   .catch(e=>{if(e.semSessao)sessaoPerdida();
+     else if(!/Sem conexão|Failed to fetch|NetworkError|Load failed/i.test(String(e&&e.message)))
+       audita('erro','foto','A foto não subiu: '+(e&&e.message||'falhou'));
+     fim(false,e.message||'falhou')});
 }
 /* testa a conexão com o banco do RTM */
 function testaConexao(){

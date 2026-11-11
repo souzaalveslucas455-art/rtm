@@ -3,7 +3,7 @@
    IMPORTANTE: o endereco souzaalveslucas455-art.github.io e dividido com o app
    do merch, e a area de cache e uma so para o endereco inteiro. Por isso este
    arquivo so cria e so apaga caches cujo nome comeca com "rtm-". */
-const VERSAO = 'rtm-2.2.0';
+const VERSAO = 'rtm-2.3.0';
 const LOCAIS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 const DE_FORA = [
   'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css',
