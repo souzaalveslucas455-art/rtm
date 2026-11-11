@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Band Auditoria</title>
+<meta name="theme-color" content="#1F2023">
+<meta name="robots" content="noindex">
+<link rel="icon" href="icon-192.png">
+<style>
+:root{
+  --verm:#E4002B; --verm-esc:#B80022; --verm-bg:#FDE7EC;
+  --ink:#1A1D21; --ink2:#5B6270; --ink3:#9CA3AF; --linha:#E5E7EB; --papel:#FFF; --fundo:#F1F2F4;
+  --lado:#1F2023; --lado2:#2B2C30; --lado-txt:#C9CBD1;
+  --verde:#0F7A52; --verde-bg:#E6F4EE; --amb:#96620F; --amb-bg:#FDF2DC; --azul:#1E6FD9; --azul-bg:#E9F1FC;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{font-family:var(--sans);font-size:14px;color:var(--ink);background:var(--fundo);-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--azul);outline-offset:2px}
+.esc{display:none!important}
+
+/* ---------- entrada ---------- */
+#entrada{position:fixed;inset:0;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(340px,.9fr);background:var(--lado)}
+#entrada .lado{padding:56px;color:#fff;display:flex;flex-direction:column;justify-content:space-between;
+  background:radial-gradient(120% 90% at 0% 100%,#5a0a19 0%,rgba(90,10,25,0) 60%),linear-gradient(160deg,#1F2023 0%,#141518 100%)}
+.lg{width:46px;height:46px;border-radius:12px;background:var(--verm);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:17px;flex:none}
+#entrada .lado h1{font-size:44px;line-height:1.05;margin:0;letter-spacing:-.02em;max-width:13ch}
+#entrada .lado h1 span{color:#ff5a6e}
+#entrada .lado p{color:#b9bcc4;max-width:46ch;line-height:1.55;margin:18px 0 0}
+#entrada .lado small{color:#7d818b}
+#entrada .form{background:var(--papel);display:flex;flex-direction:column;justify-content:center;padding:56px}
+#entrada .form h2{margin:0 0 6px;font-size:22px} #entrada .form .sub{color:var(--ink2);margin:0 0 26px}
+#entrada label{display:block;font-weight:600;font-size:13px;margin:14px 0 6px}
+#entrada input{width:100%;border:1px solid var(--linha);border-radius:10px;padding:12px 13px;background:#fff}
+#entrada .bt{width:100%;margin-top:22px;padding:12px}
+.alerta{background:var(--verm-bg);color:var(--verm-esc);border-radius:10px;padding:10px 12px;margin-bottom:6px;font-size:13px;line-height:1.45}
+@media(max-width:820px){#entrada{grid-template-columns:1fr}#entrada .lado{display:none}#entrada .form{padding:28px 20px}}
+
+/* ---------- estrutura ---------- */
+.bt{border:1px solid var(--linha);background:#fff;border-radius:10px;padding:8px 13px;font-weight:600}
+.bt:hover{background:#F7F8F9}
+.bt.verm{background:var(--verm);border-color:var(--verm);color:#fff}.bt.verm:hover{background:var(--verm-esc)}
+.bt.fino{padding:5px 10px;font-size:12.5px;font-weight:600}
+.bt:disabled{opacity:.55;cursor:default}
+header.topo{background:var(--lado);color:#fff;position:sticky;top:0;z-index:5}
+.topo .faixa{max-width:1180px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.topo .marca{display:flex;align-items:center;gap:11px;margin-right:auto}
+.topo .marca .lg{width:36px;height:36px;border-radius:10px;font-size:14px}
+.topo .marca b{display:block;font-size:15px}.topo .marca small{color:var(--lado-txt);font-size:12px}
+.topo select,.topo .bt{background:var(--lado2);border-color:#3A3B40;color:#fff}
+.topo select{border-radius:10px;padding:8px 10px;border:1px solid #3A3B40}
+.topo .bt:hover{background:#34353A}
+.topo .quem{color:var(--lado-txt);font-size:12.5px;text-align:right;line-height:1.3}
+.abas{max-width:1180px;margin:0 auto;padding:0 20px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.abas::-webkit-scrollbar{display:none}
+.abas button{background:none;border:0;color:var(--lado-txt);padding:10px 14px;border-bottom:3px solid transparent;font-weight:600;white-space:nowrap}
+.abas button:hover{color:#fff}
+.abas button[aria-selected="true"]{color:#fff;border-bottom-color:var(--verm)}
+.abas .cont{display:inline-block;min-width:20px;padding:1px 6px;border-radius:99px;font-size:11.5px;margin-left:6px;background:#3A3B40;color:#fff}
+.abas .cont.erro-c{background:var(--verm)}.abas .cont.aviso-c{background:#C98A1B}
+main{max-width:1180px;margin:0 auto;padding:22px 20px 60px}
+h1.tit{font-size:22px;margin:0 0 4px;letter-spacing:-.01em}
+p.sub{color:var(--ink2);margin:0 0 18px;line-height:1.5}
+
+/* ---------- cartoes ---------- */
+.grade{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-bottom:18px}
+.cartao{background:var(--papel);border:1px solid var(--linha);border-radius:14px;padding:18px}
+.cartao h2{font-size:16px;margin:0}
+.cab{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.farol{width:14px;height:14px;border-radius:50%;flex:none;box-shadow:0 0 0 4px rgba(0,0,0,.05)}
+.farol.erro{background:var(--verm)}.farol.aviso{background:#E0A021}.farol.ok{background:#1FA672}.farol.falha{background:var(--ink3)}
+.estado{font-size:12.5px;color:var(--ink2)}
+.nums{display:flex;gap:18px;flex-wrap:wrap;margin:6px 0 14px}
+.nums div b{display:block;font-size:22px;letter-spacing:-.01em}.nums div span{font-size:12px;color:var(--ink2)}
+.lista{list-style:none;margin:0;padding:0;border-top:1px solid var(--linha)}
+.lista li{border-bottom:1px solid var(--linha)}
+.lista button{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:10px;width:100%;padding:9px 2px}
+.lista button:hover{background:#FAFAFB}
+.lista button:focus-visible{outline:2px solid var(--azul)}
+.lista .nome{flex:1;min-width:0}
+.selo{display:inline-block;min-width:34px;text-align:center;padding:2px 9px;border-radius:99px;font-weight:700;font-size:12.5px}
+.selo.erro{background:var(--verm-bg);color:var(--verm-esc)}
+.selo.aviso{background:var(--amb-bg);color:var(--amb)}
+.selo.info{background:var(--azul-bg);color:var(--azul)}
+.selo.ok{background:var(--verde-bg);color:var(--verde)}
+.nota{background:var(--azul-bg);color:#17467F;border-radius:12px;padding:12px 14px;line-height:1.5;margin-bottom:18px}
+.nota b{color:#0F3566}
+
+/* ---------- conferencias ---------- */
+.conf{background:var(--papel);border:1px solid var(--linha);border-radius:14px;margin-bottom:10px;overflow:hidden;scroll-margin-top:150px}
+.conf>button{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px}
+.conf>button:hover{background:#FAFAFB}
+.conf>button:focus-visible{outline:2px solid var(--azul);outline-offset:-2px}
+.conf .t{flex:1;min-width:0}.conf .t b{display:block;font-size:14.5px}.conf .t small{color:var(--ink2);font-size:12.5px}
+.conf .seta{color:var(--ink3);transition:transform .15s;flex:none}
+.conf.aberta .seta{transform:rotate(90deg)}
+.conf .corpo{border-top:1px solid var(--linha);padding:14px 16px 16px}
+.conf .exp{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px 22px;margin-bottom:12px;line-height:1.5}
+.conf .exp div b{display:block;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink2);margin-bottom:2px}
+.barra{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.barra input{border:1px solid var(--linha);border-radius:9px;padding:7px 10px;min-width:220px;flex:1;max-width:340px;background:#fff}
+.barra .qt{color:var(--ink2);font-size:12.5px;margin-left:auto}
+.rol{overflow:auto;max-height:440px;border:1px solid var(--linha);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--linha);white-space:nowrap}
+td.larga{white-space:normal;min-width:180px}
+th{position:sticky;top:0;background:#F7F8F9;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink2)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+tr:last-child td{border-bottom:0}
+.vazio{color:var(--ink2);padding:6px 0}
+.carreg{padding:60px 0;text-align:center;color:var(--ink2)}
+#toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;opacity:0;pointer-events:none;transition:.2s;z-index:20;max-width:90vw}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+@media(max-width:640px){.topo .quem{display:none}main{padding:16px 12px 50px}.topo .faixa{padding:10px 12px}.abas{padding:0 8px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div id="entrada"></div>
+<div id="app" class="esc">
+  <header class="topo">
+    <div class="faixa">
+      <div class="marca"><div class="lg">BA</div><div><b>Band Auditoria</b><small>Repositores e desenvolvedores</small></div></div>
+      <label class="esc" for="dias">Período</label>
+      <select id="dias" aria-label="Período">
+        <option value="7">Últimos 7 dias</option>
+        <option value="30">Últimos 30 dias</option>
+        <option value="90">Últimos 90 dias</option>
+      </select>
+      <button class="bt" id="batualiza">Atualizar</button>
+      <div class="quem" id="quem"></div>
+      <button class="bt" id="bsair">Sair</button>
+    </div>
+    <div class="abas" id="abas" role="tablist"></div>
+  </header>
+  <main id="main"></main>
+</div>
+<div id="toast" role="status"></div>
+
+<script>
+/* ============================================================================
+   Band Auditoria: painel independente de auditoria dos dois apps de campo.
+   So LE os dados do merch (repositores) e do RTM (desenvolvedores), pelas
+   funcoes do esquema "auditoria" do Supabase. A chave abaixo e a publicavel:
+   o que protege os dados e o login de administrador e as regras do banco.
+   Tudo o que esta pagina guarda no navegador usa chaves com o prefixo aud_.
+   ============================================================================ */
+const VERSAO='1.0.0';
+const SUPA={url:'https://kqpdledhaghuzuwjkvrf.supabase.co',chave:'sb_publishable_dMdB5b_G5X5TnXemexGIXQ_GWXS6cid'};
+const K_SESSAO='aud_sessao',K_EMAIL='aud_email',K_DIAS='aud_dias';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>Math.round(+n||0).toLocaleString('pt-BR');
+function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),3600)}
+function guarda(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}}
+function le(k){try{return localStorage.getItem(k)}catch(e){return null}}
+
+/* ---------------- o que cada conferencia quer dizer ----------------
+   nivel: erro (corrigir), aviso (conferir), info (saber).
+   cols: [campo, titulo, formato]. Formatos: data, m (metros), n (numero), larga. */
+const CONF={
+  rep:[
+    {id:'cargas',nivel:'erro',t:'Cargas do merch',todas:true,
+     oque:'A carga do portal (todo dia às 06:00) e a carga de vendas diárias.',
+     fazer:'A do portal deve dizer CONCLUIDA / APLICADO, de hoje ou de ontem. Se não disser, rode de novo pelo botão do portal. Vendas diárias com mais de 4 dias: importar de novo.',
+     cols:[['item','Carga'],['ultima','Última vez','data'],['situacao','Situação'],['problema','Está certo?','okno']]},
+    {id:'foto_nao_subiu',nivel:'erro',t:'Fotos que não chegaram ao servidor',
+     oque:'O registro existe no banco, mas o arquivo da foto não está no armazenamento há mais de 24 horas.',
+     fazer:'Pedir ao repositor para abrir o app com internet, para ele enviar o que ficou na fila. Se o app foi reinstalado ou o aparelho trocado, a foto pode ter se perdido.',
+     cols:[['data','Dia','data'],['origem','Onde'],['loja','Loja','larga'],['loja_codigo','Código'],['arquivo','Arquivo']]},
+    {id:'visita_aberta',nivel:'aviso',t:'Visitas de dias anteriores ainda em andamento',
+     oque:'O repositor iniciou a visita e ela nunca foi finalizada.',
+     fazer:'Conferir com o repositor ou com o líder se a visita foi feita. Pode ser esquecimento de finalizar ou o app fechado no meio.',
+     cols:[['data','Dia','data'],['rota','Rota'],['repositor','Repositor','larga'],['loja','Loja','larga'],['inicio','Início']]},
+    {id:'fora_da_cerca',nivel:'aviso',t:'Visitas iniciadas ou finalizadas fora da cerca',
+     oque:d=>'A distância entre o GPS do aparelho e a loja passou da cerca de '+fmt(d.raio_m||100)+' m, no início ou no fim.',
+     fazer:'Distâncias de muitos quilômetros costumam ser coordenada errada da loja (veja a conferência seguinte). Distâncias de centenas de metros pedem conversa com o repositor.',
+     cols:[['data','Dia','data'],['rota','Rota'],['repositor','Repositor','larga'],['loja','Loja','larga'],['inicio_m','No início','m'],['fim_m','No fim','m']]},
+    {id:'coordenada_suspeita',nivel:'aviso',t:'Lojas com coordenada provavelmente errada',
+     oque:'Todas as visitas da loja começaram a mais de 1 km do endereço cadastrado.',
+     fazer:'O mais provável é a coordenada da loja estar errada no cadastro. Pedir a correção no Portal Merchandising.',
+     cols:[['loja','Loja','larga'],['loja_codigo','Código'],['visitas','Visitas','n'],['menor_m','Menor distância','m']]},
+    {id:'sem_gps',nivel:'aviso',t:'Visitas sem GPS',
+     oque:'A visita foi gravada sem a posição do aparelho.',
+     fazer:'Conferir se a localização do celular está ligada e liberada para o app.',
+     cols:[['data','Dia','data'],['rota','Rota'],['repositor','Repositor','larga'],['loja','Loja','larga']]},
+    {id:'rota_parada',nivel:'aviso',t:'Rotas que usam o app e estão há 4 dias ou mais sem visita',
+     oque:'A rota já registrou visita no período, tem repositor hoje e parou de registrar.',
+     fazer:'Conferir com o líder: férias, troca de rota, problema no aparelho ou no login.',
+     cols:[['rota','Rota'],['repositor','Repositor hoje','larga'],['ultima','Última visita','data'],['dias','Dias parada','n']]},
+    {id:'visita_curta',nivel:'info',t:'Visitas concluídas em menos de 3 minutos',
+     oque:'A visita foi aberta e finalizada quase em seguida.',
+     fazer:'Olhar no painel do merch o que foi registrado nessa visita.',
+     cols:[['data','Dia','data'],['rota','Rota'],['repositor','Repositor','larga'],['loja','Loja','larga'],['inicio','Início'],['fim','Fim']]},
+    {id:'lideranca_sem_acesso',nivel:'info',t:'Líderes e gerentes ativos que nunca entraram',
+     oque:'A pessoa está ativa no portal, mas ainda não criou a conta no app da liderança.',
+     fazer:'Liberar o acesso pelo cartão Acessos do painel do merch, quando for a hora.',
+     cols:[['nome','Nome','larga'],['perfil','Perfil']]}
+  ],
+  dev:[
+    {id:'foto_nao_subiu',nivel:'erro',t:'Fotos que não chegaram ao servidor',
+     oque:'A visita aponta para uma foto, mas o arquivo não está no armazenamento há mais de 24 horas.',
+     fazer:'Pedir ao desenvolvedor para abrir o app com internet. O app reenvia as fotos que ficaram no aparelho.',
+     cols:[['data','Dia','data'],['dev','Login'],['pdv','PDV','larga'],['bairro','Bairro']]},
+    {id:'dev_parado',nivel:'aviso',t:'Desenvolvedores sem visita há 4 dias ou mais',
+     oque:'Desenvolvedor ativo que nunca entrou, nunca enviou visita ou parou de enviar.',
+     fazer:'Conferir com a pessoa: login, senha, roteiro publicado para ela e internet no aparelho.',
+     cols:[['login','Login'],['nome','Nome','larga'],['ultima','Última visita','data'],['situacao','Situação']]},
+    {id:'atraso_envio',nivel:'aviso',t:'Visitas que chegaram mais de 6 horas depois',
+     oque:'O servidor recebeu a visita muito depois da hora em que ela foi feita.',
+     fazer:'Costuma ser falta de sinal ou o app fechado antes de sincronizar. Se repetir com a mesma pessoa, olhar o aparelho.',
+     cols:[['data','Dia','data'],['dev','Login'],['pdv','PDV','larga'],['horas','Horas de atraso','n']]},
+    {id:'longe',nivel:'aviso',t:'Visitas a mais de 300 m do endereço',
+     oque:'O GPS do aparelho estava longe do endereço do estabelecimento.',
+     fazer:'Abrir a visita no painel do RTM e conferir a foto e o mapa.',
+     cols:[['data','Dia','data'],['dev','Login'],['pdv','PDV','larga'],['bairro','Bairro'],['dist_m','Distância','m']]},
+    {id:'sem_gps',nivel:'aviso',t:'Visitas sem GPS',
+     oque:'A visita foi gravada sem a posição do aparelho.',
+     fazer:'Conferir se a localização do celular está ligada e liberada para o app.',
+     cols:[['data','Dia','data'],['dev','Login'],['pdv','PDV','larga'],['bairro','Bairro']]},
+    {id:'sem_foto',nivel:'aviso',t:'Visitas sem foto',
+     oque:'A visita não tem foto nenhuma.',
+     fazer:'A foto é obrigatória no app. Se aparecer aqui, vale investigar a versão do app da pessoa.',
+     cols:[['data','Dia','data'],['dev','Login'],['pdv','PDV','larga'],['bairro','Bairro']]},
+    {id:'fora_do_dia',nivel:'info',t:'Visitas fora do dia planejado',
+     oque:'A visita foi feita em dia diferente do dia do roteiro.',
+     fazer:'Só acompanhar. Muitas visitas fora do dia indicam roteiro apertado ou reagendamento.',
+     cols:[['data','Dia','data'],['dev','Login'],['pdv','PDV','larga'],['planejado','Planejado para']]},
+    {id:'alterada',nivel:'info',t:'Visitas alteradas mais de uma vez',
+     oque:'A mesma visita foi regravada com conteúdo diferente duas vezes ou mais. A versão anterior fica guardada.',
+     fazer:'Só acompanhar. Uma alteração é normal (correção); muitas na mesma visita pedem conversa.',
+     cols:[['data','Dia','data'],['dev','Login'],['pdv','PDV','larga'],['vezes','Alterações','n'],['ultima_alteracao','Última alteração','data']]}
+  ]
+};
+const LADOS={rep:{t:'Repositores',sub:'App do merch',fn:'repositores'},dev:{t:'Desenvolvedores',sub:'App do RTM',fn:'desenvolvedores'}};
+const ROTULO={erro:'Corrigir',aviso:'Conferir',info:'Saber'};
+
+/* ---------------- servidor ---------------- */
+let SESSAO=null;try{SESSAO=JSON.parse(le(K_SESSAO)||'null')}catch(e){}
+function guardaSessao(j){
+  SESSAO=j?{access_token:j.access_token,refresh_token:j.refresh_token,expira:Date.now()+((+j.expires_in||3600)*1000)}:null;
+  guarda(K_SESSAO,SESSAO?JSON.stringify(SESSAO):null);
+}
+function erroDe(j,status){
+  const m=String((j&&(j.message||j.msg||j.error_description||j.error))||('erro '+status));
+  const cod=String((j&&j.code)||'');
+  if(/Invalid login credentials|invalid_credentials|invalid_grant/i.test(m))return 'E-mail ou senha incorretos.';
+  if(cod==='PGRST106'||/schema must be one of/i.test(m))
+    return 'O esquema "auditoria" ainda não foi liberado no Supabase. Em Project Settings > Data API > Exposed schemas, acrescente "auditoria".';
+  if(cod==='PGRST202'||/Could not find the function/i.test(m))
+    return 'As funções de auditoria ainda não existem no banco. Falta aplicar o arquivo sql/a01-auditoria.sql.';
+  return m;
+}
+async function pede(caminho,opc){
+  let r;try{r=await fetch(SUPA.url+caminho,opc)}catch(e){throw new Error('Sem conexão com o servidor.')}
+  const x=await r.text();let j=null;try{j=x?JSON.parse(x):null}catch(e){}
+  return {ok:r.ok,status:r.status,j};
+}
+function semSessao(){const e=new Error('Sua sessão expirou. Entre de novo.');e.semSessao=true;return e}
+async function autentica(email,senha){
+  const r=await pede('/auth/v1/token?grant_type=password',{method:'POST',
+    headers:{apikey:SUPA.chave,'Content-Type':'application/json'},body:JSON.stringify({email,password:senha})});
+  if(!r.ok)throw new Error(erroDe(r.j,r.status));
+  guardaSessao(r.j);
+}
+let renovando=null;
+function renova(){
+  if(renovando)return renovando;
+  if(!SESSAO||!SESSAO.refresh_token)return Promise.reject(semSessao());
+  renovando=pede('/auth/v1/token?grant_type=refresh_token',{method:'POST',
+      headers:{apikey:SUPA.chave,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:SESSAO.refresh_token})})
+    .then(r=>{if(r.ok){guardaSessao(r.j);return}
+      if(r.status>=400&&r.status<500){guardaSessao(null);throw semSessao()}
+      throw new Error(erroDe(r.j,r.status))})
+    .finally(()=>{renovando=null});
+  return renovando;
+}
+async function token(){if(!SESSAO)throw semSessao();if(Date.now()>SESSAO.expira-60000)await renova();return SESSAO.access_token}
+async function rpc(nome,args,tentou){
+  const tk=await token();
+  const r=await pede('/rest/v1/rpc/'+nome,{method:'POST',headers:{apikey:SUPA.chave,Authorization:'Bearer '+tk,
+    'Content-Type':'application/json','Content-Profile':'auditoria','Accept-Profile':'auditoria'},body:JSON.stringify(args||{})});
+  if(r.status===401&&!tentou){await renova();return rpc(nome,args,true)}
+  if(r.status===401){guardaSessao(null);throw semSessao()}
+  if(!r.ok)throw new Error(erroDe(r.j,r.status));
+  return r.j;
+}
+
+/* ---------------- estado ---------------- */
+let EU=null,ABA='geral',DIAS=+le(K_DIAS)||30,CARREGANDO=false,ATUALIZADO=null;
+if([7,30,90].indexOf(DIAS)<0)DIAS=30;
+const DADOS={rep:null,dev:null},FALHA={rep:null,dev:null};
+const ABERTAS={},BUSCA={};
+
+/* ---------------- entrada ---------------- */
+function telaEntrada(erro){
+  $('app').classList.add('esc');$('entrada').classList.remove('esc');
+  $('entrada').innerHTML=
+   '<div class="lado"><div class="lg">BA</div>'+
+     '<div><h1>O que deu errado em campo, <span>antes de virar problema</span>.</h1>'+
+     '<p>Auditoria dos dois apps de campo num lugar só: o dos repositores (merch) e o dos desenvolvedores (RTM). '+
+     'Esta página só lê; nada é alterado por aqui.</p></div>'+
+     '<small>Band Auditoria · versão '+VERSAO+'</small></div>'+
+   '<div class="form"><h2>Entrar na auditoria</h2><p class="sub">Use a conta de administrador.</p>'+
+     (erro?'<div class="alerta" role="alert">'+esc(erro)+'</div>':'')+
+     '<label for="em">E-mail</label><input id="em" type="email" autocomplete="username" value="'+esc(le(K_EMAIL)||'')+'">'+
+     '<label for="se">Senha</label><input id="se" type="password" autocomplete="current-password">'+
+     '<button class="bt verm" id="bentra">Entrar</button></div>';
+  const vai=()=>entra();
+  $('bentra').onclick=vai;
+  $('se').onkeydown=e=>{if(e.key==='Enter')vai()};
+  $('em').onkeydown=e=>{if(e.key==='Enter')$('se').focus()};
+  ($('em').value?$('se'):$('em')).focus();
+}
+async function entra(){
+  const email=$('em').value.trim().toLowerCase(),senha=$('se').value;
+  if(!email||!senha){telaEntrada('Preencha o e-mail e a senha.');return}
+  $('bentra').disabled=true;$('bentra').textContent='Entrando…';
+  try{await autentica(email,senha);guarda(K_EMAIL,email);await abre()}
+  catch(e){telaEntrada(e.message)}
+}
+async function abre(){
+  try{EU=await rpc('quem_sou')}
+  catch(e){guardaSessao(null);telaEntrada(e.semSessao?'':e.message);return}
+  $('entrada').classList.add('esc');$('entrada').innerHTML='';$('app').classList.remove('esc');
+  $('quem').innerHTML=esc(EU.nome||'Administrador')+'<br>'+esc(EU.email||'');
+  $('dias').value=String(DIAS);
+  desenha();carrega();
+}
+function sai(){guardaSessao(null);EU=null;DADOS.rep=DADOS.dev=null;telaEntrada('')}
+
+/* ---------------- dados ---------------- */
+async function carrega(){
+  if(CARREGANDO)return;CARREGANDO=true;$('batualiza').disabled=true;desenha();
+  const lados=Object.keys(LADOS);
+  const r=await Promise.allSettled(lados.map(l=>rpc(LADOS[l].fn,{p_dias:DIAS})));
+  let caiu=false;
+  r.forEach((x,i)=>{const l=lados[i];
+    if(x.status==='fulfilled'){DADOS[l]=x.value;FALHA[l]=null}
+    else{FALHA[l]=x.reason.message;if(x.reason.semSessao)caiu=true}});
+  CARREGANDO=false;$('batualiza').disabled=false;ATUALIZADO=new Date();
+  if(caiu){telaEntrada('Sua sessão expirou. Entre de novo.');return}
+  desenha();
+}
+const total=(d,c)=>d&&d[c.id]?(+d[c.id].total||0):0;
+function farol(l){
+  const d=DADOS[l];if(!d)return FALHA[l]?'falha':'';
+  let f='ok';
+  CONF[l].forEach(c=>{const n=total(d,c);if(!n)return;
+    if(c.nivel==='erro')f='erro';else if(c.nivel==='aviso'&&f!=='erro')f='aviso'});
+  return f;
+}
+function pendencias(l,nivel){const d=DADOS[l];if(!d)return 0;return CONF[l].filter(c=>c.nivel===nivel&&total(d,c)>0).length}
+
+/* ---------------- formatos ---------------- */
+function data(v){const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(String(v||''));return m?m[3]+'/'+m[2]+'/'+m[1]:(v==null?'':String(v))}
+function metros(v){if(v==null||v==='')return '';const n=+v;return n>=10000?fmt(n/1000)+' km':n>=1000?(n/1000).toLocaleString('pt-BR',{maximumFractionDigits:1})+' km':fmt(n)+' m'}
+function celula(v,f){
+  if(f==='data')return data(v);
+  if(f==='m')return metros(v);
+  if(f==='n')return v==null?'':fmt(v);
+  if(f==='okno')return v?'Não':'Sim';
+  return v==null?'':(ACENTO[v]||String(v));
+}
+/* o SQL so tem ASCII; os rotulos que vem do banco ganham o acento aqui */
+const ACENTO={'Vendas diarias':'Vendas diárias','Cargas com falha no periodo':'Cargas com falha no período',
+  'Solicitacao':'Solicitação','Ocorrencia':'Ocorrência'};
+const ehNum=f=>f==='m'||f==='n';
+function periodo(d){return d&&d.desde?'de '+data(d.desde)+' a '+data(d.hoje):''}
+
+/* ---------------- telas ---------------- */
+function desenha(){
+  const abas=[['geral','Visão geral'],['rep','Repositores'],['dev','Desenvolvedores'],['erros','Erros dos apps']];
+  $('abas').innerHTML=abas.map(a=>{
+    let c='';
+    if(LADOS[a[0]]&&DADOS[a[0]]){const e=pendencias(a[0],'erro'),w=pendencias(a[0],'aviso');
+      if(e+w)c='<span class="cont '+(e?'erro-c':'aviso-c')+'">'+(e+w)+'</span>'}
+    return '<button role="tab" data-aba="'+a[0]+'" aria-selected="'+(ABA===a[0])+'">'+a[1]+c+'</button>'}).join('');
+  const m=$('main');
+  if(CARREGANDO&&!DADOS.rep&&!DADOS.dev){m.innerHTML='<div class="carreg">Conferindo os dados dos dois apps…</div>';return}
+  m.innerHTML=ABA==='geral'?telaGeral():ABA==='erros'?telaErros():telaLado(ABA);
+}
+function telaGeral(){
+  let h='<h1 class="tit">Visão geral</h1><p class="sub">Conferências automáticas dos últimos '+DIAS+' dias. '+
+    (ATUALIZADO?'Atualizado às '+ATUALIZADO.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+'.':'')+
+    (CARREGANDO?' Atualizando…':'')+'</p><div class="grade">';
+  Object.keys(LADOS).forEach(l=>{
+    const d=DADOS[l],f=farol(l),L=LADOS[l];
+    const estado=f==='erro'?'Tem coisa para corrigir':f==='aviso'?'Tem coisa para conferir':f==='ok'?'Tudo certo nas conferências':f==='falha'?'Não consegui ler':'Carregando…';
+    h+='<section class="cartao"><div class="cab"><span class="farol '+f+'"></span><div><h2>'+L.t+'</h2><div class="estado">'+L.sub+' · '+estado+'</div></div></div>';
+    if(!d){h+=FALHA[l]?'<div class="alerta" role="alert">'+esc(FALHA[l])+'</div>':'<div class="vazio">Carregando…</div>';h+='</section>';return}
+    const r=d.resumo||{};
+    h+='<div class="nums"><div><b>'+fmt(r.visitas)+'</b><span>visitas no período</span></div>'+
+       (l==='rep'?'<div><b>'+fmt(r.repositores)+'</b><span>repositores</span></div><div><b>'+fmt(r.lojas)+'</b><span>lojas</span></div>'
+                 :'<div><b>'+fmt(r.desenvolvedores)+'</b><span>desenvolvedores com visita</span></div>')+
+       '<div><b>'+(r.ultima_visita?data(r.ultima_visita).slice(0,5):'–')+'</b><span>última visita</span></div></div>';
+    h+='<ul class="lista">'+CONF[l].map(c=>{const n=total(d,c);
+      return '<li><button data-ir="'+l+'" data-conf="'+c.id+'"><span class="nome">'+esc(c.t)+'</span>'+
+        '<span class="selo '+(n?c.nivel:'ok')+'">'+(n?fmt(n):'ok')+'</span></button></li>'}).join('')+'</ul></section>';
+  });
+  h+='</div><div class="nota"><b>Erros dos apps e aparelhos:</b> ainda não aparecem aqui. Hoje os apps não registram o erro que acontece no celular. '+
+     'Isso chega na fase 2 (app dos desenvolvedores) e na fase 3 (apps do merch).</div>';
+  return h;
+}
+function telaErros(){
+  return '<h1 class="tit">Erros dos apps</h1><p class="sub">Erros que acontecem no celular, versão do app e último acesso de cada aparelho.</p>'+
+    '<div class="nota"><b>Ainda não disponível.</b> Hoje nenhum dos apps registra o erro que acontece no celular: ele aparece só no próprio aparelho. '+
+    'Esta tela passa a funcionar quando os apps começarem a mandar esses registros: fase 2 para o app dos desenvolvedores e fase 3 para os apps do merch.</div>';
+}
+function telaLado(l){
+  const d=DADOS[l],L=LADOS[l];
+  let h='<h1 class="tit">'+L.t+'</h1><p class="sub">'+L.sub+' · '+(d?periodo(d):'')+(CARREGANDO?' · atualizando…':'')+'</p>';
+  if(!d)return h+(FALHA[l]?'<div class="alerta" role="alert">'+esc(FALHA[l])+'</div>':'<div class="carreg">Carregando…</div>');
+  if(FALHA[l])h+='<div class="alerta" role="alert">Não consegui atualizar: '+esc(FALHA[l])+' Mostrando a última leitura.</div>';
+  if(l==='dev'&&d.roteiro)h+='<div class="nota"><b>Roteiro em uso:</b> publicado em '+data(d.roteiro.publicado_em)+', com '+fmt(d.roteiro.clientes)+
+    ' clientes; '+fmt(d.roteiro.visitados)+' já têm visita.</div>';
+  CONF[l].forEach(c=>{h+=blocoConf(l,c,d)});
+  return h;
+}
+function linhasDe(l,c,d){
+  const todas=(d[c.id]&&d[c.id].linhas)||[];
+  const q=(BUSCA[l+'.'+c.id]||'').trim().toLowerCase();
+  if(!q)return todas;
+  return todas.filter(x=>c.cols.some(k=>celula(x[k[0]],k[2]).toLowerCase().indexOf(q)>=0));
+}
+function blocoConf(l,c,d){
+  const ch=l+'.'+c.id,n=total(d,c),aberta=!!ABERTAS[ch];
+  const todas=(d[c.id]&&d[c.id].linhas)||[];
+  let h='<section class="conf'+(aberta?' aberta':'')+'" id="conf-'+l+'-'+c.id+'">'+
+    '<button data-abre="'+ch+'" aria-expanded="'+aberta+'"><span class="selo '+(n?c.nivel:'ok')+'">'+(n?fmt(n):'ok')+'</span>'+
+    '<span class="t"><b>'+esc(c.t)+'</b><small>'+(n?ROTULO[c.nivel]:'Nada encontrado')+'</small></span><span class="seta" aria-hidden="true">▶</span></button>';
+  if(!aberta)return h+'</section>';
+  const oque=typeof c.oque==='function'?c.oque(d):c.oque;
+  h+='<div class="corpo"><div class="exp"><div><b>O que é</b>'+esc(oque)+'</div><div><b>O que fazer</b>'+esc(c.fazer)+'</div></div>';
+  if(!todas.length)return h+'<div class="vazio">Nenhum caso no período.</div></div></section>';
+  const lin=linhasDe(l,c,d);
+  h+='<div class="barra"><input type="search" placeholder="Filtrar nesta lista" aria-label="Filtrar nesta lista" data-busca="'+ch+'" value="'+esc(BUSCA[ch]||'')+'">'+
+     '<button class="bt fino" data-csv="'+ch+'">Baixar em Excel (CSV)</button>'+
+     '<span class="qt">'+fmt(lin.length)+' de '+fmt(todas.length)+(n>todas.length&&!c.todas?' (a lista mostra as primeiras '+fmt(todas.length)+' de '+fmt(n)+')':'')+'</span></div>';
+  h+='<div class="rol" data-rol="'+ch+'">'+tabela(c,lin)+'</div></div></section>';
+  return h;
+}
+function tabela(c,lin){
+  return '<table><thead><tr>'+c.cols.map(k=>'<th'+(ehNum(k[2])?' class="num"':'')+'>'+esc(k[1])+'</th>').join('')+'</tr></thead><tbody>'+
+    (lin.length?lin.map(x=>'<tr>'+c.cols.map(k=>'<td class="'+(ehNum(k[2])?'num':k[2]==='larga'?'larga':'')+'">'+esc(celula(x[k[0]],k[2]))+'</td>').join('')+'</tr>').join('')
+               :'<tr><td colspan="'+c.cols.length+'" class="vazio">Nada com esse filtro.</td></tr>')+'</tbody></table>';
+}
+function acha(ch){const p=ch.split('.');return {l:p[0],c:CONF[p[0]].find(x=>x.id===p[1])}}
+function baixaCsv(ch){
+  const a=acha(ch),d=DADOS[a.l];if(!a.c||!d)return;
+  const lin=linhasDe(a.l,a.c,d);
+  const cel=v=>{let s=String(v==null?'':v);
+    if(/^[=+\-@\t\r]/.test(s))s="'"+s;            /* nao deixa o Excel tratar texto como formula */
+    return '"'+s.replace(/"/g,'""')+'"'};
+  const txt=[a.c.cols.map(k=>cel(k[1])).join(';')].concat(lin.map(x=>a.c.cols.map(k=>cel(celula(x[k[0]],k[2]))).join(';'))).join('\r\n');
+  const url=URL.createObjectURL(new Blob(['﻿'+txt],{type:'text/csv;charset=utf-8'}));
+  const el=document.createElement('a');el.href=url;el.download='auditoria-'+a.l+'-'+a.c.id+'-'+(d.hoje||'')+'.csv';
+  document.body.appendChild(el);el.click();el.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);
+  toast('Arquivo baixado: '+fmt(lin.length)+' linhas.');
+}
+
+/* ---------------- cliques ---------------- */
+$('abas').addEventListener('click',e=>{const b=e.target.closest('[data-aba]');if(!b)return;ABA=b.dataset.aba;desenha();window.scrollTo(0,0)});
+$('main').addEventListener('click',e=>{
+  const ir=e.target.closest('[data-ir]');
+  if(ir){ABA=ir.dataset.ir;ABERTAS[ABA+'.'+ir.dataset.conf]=true;desenha();
+    const el=$('conf-'+ABA+'-'+ir.dataset.conf);if(el)el.scrollIntoView({block:'start'});return}
+  const ab=e.target.closest('[data-abre]');
+  if(ab){ABERTAS[ab.dataset.abre]=!ABERTAS[ab.dataset.abre];desenha();
+    const el=document.querySelector('[data-abre="'+ab.dataset.abre+'"]');if(el)el.focus();return}
+  const cs=e.target.closest('[data-csv]');if(cs)baixaCsv(cs.dataset.csv);
+});
+$('main').addEventListener('input',e=>{
+  const b=e.target.closest('[data-busca]');if(!b)return;
+  const ch=b.dataset.busca;BUSCA[ch]=b.value;
+  /* troca so a tabela, para o cursor nao sair do campo */
+  const a=acha(ch),d=DADOS[a.l],rol=document.querySelector('[data-rol="'+ch+'"]');
+  if(rol&&d){const lin=linhasDe(a.l,a.c,d);rol.innerHTML=tabela(a.c,lin);
+    const qt=b.parentNode.querySelector('.qt');if(qt)qt.textContent=fmt(lin.length)+' de '+fmt(((d[a.c.id]||{}).linhas||[]).length)}
+});
+$('dias').addEventListener('change',e=>{DIAS=+e.target.value||30;guarda(K_DIAS,String(DIAS));carrega()});
+$('batualiza').addEventListener('click',carrega);
+$('bsair').addEventListener('click',sai);
+
+/* ---------------- partida ---------------- */
+if(SESSAO)abre();else telaEntrada('');
+</script>
+</body>
+</html>
