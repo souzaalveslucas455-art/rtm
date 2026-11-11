@@ -621,11 +621,15 @@ const nomeDev=v=>{const d=D.devs.find(x=>x.login===v.devLogin);return d?d.nome:(
 
 /* ---------------- módulo: Visitas ---------------- */
 const FV={dev:'',per:'30',sit:'',q:''};
+/* as respostas do app ("O estabelecimento existe neste endereço?") viram situações */
 function situacao(v){
   const e=v.existe||'';
-  if(/cancelad/i.test(e))return ['Cancelada','c'];
+  if(/cancelad/i.test(e)||v.cancelada)return ['Cancelada','c'];
+  if(/^Já tem cadastro BAND/i.test(e))return ['Já é cliente','v'];
   if(/^Sim/i.test(e))return /agora/i.test(v.interesse||'')?['Quer cadastro','v']:['Funcionando','b'];
-  if(/fechad|não existe|nao existe|mudou/i.test(e))return ['Não encontrado','r'];
+  if(/^Existe, mas estava fechado/i.test(e))return ['Fechado na hora','a'];
+  if(/mudou de ramo/i.test(e))return ['Mudou de ramo','a'];
+  if(/encerrou|não localizado|nao localizado|não existe|nao existe/i.test(e))return ['Não encontrado','r'];
   return [e||'Registrada','a'];
 }
 function visitasFiltradas(){
@@ -647,7 +651,7 @@ function mVisitas(){
   const comFoto=l.filter(v=>v.fotoCaminho||v.fotoUrl).length;
   const durs=l.map(v=>v.duracaoMin).filter(x=>x>0);
   const opDev='<option value="">Todos</option>'+D.devs.map(d=>'<option value="'+esc(d.login)+'"'+(FV.dev===d.login?' selected':'')+'>'+esc(d.nome)+'</option>').join('');
-  const sits=['Quer cadastro','Funcionando','Não encontrado','Cancelada'];
+  const sits=['Quer cadastro','Funcionando','Já é cliente','Fechado na hora','Mudou de ramo','Não encontrado','Cancelada'];
   return cab('Visitas',fmt(D.visitas.length)+' visitas na base · fotos e localização de cada registro')+
    '<div class="filtros">'+
     '<label>Desenvolvedor<select id="fvdev">'+opDev+'</select></label>'+
@@ -714,7 +718,7 @@ function janela(v){
   if(ini==null||ini>fim)ini=v.duracaoMin?fim-v.duracaoMin:fim-8;
   return [ini,fim];
 }
-const COR_SIT={'Quer cadastro':'#22C55E','Funcionando':'#60A5FA','Não encontrado':'#9CA3AF','Cancelada':'#F5A524'};
+const COR_SIT={'Quer cadastro':'#22C55E','Funcionando':'#60A5FA','Já é cliente':'#14B8A6','Fechado na hora':'#A78BFA','Mudou de ramo':'#F472B6','Não encontrado':'#9CA3AF','Cancelada':'#F5A524'};
 const corSit=v=>COR_SIT[situacao(v)[0]]||'#A78BFA';
 const PAL_DEV=['#E4002B','#2563EB','#16A34A','#9333EA','#EA580C','#0891B2'];
 const corDev=l=>{const i=D.devs.findIndex(d=>d.login===l);return PAL_DEV[(i<0?0:i)%PAL_DEV.length]};
@@ -848,7 +852,7 @@ function mFunil(){
   let noRot=null;
   if(pl){const idx=(pl.logins||[]).indexOf(FFN.dev);noRot=(pl.clientes||[]).filter(c=>!FFN.dev||c.dev===idx).length}
   const P=D.base?prep():null,cad=new Set();if(P)for(let i=0;i<P.n;i++)if(P.cad[i])cad.add(P.cnpj[i]);
-  const exist=l.filter(v=>/^Sim/i.test(v.existe||'')),vende=exist.filter(v=>/^Sim/i.test(v.vende||'')),quer=vende.filter(v=>/agora/i.test(v.interesse||''));
+  const exist=l.filter(v=>/^(Sim|Existe, mas estava fechado)/i.test(v.existe||'')),vende=exist.filter(v=>/^Sim/i.test(v.vende||'')),quer=vende.filter(v=>/agora/i.test(v.interesse||''));
   const virou=l.filter(v=>cad.has(String(v.cnpj)));
   const et=[];
   if(noRot!=null)et.push(['No roteiro em uso','clientes sem cadastro escolhidos',noRot,'#52525B']);
@@ -1224,7 +1228,7 @@ function dCampo(){
     '<div class="ks"><div class="k"><b>'+fpct(pct(q,l.length))+'</b><span>das visitas viram interesse</span></div><div class="k meta"><b>'+fmt(st['Não encontrado']||0)+'</b><span>não existem mais</span></div></div></div>'+
     '<div class="grade2"><div class="bloco"><h3>POR DESENVOLVEDOR</h3>'+barras(Object.keys(porDev).sort((a,b)=>porDev[b].n-porDev[a].n).map(d=>({nm:d,sub:porDev[d].q+' querem cadastro',partes:[[porDev[d].q,VERDE],[porDev[d].n-porDev[d].q,'#3F3F46']],vl:fmt(porDev[d].n)})))+
       '<h3 style="margin-top:22px">VISITAS POR SEMANA</h3>'+barras(sems.map(k=>({nm:'Semana de '+k.split('-').reverse().slice(0,2).join('/'),partes:[[sem[k],AZUL]],vl:fmt(sem[k])})))+'</div>'+
-    '<div class="bloco"><h3>O QUE FOI ENCONTRADO</h3>'+rosca([['Quer cadastro',st['Quer cadastro']||0,VERDE],['Funcionando',st['Funcionando']||0,AZUL],['Não encontrado',st['Não encontrado']||0,CINZA],['Cancelada',st['Cancelada']||0,AMB]],fmt(l.length),'visitas')+'</div></div>'};
+    '<div class="bloco"><h3>O QUE FOI ENCONTRADO</h3>'+rosca(Object.keys(COR_SIT).map(k=>[k,st[k]||0,COR_SIT[k]]).filter(f=>f[1]),fmt(l.length),'visitas')+'</div></div>'};
 }
 function dConc(){
   const l=D.visitas.filter(v=>fornecDe(v).length||v.canal);
