@@ -596,7 +596,8 @@ function mostraMapa(){
   if(!usa)return false;
   const ifr=$('mapaif');
   const h=MOD==='planejar'?'planejar':MOD==='simul'?'simulador':'mapa';
-  if(!ifr.src)ifr.src='mapa.html#'+h;
+  /* o ?t= faz o navegador sempre buscar o mapa novo do GitHub, e nunca uma cópia velha guardada */
+  if(!ifr.src)ifr.src='mapa.html?t='+Date.now()+'#'+h;
   else{try{ifr.contentWindow.location.hash=h}catch(e){}}
   return true;
 }
