@@ -367,6 +367,9 @@ body:not([data-adm=sim]) .adm{display:none!important}
   font:700 12px/1 system-ui,sans-serif;border:2px solid #fff;letter-spacing:-.02em}
 @media (prefers-reduced-motion:reduce){.pino.sel::before{animation:none}.pino,.bolha{transition:none}}
 #btnadm,#btncol,#btnpush,#pjson{display:none!important}
+#plano .pxls{background:#2A2D34;color:#fff;border:1px solid #454953;border-radius:8px;padding:6px 14px;font:600 13px system-ui,sans-serif;cursor:pointer;white-space:nowrap}
+#plano .pxls:hover{background:var(--brand);border-color:var(--brand)}
+#plano .pxls:disabled{opacity:.5;cursor:default}
 #rtmfora{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#1F2023;color:#fff;
   font:15px system-ui,sans-serif;z-index:99999;text-align:center;padding:30px;line-height:1.6}
 #rtmfora a{color:#ff7a8a}
@@ -3173,8 +3176,10 @@ function clientesDoDia(cli){
           const cl=C[i], d=kmEntre(p.lat,p.lon,cl.lat,cl.lon);
           if(d>RAIO)continue;
           vistos[i]=1;
+          const mr=META[ROTAS[cl.rt]]||{};
           achados.push({cod:cl.cod,nome:cl.nm,lat:+cl.lat.toFixed(5),lon:+cl.lon.toFixed(5),
-            rota:ROTAS[cl.rt]||'',bairro:BAIR[cl.ba]||'',km:+d.toFixed(2)});
+            rota:ROTAS[cl.rt]||'',bairro:BAIR[cl.ba]||'',km:+d.toFixed(2),
+            segmento:(D.segs||[])[cl.sg]||'',cidade:CIDR[cl.ci]||'',sv:mr.sv||'',gc:mr.gc||'',consultor:mr.cons||''});
         }
       }
     });

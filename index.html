@@ -477,6 +477,42 @@ body.comacao #toast{bottom:calc(env(safe-area-inset-bottom) + 108px)}
 .mapbts button{display:flex;align-items:center;gap:6px;background:#fff;border:0;border-radius:10px;padding:9px 12px;
   font:700 13px system-ui,sans-serif;color:#1A1D21;box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer}
 .mapbts button.busca{opacity:.6}
+.phd{background:linear-gradient(135deg,#C8102E,#8E0B21);color:#fff;border-radius:16px;padding:14px 15px;margin-top:10px}
+.pht{font-size:14px;line-height:1.35}.pht b{font-size:20px}
+.phk{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:11px}
+.phk div{background:rgba(0,0,0,.2);border-radius:10px;padding:8px 7px}
+.phk b{display:block;font-size:16px}.phk span{font-size:11px;opacity:.9;line-height:1.25;display:block}
+.pfil{display:flex;gap:8px;margin:12px 0 8px;align-items:center}.pfil .busca{flex:1}
+.chips{display:flex;gap:7px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chips button{flex:0 0 auto;border:1px solid var(--line);background:#fff;border-radius:18px;padding:7px 12px;font:600 12.5px var(--sans,system-ui);color:var(--ink2)}
+.chips button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.chips i{flex:0 0 1px;background:var(--line);margin:4px 2px}
+.pc{display:flex;gap:11px;background:#fff;border-radius:14px;box-shadow:var(--sh);margin-bottom:10px;padding:12px}
+.pd{flex:0 0 74px;text-align:center;border-right:1px dashed var(--line);padding-right:9px;display:flex;flex-direction:column;justify-content:center}
+.pd b{font-size:17px;color:var(--blue);line-height:1.1}.pd span{font-size:11px;color:var(--ink3)}
+.pd small{font-size:10.5px;color:var(--ink2);margin-top:5px;line-height:1.3}
+.pdir{display:inline-flex;vertical-align:-2px;margin-right:2px;color:var(--blue)}
+.pm{flex:1;min-width:0}.pn{font-weight:800;font-size:14.5px;line-height:1.25}
+.pt{display:flex;gap:6px;align-items:center;margin:5px 0 4px;flex-wrap:wrap}
+.pt .sg{background:#EEF4FF;color:#1D4ED8;border-radius:7px;padding:2px 7px;font-size:11.5px;font-weight:700}
+.pt .cd{display:inline-flex;gap:4px;align-items:center;border:0;background:#FFF7E6;color:#8A5A00;border-radius:7px;padding:2px 7px;font:700 12px var(--sans,system-ui)}
+.pt .cd svg{width:13px;height:13px}
+.pi{font-size:12.5px;color:var(--ink2);line-height:1.4}
+.pb{display:flex;flex-direction:column;gap:7px;justify-content:center}
+.pb .acao.cin{background:#F1F2F4;color:var(--ink2)}
+#mapaperto{height:58vh;border-radius:14px;overflow:hidden;margin-bottom:10px;background:#E9EAEC}
+#ptcard .pc{margin-top:0}
+.ppin{width:30px;height:38px;display:flex;align-items:flex-start;justify-content:center;padding-top:5px;color:#fff;
+  background:#0B7A3B;clip-path:path('M15 37C6 27 2 21 2 14a13 13 0 1 1 26 0c0 7-4 13-13 23z')}
+.ppin svg{width:17px;height:17px}
+.fab{position:fixed;right:16px;bottom:calc(22px + env(safe-area-inset-bottom,0px));z-index:30;display:flex;align-items:center;gap:8px;
+  background:#C8102E;color:#fff;border:0;border-radius:28px;padding:14px 18px;font:800 14px var(--sans,system-ui);box-shadow:0 6px 18px rgba(120,0,20,.45)}
+.fab.gira svg{animation:girafab 1s linear infinite}
+.fab.velho{animation:chama 1.6s ease-in-out infinite}
+@keyframes girafab{to{transform:rotate(360deg)}}
+@keyframes chama{50%{box-shadow:0 0 0 8px rgba(200,16,46,.25),0 6px 18px rgba(120,0,20,.45)}}
+@media (prefers-reduced-motion:reduce){.fab.gira svg,.fab.velho{animation:none}}
 #login .dica{margin:0 0 14px;font-size:14px;line-height:1.45;color:rgba(255,255,255,.9)}
 #login .dica b{color:#fff}
 #login input.pin{letter-spacing:.6em;font-size:22px;text-align:center}
@@ -513,7 +549,7 @@ body.comacao #toast{bottom:calc(env(safe-area-inset-bottom) + 108px)}
    A base vem embutida e funciona sem internet. As respostas ficam no aparelho
    e sobem para a planilha assim que houver sinal.
    =========================================================================== */
-const VERSAO='2.1.0';
+const VERSAO='2.2.0';
 const M=JSON.parse(document.getElementById('M').textContent);
 const DEVS=M.devs,CNAES=M.cnaes,BAIRROS=M.bairros,ROTAS=M.rotas,SVS=M.svs,CONS=M.cons;
 
@@ -1393,7 +1429,7 @@ function atualizaTela(forca){
   if(!DESBLOQ)return;
   const at=document.activeElement;
   const digitando=at&&/^(INPUT|TEXTAREA|SELECT)$/.test(at.tagName)&&$('app').contains(at);
-  if(tela_==='form'||digitando||(tela_==='visitas'&&!modoLista&&!forca)){
+  if(tela_==='form'||digitando||(tela_==='visitas'&&!modoLista&&!forca)||(tela_==='perto'&&PERTO.modo==='mapa'&&!forca)){
     try{const nb=naoLidos()+pendentes().length;
       $('sinob').style.display=nb?'block':'none';$('sinob').textContent=nb>99?'99+':nb;
       pintaFaixas();if(tela_==='visitas'){pintaTira()}}catch(e){}
@@ -1447,6 +1483,7 @@ function renderInterno(){
   if(tela_==='form'){ligaFoto();ligaObs()}
   if(tela_==='clientes')ligaBuscaCli();
   if(tela_==='feitas')ligaBuscaFeitas();
+  if(tela_==='perto')ligaPerto();
   if(tela_==='plano')ligaCronometro(); else clearInterval(cronT);
   if(tela_==='form')ligaFoto();
   const a=$('acao');
@@ -2686,77 +2723,168 @@ function limpaAvisos(){
 }
 /* Quem já compra da BAND na mesma região do dia. O desenvolvedor aproveita a ida
    para reforçar mix, conferir material de PDV ou resolver uma pendência. */
-let GPSPERTO=null,BUSCANDOGPS=false;
-function vPerto(){
-  let l=vizinhosDoDia().slice(), diaMostrado=fDia, avisoOutro='';
-  if(!l.length){
-    /* pode não haver nada no dia escolhido, mas haver nos outros dias do roteiro */
-    const outros=Object.keys(VIZ||{}).filter(k=>k.indexOf(S.dev+'|')===0)
-      .map(k=>+k.split('|')[1]).sort((a,b)=>Math.abs(a-fDia)-Math.abs(b-fDia));
-    if(outros.length){
-      diaMostrado=outros[0];
-      l=(VIZ[S.dev+'|'+diaMostrado]||[]).slice();
-      avisoOutro='<div class="aviso" style="margin-top:10px">Nenhum cliente mapeado no '+
-        'dia '+fDia+'. Mostrando o dia '+diaMostrado+', que é o mais próximo com '+
-        'clientes na região.</div>';
-    }
-  }
-  if(!l.length){
-    const temAlgum=Object.keys(VIZ||{}).length>0;
-    return '<div class="vazio">'+
-      (temAlgum
-        ? 'Nenhum cliente ativo mapeado na sua região.'
-        : '<b>O roteiro em uso não trouxe os clientes da região.</b><br><br>'+
-          'Roteiro '+esc(PLANO?PLANO.versao:'embutido')+
-          (PLANO&&PLANO.escopo?' · '+esc(PLANO.escopo):'')+'.<br><br>'+
-          'Toque em Sincronizar: se o coordenador publicou depois, a lista chega.')+
-      '</div>'+
-      '<button class="cta o" onclick="sincroniza(false)">Sincronizar agora</button>';
-  }
-  if(GPSPERTO)l.forEach(c=>c.dGps=kmAte(GPSPERTO.lat,GPSPERTO.lon,c.lat,c.lon));
-  l.sort((a,b)=>GPSPERTO?(a.dGps-b.dGps):(a.km-b.km));
-  let h='<div class="info" style="margin-top:10px">'+
-    '<b>'+fmt(l.length)+' clientes ativos</b> na região onde você trabalha '+
-    esc(dowDo(diaMostrado)+' '+dataDo(diaMostrado))+'. '+
-    'Para ver outro dia, troque o dia na tela de Visitas. '+
-    (GPSPERTO?'Ordenados pela distância de onde você está agora.'
-      :'Toque abaixo para ordenar pelos mais próximos de você.')+'</div>'+
-    (GPSPERTO?'':'<button class="cta o" onclick="localizaPerto()"'+
-      (BUSCANDOGPS?' disabled':'')+'>'+
-      (BUSCANDOGPS?'Localizando…':'Usar minha localização')+'</button>');
-  h=avisoOutro+h;
-  h+=l.map(c=>{
-    const d=(GPSPERTO&&c.dGps!=null)?c.dGps:c.km;
-    return '<div class="cli">'+
-      '<div class="ct">'+
-        '<span class="lj">'+svg('loja',1.9)+'</span>'+
-        '<div class="nm">'+esc(c.nome)+'</div>'+
-        '<span class="cod">'+svg('chave',1.9)+esc(String(c.cod))+'</span>'+
-      '</div>'+
-      '<div class="sep"></div>'+
-      '<div class="cb">'+
-        '<div class="ag"><b style="color:var(--blue)">'+fmtKm(d)+'</b>'+
-          (GPSPERTO?' de você':' do seu roteiro')+
-          (c.rota?' · rota '+esc(c.rota):'')+
-          '<br><span style="color:var(--ink3)">'+esc(c.bairro||'')+'</span></div>'+
-        '<button class="acao" onclick="rotaPara('+c.lat+','+c.lon+')">'+svg('rota')+'</button>'+
-      '</div></div>';
-  }).join('');
-  return h+'<div style="height:20px"></div>';
+/* ============================================================================
+   NA REGIÃO DE HOJE
+   Os clientes BAND ativos perto de onde o desenvolvedor trabalha no dia. O botão
+   flutuante pega a posição de novo a qualquer momento: andou, toca e a lista se
+   reordena pelo mais perto. Lista ou mapa, com busca, distância e segmento.
+   ============================================================================ */
+const PERTO={modo:'lista',raio:0,seg:'',q:''};
+let GPSPERTO=null,BUSCANDOGPS=false,mapaPerto=null,ptMk=null,ptAcc=null;
+function rumo(la1,lo1,la2,lo2){
+  const r=Math.PI/180,y=Math.sin((lo2-lo1)*r)*Math.cos(la2*r),
+    x=Math.cos(la1*r)*Math.sin(la2*r)-Math.sin(la1*r)*Math.cos(la2*r)*Math.cos((lo2-lo1)*r);
+  return (Math.atan2(y,x)/r+360)%360;
 }
 function kmAte(la1,lo1,la2,lo2){
   const dy=(la2-la1)*111.32;
   const dx=(lo2-lo1)*111.32*Math.cos((la1+la2)/2*Math.PI/180);
   return Math.sqrt(dy*dy+dx*dx);
 }
+const PONTOS=['N','NE','L','SE','S','SO','O','NO'];
+function tempoAte(km){const m=km*1000*1.3;
+  return m<=2500?'~'+Math.max(1,Math.round(m/70))+' min a pé':'~'+Math.max(1,Math.round(m/450))+' min de carro'}
+function listaPerto(){
+  let l=vizinhosDoDia().slice(),dia=fDia,outro=false;
+  if(!l.length){
+    const outros=Object.keys(VIZ||{}).filter(k=>k.indexOf(S.dev+'|')===0)
+      .map(k=>+k.split('|')[1]).sort((a,b)=>Math.abs(a-fDia)-Math.abs(b-fDia));
+    if(outros.length){dia=outros[0];l=(VIZ[S.dev+'|'+dia]||[]).slice();outro=true}
+  }
+  l.forEach(c=>{c.dGps=GPSPERTO?kmAte(GPSPERTO.lat,GPSPERTO.lon,c.lat,c.lon):null;
+    c.rumo=GPSPERTO?rumo(GPSPERTO.lat,GPSPERTO.lon,c.lat,c.lon):null});
+  l.sort((a,b)=>GPSPERTO?(a.dGps-b.dGps):(a.km-b.km));
+  return {l,dia,outro};
+}
+function filtraPerto(l){
+  const q=PERTO.q.trim().toLowerCase();
+  return l.filter(c=>{
+    if(PERTO.raio&&GPSPERTO&&c.dGps>PERTO.raio)return false;
+    if(PERTO.seg&&(c.segmento||'Sem segmento')!==PERTO.seg)return false;
+    if(q&&!((c.nome||'')+' '+c.cod+' '+(c.bairro||'')).toLowerCase().includes(q))return false;
+    return true;
+  });
+}
+function cartaoPerto(c){
+  const temGps=GPSPERTO&&c.dGps!=null,d=temGps?c.dGps:c.km;
+  const seta=temGps?'<span class="pdir" style="transform:rotate('+Math.round(c.rumo)+'deg)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V4M5 11l7-7 7 7"/></svg></span>':'';
+  return '<div class="pc" data-cod="'+esc(String(c.cod))+'">'+
+    '<div class="pd"><b>'+fmtKm(d)+'</b><span>'+(temGps?'de você':'do roteiro')+'</span>'+
+      (temGps?'<small>'+seta+PONTOS[Math.round(c.rumo/45)%8]+' · '+tempoAte(d)+'</small>':'')+'</div>'+
+    '<div class="pm"><div class="pn">'+esc(c.nome)+'</div>'+
+      '<div class="pt">'+(c.segmento?'<span class="sg">'+esc(c.segmento)+'</span>':'')+
+        '<button class="cd" onclick="copiaCod(\''+esc(String(c.cod))+'\')" aria-label="Copiar código">'+svg('chave',1.9)+esc(String(c.cod))+'</button></div>'+
+      '<div class="pi">'+(c.rota?'Rota '+esc(c.rota):'')+(c.consultor?' · '+esc(nomeCurto(c.consultor)):'')+'</div>'+
+      '<div class="pi" style="color:var(--ink3)">'+esc([c.bairro,c.cidade].filter(Boolean).join(' · '))+
+        (temGps?' · '+fmtKm(c.km)+' do roteiro':'')+'</div></div>'+
+    '<div class="pb"><button class="acao" onclick="rotaPara('+c.lat+','+c.lon+')" aria-label="Ir até lá">'+svg('rota')+'</button>'+
+      '<button class="acao cin" onclick="vePertoNoMapa(\''+esc(String(c.cod))+'\')" aria-label="Ver no mapa">'+svg('mapa',1.8)+'</button></div></div>';
+}
+const nomeCurto=n=>{const p=String(n||'').trim().split(/\s+/);return p.length>1?p[0]+' '+p[p.length-1]:p[0]||''};
+function vPerto(){
+  const {l,dia,outro}=listaPerto();
+  if(!l.length){
+    const temAlgum=Object.keys(VIZ||{}).length>0;
+    return '<div class="vazio">'+(temAlgum?'Nenhum cliente ativo mapeado na sua região.'
+        :'<b>O roteiro em uso não trouxe os clientes da região.</b><br><br>Toque em Sincronizar: '+
+         'se o coordenador publicou depois, a lista chega.')+'</div>'+
+      '<button class="cta o" onclick="sincroniza(false)">Sincronizar agora</button>';
+  }
+  const f=filtraPerto(l),segs={};l.forEach(c=>{const s=c.segmento||'Sem segmento';segs[s]=(segs[s]||0)+1});
+  const ss=Object.keys(segs).sort((a,b)=>segs[b]-segs[a]).slice(0,6);
+  const perto300=GPSPERTO?l.filter(c=>c.dGps<=0.3).length:0,maisPerto=l[0];
+  const idade=GPSPERTO?Math.round((Date.now()-GPSPERTO.t)/60000):null;
+  let h=(outro?'<div class="aviso" style="margin-top:10px">Nenhum cliente mapeado no dia '+fDia+
+      '. Mostrando o dia '+dia+', o mais próximo com clientes na região.</div>':'')+
+   '<div class="phd"><div class="pht"><b>'+fmt(l.length)+'</b> clientes BAND perto do seu trabalho · '+
+     esc(dowDo(dia)+' '+dataDo(dia))+'</div>'+
+    '<div class="phk">'+(GPSPERTO
+      ?'<div><b>'+perto300+'</b><span>a até 300 m de você</span></div>'+
+       '<div><b>'+fmtKm(maisPerto.dGps)+'</b><span>o mais perto: '+esc(nomeCurto(maisPerto.nome))+'</span></div>'
+      :'<div><b>'+fmtKm(maisPerto.km)+'</b><span>o mais perto do roteiro</span></div>'+
+       '<div><b>'+ss.length+'</b><span>segmentos diferentes</span></div>')+
+     '<div><b>'+(GPSPERTO?(idade<1?'agora':'há '+idade+' min'):'—')+'</b><span>'+(GPSPERTO?'sua posição · ±'+Math.round(GPSPERTO.acc||0)+' m':'toque em Perto de mim')+'</span></div></div></div>'+
+   '<div class="pfil"><div class="busca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">'+IC.busca+'</svg>'+
+     '<input id="pq" placeholder="Nome, código ou bairro" value="'+esc(PERTO.q)+'"></div>'+
+    '<div class="seg"><button class="'+(PERTO.modo==='lista'?'on':'')+'" onclick="PERTO.modo=\'lista\';render()" aria-label="Lista">'+svg('lista',2)+'</button>'+
+     '<button class="'+(PERTO.modo==='mapa'?'on':'')+'" onclick="PERTO.modo=\'mapa\';render()" aria-label="Mapa">'+svg('mapa',1.8)+'</button></div></div>'+
+   '<div class="chips">'+(GPSPERTO?[[0,'Todos'],[0.3,'Até 300 m'],[1,'Até 1 km']].map(([r,t])=>
+      '<button class="'+(PERTO.raio===r?'on':'')+'" onclick="PERTO.raio='+r+';render()">'+t+'</button>').join('')+'<i></i>':'')+
+    '<button class="'+(!PERTO.seg?'on':'')+'" onclick="PERTO.seg=\'\';render()">Todos os segmentos</button>'+
+    ss.map(s=>'<button class="'+(PERTO.seg===s?'on':'')+'" onclick="PERTO.seg='+JSON.stringify(s).replace(/"/g,'&quot;')+';render()">'+esc(s)+' · '+segs[s]+'</button>').join('')+'</div>';
+  if(PERTO.modo==='mapa')h+='<div id="mapaperto"></div><div id="ptcard"></div>';
+  else h+=(f.length?f.map(cartaoPerto).join(''):'<div class="vazio">Nenhum cliente com esse filtro.</div>');
+  h+='<button class="fab'+(BUSCANDOGPS?' gira':'')+(GPSPERTO&&idade>=3?' velho':'')+'" id="fabgps" onclick="localizaPerto()" aria-label="Atualizar minha posição">'+
+     '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>'+
+     '<span>'+(BUSCANDOGPS?'Localizando…':GPSPERTO?'Atualizar posição':'Perto de mim')+'</span></button>'+
+   '<div style="height:90px"></div>';
+  return h;
+}
+function ligaPerto(){
+  const q=$('pq');
+  if(q){let t;q.oninput=()=>{PERTO.q=q.value;clearTimeout(t);t=setTimeout(()=>{
+    const pos=q.selectionStart;render();const n=$('pq');if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(e){}}},300)}}
+  if(PERTO.modo==='mapa')setTimeout(pintaMapaPerto,30);
+}
+function pintaMapaPerto(focoCod){
+  const el=$('mapaperto');if(!el)return;
+  if(typeof L==='undefined'){el.outerHTML='<div class="vazio">O mapa precisa de internet na primeira vez.</div>';return}
+  const {l}=listaPerto(),f=filtraPerto(l);
+  const vista=mapaPerto&&mapaPerto._rtmVista;
+  if(mapaPerto){try{mapaPerto.remove()}catch(e){}mapaPerto=null}
+  ptMk=null;ptAcc=null;
+  mapaPerto=L.map(el,{zoomControl:false});
+  L.control.zoom({position:'bottomleft'}).addTo(mapaPerto);
+  L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+    {attribution:'Esri, HERE, Garmin',maxZoom:19}).addTo(mapaPerto);
+  /* os clientes do roteiro do dia, pequenos, para dar referência */
+  doDia().forEach(c=>L.circleMarker([c.lat,c.lon],{radius:4,color:'#fff',weight:1,fillColor:'#C8102E',fillOpacity:.8,interactive:false}).addTo(mapaPerto));
+  const pts=[];
+  f.forEach(c=>{pts.push([c.lat,c.lon]);
+    L.marker([c.lat,c.lon],{icon:L.divIcon({className:'',iconSize:[30,38],iconAnchor:[15,37],
+      html:'<div class="ppin">'+svg('loja',2)+'</div>'})})
+     .on('click',()=>mostraCartaoPerto(c)).addTo(mapaPerto);
+  });
+  if(GPSPERTO){pts.push([GPSPERTO.lat,GPSPERTO.lon]);marcaPerto()}
+  if(vista)mapaPerto.setView(vista.c,vista.z,{animate:false});
+  else if(pts.length)mapaPerto.fitBounds(L.latLngBounds(pts).pad(.12),{maxZoom:17});
+  mapaPerto.on('moveend',()=>{if(mapaPerto)mapaPerto._rtmVista={c:mapaPerto.getCenter(),z:mapaPerto.getZoom()};VISTA_PERTO=mapaPerto._rtmVista});
+  if(!vista&&VISTA_PERTO)mapaPerto.setView(VISTA_PERTO.c,VISTA_PERTO.z,{animate:false});
+  if(focoCod){const c=f.find(x=>String(x.cod)===String(focoCod));if(c){mapaPerto.setView([c.lat,c.lon],17);mostraCartaoPerto(c)}}
+  setTimeout(()=>mapaPerto&&mapaPerto.invalidateSize(),120);
+}
+let VISTA_PERTO=null;
+function marcaPerto(){
+  if(!mapaPerto||!GPSPERTO)return;const ll=[GPSPERTO.lat,GPSPERTO.lon];
+  if(!ptAcc)ptAcc=L.circle(ll,{radius:GPSPERTO.acc||30,color:'#1A73E8',weight:1,fillColor:'#1A73E8',fillOpacity:.12,interactive:false}).addTo(mapaPerto);
+  else{ptAcc.setLatLng(ll);ptAcc.setRadius(GPSPERTO.acc||30)}
+  if(!ptMk)ptMk=L.circleMarker(ll,{radius:8,color:'#fff',weight:3,fillColor:'#1A73E8',fillOpacity:1}).bindTooltip('Você está aqui').addTo(mapaPerto);
+  else ptMk.setLatLng(ll);
+}
+function mostraCartaoPerto(c){const el=$('ptcard');if(el)el.innerHTML=cartaoPerto(c)}
+function vePertoNoMapa(cod){PERTO.modo='mapa';VISTA_PERTO=null;render();setTimeout(()=>pintaMapaPerto(cod),60)}
+function copiaCod(cod){
+  try{navigator.clipboard.writeText(String(cod)).then(()=>toast('Código '+cod+' copiado'),()=>toast('Código: '+cod))}
+  catch(e){toast('Código: '+cod)}
+}
+/* Pega a posição de novo. Andou? Toca de novo e a lista se reordena. */
 function localizaPerto(){
   if(!navigator.geolocation)return toast('Este aparelho não informa a localização');
-  BUSCANDOGPS=true;render();
+  if(BUSCANDOGPS)return;
+  BUSCANDOGPS=true;const b=$('fabgps');if(b){b.classList.add('gira');b.querySelector('span').textContent='Localizando…'}
   navigator.geolocation.getCurrentPosition(p=>{
-    GPSPERTO={lat:p.coords.latitude,lon:p.coords.longitude};
-    BUSCANDOGPS=false;render();
-  },()=>{BUSCANDOGPS=false;toast('Não consegui obter o GPS agora');render()},
-  {enableHighAccuracy:true,timeout:15000,maximumAge:30000});
+    BUSCANDOGPS=false;
+    GPSPERTO={lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy,t:Date.now()};
+    EU_POS=GPSPERTO;
+    if(tela_!=='perto')return;
+    if(PERTO.modo==='mapa'&&mapaPerto){marcaPerto();mapaPerto.setView([GPSPERTO.lat,GPSPERTO.lon],Math.max(mapaPerto.getZoom(),16));
+      const b2=$('fabgps');if(b2){b2.classList.remove('gira','velho');b2.querySelector('span').textContent='Atualizar posição'}}
+    else render();
+    toast('Ordenado pelo mais perto de você · precisão ±'+Math.round(p.coords.accuracy)+' m');
+  },e=>{BUSCANDOGPS=false;
+    toast(e.code===1?'Libere a localização para o app nas configurações do celular':'Não consegui achar sua posição agora');
+    if(tela_==='perto')render()},
+  {enableHighAccuracy:true,timeout:20000,maximumAge:0});   /* tocou: sempre a posição de agora */
 }
 function rotaPara(lat,lon){
   window.open('https://www.google.com/maps/dir/?api=1&destination='+lat+','+lon,'_blank');
