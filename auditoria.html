@@ -158,7 +158,7 @@ h2.sec{font-size:15px;margin:0 0 4px}
    o que protege os dados e o login de administrador e as regras do banco.
    Tudo o que esta pagina guarda no navegador usa chaves com o prefixo aud_.
    ============================================================================ */
-const VERSAO='1.2.0';
+const VERSAO='1.2.1';
 const SUPA={url:'https://kqpdledhaghuzuwjkvrf.supabase.co',chave:'sb_publishable_dMdB5b_G5X5TnXemexGIXQ_GWXS6cid'};
 const K_SESSAO='aud_sessao',K_EMAIL='aud_email',K_DIAS='aud_dias';
 const $=id=>document.getElementById(id);
@@ -548,7 +548,18 @@ async function carregaAlertas(){
   if(ABA==='ale')desenha();
 }
 const TIPO_ALERTA={erro:'Erro no app',versao:'Versão nova',carga:'Carga ou dado',teste:'Teste'};
-const SITUACAO={enviado:'Enviado','sem destinatario':'Não enviado: nenhum destinatário ativo','falta configurar':'Não enviado: falta guardar as chaves no cofre'};
+const SITUACAO={enviado:'Saiu do banco','sem destinatario':'Não enviado: nenhum destinatário ativo','falta configurar':'Não enviado: falta guardar as chaves no cofre'};
+/* "saiu do banco" não quer dizer que chegou: o script do Google responde 200 até quando recusa.
+   O que vale é o resultado que o banco anota a partir da resposta do script (arquivo a04). */
+function situacaoDe(x){
+  if(x.situacao!=='enviado')return esc(SITUACAO[x.situacao]||x.situacao);
+  if(x.resultado===undefined)
+    return 'Saiu do banco'+(x.resposta==null?'':' (o script respondeu '+esc(x.resposta)+')')+'. Para saber se o script aceitou, falta aplicar o arquivo a04.';
+  const r=String(x.resultado||'');
+  if(!r)return 'Saiu do banco; aguardando a resposta do script';
+  const t=esc(r.charAt(0).toUpperCase()+r.slice(1));
+  return /^entregue/.test(r)&&!/falhas:/.test(r)?t:'<b>'+t+'</b>';
+}
 function mascara(n){const t=String(n||'');return t.length>6?t.slice(0,4)+' ••••• '+t.slice(-4):t}
 function telaAlertas(){
   let h='<h1 class="tit">Alertas</h1><p class="sub">Quem recebe o aviso por e-mail e WhatsApp quando aparece um erro novo, uma versão nova ou um problema de carga.</p>';
@@ -584,8 +595,7 @@ function telaAlertas(){
     h+='<div class="rol"><table><thead><tr><th>Quando</th><th>Tipo</th><th>Alerta</th><th class="num">Contatos</th><th>Situação</th></tr></thead><tbody>'+
       hi.map(x=>'<tr><td>'+esc(dataHora(x.quando))+'</td><td>'+esc(TIPO_ALERTA[x.tipo]||x.tipo)+'</td>'+
         '<td class="larga"><details><summary>'+esc(x.assunto||'')+'</summary><pre class="txt">'+esc(x.texto||'')+'</pre></details></td>'+
-        '<td class="num">'+fmt(x.destinatarios)+'</td><td>'+esc(SITUACAO[x.situacao]||x.situacao)+
-        (x.situacao==='enviado'?(x.resposta==null?'':(x.resposta<400?' (script respondeu '+x.resposta+')':' <b>(script recusou: '+esc(x.resposta)+')</b>')):'')+'</td></tr>').join('')+'</tbody></table></div>';
+        '<td class="num">'+fmt(x.destinatarios)+'</td><td class="larga">'+situacaoDe(x)+'</td></tr>').join('')+'</tbody></table></div>';
   }else h+='<div class="vazio">Nenhum alerta no período.</div>';
   return h+'</section>';
 }
@@ -606,7 +616,8 @@ async function acaoAlerta(acao,id){
       ALE_OCUPADO=true;await rpc('destinatario_apagar',{p_id:d.id});toast('Removido.');
     }else if(acao==='teste'){
       ALE_OCUPADO=true;const r=await rpc('alerta_teste');
-      toast(r.situacao==='enviado'?'Teste enviado. Deve chegar em instantes.':(SITUACAO[r.situacao]||r.situacao));
+      toast(r.situacao==='enviado'?'O teste saiu do banco. Em alguns segundos esta tela mostra se o script aceitou.':(SITUACAO[r.situacao]||r.situacao));
+      if(r.situacao==='enviado')setTimeout(carregaAlertas,7000);
     }else return;
   }catch(e){toast(e.message)}
   ALE_OCUPADO=false;await carregaAlertas();if(ABA==='ale')desenha();
