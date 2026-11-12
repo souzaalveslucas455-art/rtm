@@ -113,6 +113,15 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 tr:last-child td{border-bottom:0}
 .vazio{color:var(--ink2);padding:6px 0}
 .carreg{padding:60px 0;text-align:center;color:var(--ink2)}
+/* ---------- alertas ---------- */
+.formlin{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin:12px 0 8px}
+.formlin input{border:1px solid var(--linha);border-radius:9px;padding:8px 10px;background:#fff;width:100%}
+.passos{list-style:none;margin:0 0 4px;padding:0}
+.passos li{display:flex;gap:10px;align-items:center;padding:6px 0}
+pre.txt{white-space:pre-wrap;font:inherit;font-size:12.5px;margin:6px 0 2px;color:var(--ink2)}
+details summary{cursor:pointer}
+.acoes{display:flex;gap:6px;flex-wrap:wrap}
+h2.sec{font-size:15px;margin:0 0 4px}
 #toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;opacity:0;pointer-events:none;transition:.2s;z-index:20;max-width:90vw}
 #toast.on{opacity:1;transform:translate(-50%,0)}
 @media(max-width:640px){.topo .quem{display:none}main{padding:16px 12px 50px}.topo .faixa{padding:10px 12px}.abas{padding:0 8px}}
@@ -149,7 +158,7 @@ tr:last-child td{border-bottom:0}
    o que protege os dados e o login de administrador e as regras do banco.
    Tudo o que esta pagina guarda no navegador usa chaves com o prefixo aud_.
    ============================================================================ */
-const VERSAO='1.1.0';
+const VERSAO='1.2.0';
 const SUPA={url:'https://kqpdledhaghuzuwjkvrf.supabase.co',chave:'sb_publishable_dMdB5b_G5X5TnXemexGIXQ_GWXS6cid'};
 const K_SESSAO='aud_sessao',K_EMAIL='aud_email',K_DIAS='aud_dias';
 const $=id=>document.getElementById(id);
@@ -373,6 +382,7 @@ async function carrega(){
     else{FALHA[l]=x.reason.message;if(x.reason.semSessao)caiu=true}});
   CARREGANDO=false;$('batualiza').disabled=false;ATUALIZADO=new Date();
   if(caiu){telaEntrada('Sua sessão expirou. Entre de novo.');return}
+  carregaAlertas();
   desenha();
 }
 /* da lista de aparelhos saem duas conferências: fila presa e versão antiga */
@@ -431,7 +441,7 @@ function periodo(d){return d&&d.desde?'de '+data(d.desde)+' a '+data(d.hoje):''}
 
 /* ---------------- telas ---------------- */
 function desenha(){
-  const abas=[['geral','Visão geral'],['rep','Repositores'],['dev','Desenvolvedores'],['err','Erros dos apps'],['apa','Aparelhos']];
+  const abas=[['geral','Visão geral'],['rep','Repositores'],['dev','Desenvolvedores'],['err','Erros dos apps'],['apa','Aparelhos'],['ale','Alertas']];
   $('abas').innerHTML=abas.map(a=>{
     let c='';
     if(LADOS[a[0]]&&DADOS[a[0]]){const e=pendencias(a[0],'erro'),w=pendencias(a[0],'aviso');
@@ -439,7 +449,7 @@ function desenha(){
     return '<button role="tab" data-aba="'+a[0]+'" aria-selected="'+(ABA===a[0])+'">'+a[1]+c+'</button>'}).join('');
   const m=$('main');
   if(CARREGANDO&&!Object.keys(DADOS).some(l=>DADOS[l])){m.innerHTML='<div class="carreg">Conferindo os dados dos dois apps…</div>';return}
-  m.innerHTML=ABA==='geral'?telaGeral():telaLado(ABA);
+  m.innerHTML=ABA==='geral'?telaGeral():ABA==='ale'?telaAlertas():telaLado(ABA);
 }
 /* os números do topo de cada cartão da visão geral */
 function numeros(l,d){
@@ -530,6 +540,78 @@ function baixaCsv(ch){
   toast('Arquivo baixado: '+fmt(lin.length)+' linhas.');
 }
 
+/* ---------------- alertas: quem recebe, teste e histórico ---------------- */
+let ALE=null,ALE_FALHA=null,ALE_OCUPADO=false;
+async function carregaAlertas(){
+  try{ALE=await rpc('alertas_painel',{p_dias:DIAS});ALE_FALHA=null}
+  catch(e){ALE_FALHA=e.message;if(e.semSessao){telaEntrada('Sua sessão expirou. Entre de novo.');return}}
+  if(ABA==='ale')desenha();
+}
+const TIPO_ALERTA={erro:'Erro no app',versao:'Versão nova',carga:'Carga ou dado',teste:'Teste'};
+const SITUACAO={enviado:'Enviado','sem destinatario':'Não enviado: nenhum destinatário ativo','falta configurar':'Não enviado: falta guardar as chaves no cofre'};
+function mascara(n){const t=String(n||'');return t.length>6?t.slice(0,4)+' ••••• '+t.slice(-4):t}
+function telaAlertas(){
+  let h='<h1 class="tit">Alertas</h1><p class="sub">Quem recebe o aviso por e-mail e WhatsApp quando aparece um erro novo, uma versão nova ou um problema de carga.</p>';
+  if(!ALE)return h+(ALE_FALHA?'<div class="alerta" role="alert">'+esc(ALE_FALHA)+'</div>':'<div class="carreg">Carregando…</div>');
+  if(ALE_FALHA)h+='<div class="alerta" role="alert">Não consegui atualizar: '+esc(ALE_FALHA)+'</div>';
+  const c=ALE.config||{},d=ALE.destinatarios||[],hi=ALE.historico||[];
+  const passo=(ok,t)=>'<li><span class="selo '+(ok?'ok':'erro')+'">'+(ok?'ok':'falta')+'</span><span>'+t+'</span></li>';
+  h+='<section class="cartao" style="margin-bottom:14px"><h2 class="sec">Está tudo ligado?</h2><ul class="passos">'+
+     passo(c.tem_url,'Endereço do script de envio guardado no cofre do Supabase (<code>auditoria_alerta_url</code>)')+
+     passo(c.tem_segredo,'Senha do script guardada no cofre do Supabase (<code>auditoria_alerta_segredo</code>)')+
+     passo(c.tarefa_ativa,'Tarefa agendada que confere a cada 5 minutos')+
+     passo(d.some(x=>x.ativo),'Pelo menos um destinatário ativo')+'</ul></section>';
+  h+='<section class="cartao" style="margin-bottom:14px"><h2 class="sec">Quem recebe</h2>';
+  if(d.length){
+    h+='<div class="rol"><table><thead><tr><th>Nome</th><th>E-mail</th><th>WhatsApp</th><th>Chave do WhatsApp</th><th>Recebe?</th><th></th></tr></thead><tbody>'+
+      d.map(x=>'<tr><td>'+esc(x.nome)+'</td><td>'+esc(x.email||'–')+'</td><td>'+esc(x.whatsapp?mascara(x.whatsapp):'–')+'</td>'+
+        '<td>'+(x.whatsapp?(x.tem_chave?'guardada':'<b>falta</b> (sem ela o WhatsApp não sai)'):'–')+'</td>'+
+        '<td>'+(x.ativo?'Sim':'Não')+'</td><td><div class="acoes">'+
+        '<button class="bt fino" data-ale="ativar" data-id="'+x.id+'">'+(x.ativo?'Pausar':'Voltar a receber')+'</button>'+
+        '<button class="bt fino" data-ale="remover" data-id="'+x.id+'">Remover</button></div></td></tr>').join('')+'</tbody></table></div>';
+  }else h+='<div class="vazio">Ninguém cadastrado ainda.</div>';
+  h+='<div class="formlin">'+
+     '<input id="al_nome" placeholder="Nome" aria-label="Nome" maxlength="80">'+
+     '<input id="al_email" type="email" placeholder="E-mail" aria-label="E-mail" maxlength="120">'+
+     '<input id="al_whats" inputmode="numeric" placeholder="WhatsApp: 55 + DDD + número" aria-label="WhatsApp" maxlength="20">'+
+     '<input id="al_chave" placeholder="Chave do WhatsApp (CallMeBot)" aria-label="Chave do WhatsApp" maxlength="40" autocomplete="off">'+
+     '</div><div class="acoes"><button class="bt verm" data-ale="adicionar"'+(ALE_OCUPADO?' disabled':'')+'>Adicionar</button>'+
+     '<button class="bt" data-ale="teste"'+(ALE_OCUPADO?' disabled':'')+'>Enviar alerta de teste</button></div>'+
+     '<p class="sub" style="margin:10px 0 0">Preencha o e-mail, o WhatsApp ou os dois. O WhatsApp só sai para o número que já ativou o serviço e tem a chave. '+
+     'A chave fica guardada no banco e não volta para esta tela.</p></section>';
+  h+='<section class="cartao"><h2 class="sec">O que já foi enviado</h2>';
+  if(hi.length){
+    h+='<div class="rol"><table><thead><tr><th>Quando</th><th>Tipo</th><th>Alerta</th><th class="num">Contatos</th><th>Situação</th></tr></thead><tbody>'+
+      hi.map(x=>'<tr><td>'+esc(dataHora(x.quando))+'</td><td>'+esc(TIPO_ALERTA[x.tipo]||x.tipo)+'</td>'+
+        '<td class="larga"><details><summary>'+esc(x.assunto||'')+'</summary><pre class="txt">'+esc(x.texto||'')+'</pre></details></td>'+
+        '<td class="num">'+fmt(x.destinatarios)+'</td><td>'+esc(SITUACAO[x.situacao]||x.situacao)+
+        (x.situacao==='enviado'?(x.resposta==null?'':(x.resposta<400?' (script respondeu '+x.resposta+')':' <b>(script recusou: '+esc(x.resposta)+')</b>')):'')+'</td></tr>').join('')+'</tbody></table></div>';
+  }else h+='<div class="vazio">Nenhum alerta no período.</div>';
+  return h+'</section>';
+}
+async function acaoAlerta(acao,id){
+  if(ALE_OCUPADO)return;
+  const d=(ALE&&ALE.destinatarios||[]).find(x=>String(x.id)===String(id));
+  try{
+    if(acao==='adicionar'){
+      const p={nome:$('al_nome').value.trim(),email:$('al_email').value.trim(),whatsapp:$('al_whats').value.trim(),whatsapp_chave:$('al_chave').value.trim()};
+      if(!p.nome){toast('Informe o nome.');$('al_nome').focus();return}
+      if(!p.email&&!p.whatsapp){toast('Informe o e-mail ou o WhatsApp.');return}
+      ALE_OCUPADO=true;await rpc('destinatario_salvar',{p});toast('Destinatário adicionado.');
+    }else if(acao==='ativar'&&d){
+      ALE_OCUPADO=true;await rpc('destinatario_salvar',{p:{id:d.id,nome:d.nome,email:d.email||'',whatsapp:d.whatsapp||'',ativo:!d.ativo}});
+      toast(d.ativo?'Pausado: não recebe mais.':'Voltou a receber.');
+    }else if(acao==='remover'&&d){
+      if(!confirm('Remover '+d.nome+' da lista de alertas?'))return;
+      ALE_OCUPADO=true;await rpc('destinatario_apagar',{p_id:d.id});toast('Removido.');
+    }else if(acao==='teste'){
+      ALE_OCUPADO=true;const r=await rpc('alerta_teste');
+      toast(r.situacao==='enviado'?'Teste enviado. Deve chegar em instantes.':(SITUACAO[r.situacao]||r.situacao));
+    }else return;
+  }catch(e){toast(e.message)}
+  ALE_OCUPADO=false;await carregaAlertas();if(ABA==='ale')desenha();
+}
+
 /* ---------------- cliques ---------------- */
 $('abas').addEventListener('click',e=>{const b=e.target.closest('[data-aba]');if(!b)return;ABA=b.dataset.aba;desenha();window.scrollTo(0,0)});
 $('main').addEventListener('click',e=>{
@@ -539,7 +621,8 @@ $('main').addEventListener('click',e=>{
   const ab=e.target.closest('[data-abre]');
   if(ab){ABERTAS[ab.dataset.abre]=!ABERTAS[ab.dataset.abre];desenha();
     const el=document.querySelector('[data-abre="'+ab.dataset.abre+'"]');if(el)el.focus();return}
-  const cs=e.target.closest('[data-csv]');if(cs)baixaCsv(cs.dataset.csv);
+  const cs=e.target.closest('[data-csv]');if(cs){baixaCsv(cs.dataset.csv);return}
+  const al=e.target.closest('[data-ale]');if(al)acaoAlerta(al.dataset.ale,al.dataset.id);
 });
 $('main').addEventListener('input',e=>{
   const b=e.target.closest('[data-busca]');if(!b)return;
