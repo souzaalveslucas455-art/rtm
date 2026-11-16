@@ -153,6 +153,81 @@ h2.sec{font-size:15px;margin:0 0 4px}
 .infra .barra2{height:6px;border-radius:3px;background:var(--serie);min-width:2px}
 .infra details{margin-top:8px;color:var(--tx2);font-size:12.5px}
 .infra code{color:var(--tx2)}
+/* ---------- backlog: quadro escuro, com as mesmas cores da sala de controle ---------- */
+.bk,#bkdlg{--sup:#1a1a19;--plano:#0d0d0d;--tx:#f0efec;--tx2:#c3c2b7;--mudo:#898781;--grade:#2c2c2a;--base:#383835;--serie:#3987e5;
+  --bom:#0ca30c;--aviso:#fab219;--critico:#d03b3b;color:var(--tx);color-scheme:dark}
+.bk{background:var(--plano);border-radius:16px;padding:18px;margin-bottom:14px}
+.bk h2{font-size:15px;margin:0}
+.bk .topo2{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.bk .seg{display:inline-flex;background:var(--sup);border:1px solid var(--grade);border-radius:10px;padding:3px;gap:2px}
+.bk .seg button{background:none;border:0;color:var(--tx2);padding:6px 12px;border-radius:7px;font-weight:600;font-size:13px}
+.bk .seg button[aria-pressed="true"]{background:var(--base);color:#fff}
+.bk .filtros{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto;align-items:center}
+:is(.bk,#bkdlg) :is(select,input,textarea){background:var(--sup);border:1px solid var(--base);color:var(--tx);border-radius:9px;padding:7px 10px;font:inherit}
+.bk .filtros input{min-width:170px}
+.bk .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:14px}
+.bk .tile{background:var(--sup);border:1px solid var(--grade);border-radius:12px;padding:14px}
+.bk .tile .rot{font-size:12px;color:var(--tx2);margin-bottom:4px}
+.bk .tile .num{font-size:24px;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.bk .tile .de{font-size:12px;color:var(--mudo)}
+:is(.bk,#bkdlg) .est{display:flex;align-items:flex-start;gap:6px;font-size:12px;font-weight:600;margin-top:6px;color:var(--tx);line-height:1.35}
+:is(.bk,#bkdlg) .est i{font-style:normal;display:inline-flex;flex:none;width:16px;height:16px;border-radius:50%;align-items:center;justify-content:center;font-size:11px;color:#fff}
+:is(.bk,#bkdlg) .est.bom i{background:var(--bom)}:is(.bk,#bkdlg) .est.aviso i{background:var(--aviso);color:#0b0b0b}:is(.bk,#bkdlg) .est.critico i{background:var(--critico)}
+.bk .quadro{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(236px,1fr);gap:12px;overflow-x:auto;padding-bottom:4px}
+.bk .col{background:var(--sup);border:1px solid var(--grade);border-radius:12px;padding:10px;min-height:200px}
+.bk .col.alvo{outline:2px dashed var(--serie);outline-offset:-3px}
+.bk .col h3{font-size:13px;margin:2px 4px 10px;display:flex;justify-content:space-between;align-items:center;color:var(--tx)}
+.bk .qtd{background:var(--base);border-radius:99px;padding:1px 8px;font-size:11.5px;font-weight:600}
+.bk .item{background:#242423;border:1px solid var(--base);border-radius:10px;padding:10px;margin-bottom:8px;cursor:grab}
+.bk .item.indo{opacity:.45}
+.bk .tit2{all:unset;box-sizing:border-box;cursor:pointer;display:block;font-weight:600;font-size:13.5px;line-height:1.35;color:var(--tx)}
+.bk .tit2:hover{text-decoration:underline}
+.bk .tit2:focus-visible,.bk .pil:focus-visible{outline:2px solid var(--serie);outline-offset:2px}
+.bk .chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+:is(.bk,#bkdlg) .chip{font-size:11px;padding:2px 7px;border-radius:99px;border:1px solid var(--base);color:var(--tx2);white-space:nowrap}
+.bk .medida{font-size:11.5px;color:var(--mudo);margin-top:7px}
+.bk .trilho{height:5px;border-radius:3px;background:var(--grade);margin-top:5px;overflow:hidden}
+.bk .trilho div{height:100%;background:var(--serie);border-radius:3px}
+.bk .pe{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-top:8px;font-size:11.5px;color:var(--mudo)}
+.bk .mv{background:var(--sup);border:1px solid var(--base);color:var(--tx2);border-radius:7px;width:32px;height:30px;padding:0;margin-left:4px}
+.bk .mv:hover{color:#fff;border-color:#5a5a55}
+.bk .nada{color:var(--mudo);font-size:12.5px;padding:8px 4px}
+.bk .mais{background:none;border:0;color:#8fbdf3;font-size:12.5px;padding:6px 4px;text-decoration:underline}
+.bk details{margin-top:12px;color:var(--tx2);font-size:12.5px}
+.bk .cx2{background:var(--sup);border:1px solid var(--grade);border-radius:12px;padding:14px;margin-bottom:12px}
+.bk .cx2 h3{font-size:13px;margin:0 0 2px;color:var(--tx)}.bk .cx2 p{font-size:12px;color:var(--mudo);margin:0 0 10px;line-height:1.45}
+.bk .matriz{display:grid;grid-template-columns:auto repeat(3,minmax(150px,1fr));gap:6px;overflow-x:auto}
+.bk .matriz .eixo{font-size:11.5px;color:var(--tx2);padding:6px;align-self:center;font-weight:600}
+.bk .matriz .cel{background:#242423;border:1px solid var(--base);border-radius:10px;padding:8px;min-height:84px}
+.bk .matriz .cel.primeiro{border-color:var(--serie);box-shadow:inset 0 0 0 1px var(--serie)}
+.bk .matriz .cel small{display:block;font-size:11px;color:var(--mudo);margin-bottom:2px}
+.bk .matriz .cel.primeiro small{color:#9cc4f5;font-weight:700}
+.bk .pil{all:unset;box-sizing:border-box;cursor:pointer;display:block;font-size:12px;line-height:1.3;padding:5px 7px;border-radius:7px;background:var(--sup);border:1px solid var(--grade);margin-top:4px;color:var(--tx)}
+.bk .pil:hover{border-color:#5a5a55}
+.bk .rank{margin:0;padding-left:22px}.bk .rank li{margin:8px 0}.bk .rank small{display:block;color:var(--mudo);font-size:12px;margin-top:2px}
+.bk .tempo h3{font-size:13px;margin:14px 0 10px;color:var(--tx)}.bk .tempo h3 span{color:var(--mudo);font-weight:400}
+.bk .tempo ol{list-style:none;margin:0 0 0 5px;padding:0;border-left:2px solid var(--base)}
+.bk .tempo li{position:relative;display:flex;gap:12px;padding:0 0 16px 16px}
+.bk .tempo li::before{content:"";position:absolute;left:-7px;top:3px;width:8px;height:8px;border-radius:50%;background:var(--serie);border:2px solid var(--plano)}
+.bk .tempo .dia{flex:none;width:42px;font-size:12px;color:var(--tx2);font-variant-numeric:tabular-nums;padding-top:1px}
+#bkdlg{border:1px solid var(--base);border-radius:16px;padding:0;background:var(--sup);width:min(700px,94vw);max-height:92vh}
+#bkdlg::backdrop{background:rgba(0,0,0,.62)}
+#bkdlg .cabd{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--grade)}
+#bkdlg .cabd h2{font-size:16px;margin:0;flex:1}
+#bkdlg .corpod{padding:14px 18px;display:grid;grid-template-columns:1fr 1fr;gap:10px 12px}
+#bkdlg label{display:block;font-size:12px;color:var(--tx2);font-weight:600}
+#bkdlg label :is(input,select,textarea){display:block;width:100%;margin-top:4px;background:var(--plano);font-weight:400}
+#bkdlg textarea{resize:vertical;min-height:84px;line-height:1.45}
+#bkdlg .larg{grid-column:1/-1}
+#bkdlg .cxd{grid-column:1/-1;background:var(--plano);border:1px solid var(--grade);border-radius:10px;padding:10px 12px;font-size:12.5px;line-height:1.45;color:var(--tx2)}
+#bkdlg .cxd>b{display:block;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--mudo);margin-bottom:3px}
+#bkdlg .cxd ul{margin:0;padding-left:18px}
+#bkdlg .msg{grid-column:1/-1;background:#3a1418;color:#ffc2ca;border-radius:9px;padding:8px 10px;font-size:12.5px}
+#bkdlg .dicad{grid-column:1/-1;background:#12263f;color:#c4dcf8;border-radius:9px;padding:8px 10px;font-size:12.5px}
+#bkdlg .ped{display:flex;gap:8px;flex-wrap:wrap;padding:12px 18px;border-top:1px solid var(--grade)}
+#bkdlg .bt{background:var(--plano);border-color:var(--base);color:var(--tx)}#bkdlg .bt:hover{background:#2c2c2a}
+#bkdlg .bt.verm{background:var(--verm);border-color:var(--verm);color:#fff}#bkdlg .bt.verm:hover{background:var(--verm-esc)}
+@media(max-width:560px){#bkdlg .corpod{grid-template-columns:1fr}}
 #dica{position:fixed;z-index:30;pointer-events:none;background:#0b0b0b;color:#f0efec;border:1px solid #383835;border-radius:8px;padding:6px 9px;font-size:12px;line-height:1.4;max-width:260px;display:none;white-space:pre-line}
 @media(prefers-reduced-motion:reduce){.infra .pulso{animation:none}}
 #toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;opacity:0;pointer-events:none;transition:.2s;z-index:20;max-width:90vw}
@@ -183,6 +258,7 @@ h2.sec{font-size:15px;margin:0 0 4px}
 </div>
 <div id="toast" role="status"></div>
 <div id="dica" role="tooltip"></div>
+<dialog id="bkdlg" aria-labelledby="bkdlg_t"></dialog>
 
 <script>
 /* ============================================================================
@@ -192,7 +268,7 @@ h2.sec{font-size:15px;margin:0 0 4px}
    o que protege os dados e o login de administrador e as regras do banco.
    Tudo o que esta pagina guarda no navegador usa chaves com o prefixo aud_.
    ============================================================================ */
-const VERSAO='1.3.0';
+const VERSAO='1.4.0';
 const SUPA={url:'https://kqpdledhaghuzuwjkvrf.supabase.co',chave:'sb_publishable_dMdB5b_G5X5TnXemexGIXQ_GWXS6cid'};
 const K_SESSAO='aud_sessao',K_EMAIL='aud_email',K_DIAS='aud_dias';
 const $=id=>document.getElementById(id);
@@ -288,7 +364,7 @@ CONF.err=[
    oque:'Cada linha é um erro diferente que aconteceu no celular, com quantas vezes aconteceu e com quantas pessoas.',
    fazer:'Comece pelos que atingem mais pessoas ou que se repetem mais. Para investigar, baixe a lista e mande a linha do erro.',
    cols:[['ultima','Última vez','dh'],['app','App','app'],['nivel','Gravidade','nivel'],['tipo','Onde','tipo'],['mensagem','Mensagem','larga'],
-     ['vezes','Vezes','n'],['pessoas','Pessoas','n'],['quem','Quem','larga'],['versoes','Versões'],['primeira','Primeira vez','dh']]},
+     ['vezes','Vezes','n'],['pessoas','Pessoas','n'],['quem','Quem','larga'],['versoes','Versões'],['primeira','Primeira vez','dh'],['_bl','Backlog','bl']]},
   {id:'recentes',nivel:'info',t:'Últimos registros, um a um',
    oque:'Os registros na ordem em que chegaram, com a tela em que a pessoa estava e o detalhe técnico.',
    fazer:'Use para ver a sequência do que aconteceu com uma pessoa. "Aconteceu em" é a hora no celular; "Chegou em" é quando o app conseguiu mandar.',
@@ -324,7 +400,7 @@ function erroDe(j,status){
   if(cod==='PGRST106'||/schema must be one of/i.test(m))
     return 'O esquema "auditoria" ainda não foi liberado no Supabase. Em Project Settings > Data API > Exposed schemas, acrescente "auditoria".';
   if(cod==='PGRST202'||/Could not find the function/i.test(m))
-    return 'Esta parte da auditoria ainda não existe no banco. Falta aplicar o arquivo mais novo da pasta sql/ (a01 ou a02).';
+    return 'Esta parte da auditoria ainda não existe no banco. Falta aplicar o arquivo mais novo da pasta sql/.';
   return m;
 }
 async function pede(caminho,opc){
@@ -403,7 +479,7 @@ async function abre(){
   $('dias').value=String(DIAS);
   desenha();carrega();
 }
-function sai(){guardaSessao(null);EU=null;Object.keys(DADOS).forEach(l=>{DADOS[l]=null;FALHA[l]=null});telaEntrada('')}
+function sai(){guardaSessao(null);EU=null;Object.keys(DADOS).forEach(l=>{DADOS[l]=null;FALHA[l]=null});BKL=null;bkFecha();telaEntrada('')}
 
 /* ---------------- dados ---------------- */
 async function carrega(){
@@ -416,7 +492,7 @@ async function carrega(){
     else{FALHA[l]=x.reason.message;if(x.reason.semSessao)caiu=true}});
   CARREGANDO=false;$('batualiza').disabled=false;ATUALIZADO=new Date();
   if(caiu){telaEntrada('Sua sessão expirou. Entre de novo.');return}
-  carregaAlertas();carregaInfra();carregaAcessos();
+  carregaAlertas();carregaInfra();carregaAcessos();carregaBacklog();
   desenha();
 }
 /* da lista de aparelhos saem duas conferências: fila presa e versão antiga */
@@ -492,15 +568,16 @@ function periodo(d){return d&&d.desde?'de '+data(d.desde)+' a '+data(d.hoje):''}
 
 /* ---------------- telas ---------------- */
 function desenha(){
-  const abas=[['geral','Visão geral'],['rep','Repositores'],['dev','Desenvolvedores'],['err','Erros dos apps'],['apa','Aparelhos'],['inf','Infra'],['ale','Alertas'],['ace','Acessos']];
+  const abas=[['geral','Visão geral'],['rep','Repositores'],['dev','Desenvolvedores'],['err','Erros dos apps'],['apa','Aparelhos'],['inf','Infra'],['ale','Alertas'],['bkl','Backlog'],['ace','Acessos']];
   $('abas').innerHTML=abas.map(a=>{
     let c='';
     if(LADOS[a[0]]&&DADOS[a[0]]){const e=pendencias(a[0],'erro'),w=pendencias(a[0],'aviso');
       if(e+w)c='<span class="cont '+(e?'erro-c':'aviso-c')+'">'+(e+w)+'</span>'}
+    if(a[0]==='bkl'&&BKL){const n=(BKL.itens||[]).filter(bkAberto).length;if(n)c='<span class="cont">'+n+'</span>'}
     return '<button role="tab" data-aba="'+a[0]+'" aria-selected="'+(ABA===a[0])+'">'+a[1]+c+'</button>'}).join('');
   const m=$('main');
   if(CARREGANDO&&!Object.keys(DADOS).some(l=>DADOS[l])){m.innerHTML='<div class="carreg">Conferindo os dados dos dois apps…</div>';return}
-  m.innerHTML=ABA==='geral'?telaGeral():ABA==='ale'?telaAlertas():ABA==='inf'?telaInfra():ABA==='ace'?telaAcessos():telaLado(ABA);
+  m.innerHTML=ABA==='geral'?telaGeral():ABA==='ale'?telaAlertas():ABA==='inf'?telaInfra():ABA==='ace'?telaAcessos():ABA==='bkl'?telaBacklog():telaLado(ABA);
 }
 /* os números do topo de cada cartão da visão geral */
 function numeros(l,d){
@@ -533,7 +610,16 @@ function telaGeral(){
       return '<li><button data-ir="'+l+'" data-conf="'+c.id+'"><span class="nome">'+esc(c.t)+'</span>'+
         '<span class="selo '+(n?nivelDe(c,d):'ok')+'">'+(n?fmt(n):'ok')+'</span></button></li>'}).join('')+'</ul></section>';
   });
-  h+='</div><div class="nota">'+NOTA_APPS+'</div>';
+  h+='</div>';
+  if(BKL){
+    const it=BKL.itens||[],n=(v,t)=>'<div><b>'+v+'</b><span>'+t+'</span></div>',ativos=it.filter(x=>x.etapa!=='descartado'&&bkErroAtivo(x)).length;
+    h+='<section class="cartao" style="margin-bottom:18px"><div class="cab"><span class="farol '+(ativos?'aviso':'ok')+'"></span><div><h2>Backlog</h2>'+
+      '<div class="estado">O que tem para melhorar · '+(ativos?'Tem erro ligado que ainda acontece':'Nenhum erro ligado acontecendo')+'</div></div>'+
+      '<button class="bt fino" data-ir-aba="bkl" style="margin-left:auto">Abrir o backlog</button></div><div class="nums" style="margin-bottom:0">'+
+      n(fmt(it.filter(bkAberto).length),'em aberto')+n(fmt(it.filter(x=>x.etapa==='fazendo').length),'fazendo agora')+
+      n(fmt(it.filter(x=>x.etapa==='publicado'&&diasEntre(x.publicado_em,BKL.hoje)<=30).length),'publicados em 30 dias')+'</div></section>';
+  }
+  h+='<div class="nota">'+NOTA_APPS+'</div>';
   return h;
 }
 const NOTA_APPS='<b>Quem manda erros e versão:</b> o app dos desenvolvedores, a partir da versão 2.3.0. '+
@@ -574,7 +660,8 @@ function blocoConf(l,c,d){
 }
 function tabela(c,lin){
   return '<table><thead><tr>'+c.cols.map(k=>'<th'+(ehNum(k[2])?' class="num"':'')+'>'+esc(k[1])+'</th>').join('')+'</tr></thead><tbody>'+
-    (lin.length?lin.map(x=>'<tr>'+c.cols.map(k=>'<td class="'+(ehNum(k[2])?'num':(k[2]==='larga'||k[2]==='det')?'larga':'')+'">'+esc(celula(x[k[0]],k[2]))+'</td>').join('')+'</tr>').join('')
+    (lin.length?lin.map(x=>'<tr>'+c.cols.map(k=>k[2]==='bl'?'<td>'+bkCelulaErro(x)+'</td>':
+      '<td class="'+(ehNum(k[2])?'num':(k[2]==='larga'||k[2]==='det')?'larga':'')+'">'+esc(celula(x[k[0]],k[2]))+'</td>').join('')+'</tr>').join('')
                :'<tr><td colspan="'+c.cols.length+'" class="vazio">Nada com esse filtro.</td></tr>')+'</tbody></table>';
 }
 function acha(ch){const p=ch.split('.');return {l:p[0],c:CONF[p[0]].find(x=>x.id===p[1])}}
@@ -584,7 +671,8 @@ function baixaCsv(ch){
   const cel=v=>{let s=String(v==null?'':v);
     if(/^[=+\-@\t\r]/.test(s))s="'"+s;            /* nao deixa o Excel tratar texto como formula */
     return '"'+s.replace(/"/g,'""')+'"'};
-  const txt=[a.c.cols.map(k=>cel(k[1])).join(';')].concat(lin.map(x=>a.c.cols.map(k=>cel(celula(x[k[0]],k[2]))).join(';'))).join('\r\n');
+  const cols=a.c.cols.filter(k=>k[2]!=='bl');   /* a coluna do botão do backlog não vai para o arquivo */
+  const txt=[cols.map(k=>cel(k[1])).join(';')].concat(lin.map(x=>cols.map(k=>cel(celula(x[k[0]],k[2]))).join(';'))).join('\r\n');
   const url=URL.createObjectURL(new Blob(['﻿'+txt],{type:'text/csv;charset=utf-8'}));
   const el=document.createElement('a');el.href=url;el.download='auditoria-'+a.l+'-'+a.c.id+'-'+(d.hoje||'')+'.csv';
   document.body.appendChild(el);el.click();el.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);
@@ -841,6 +929,239 @@ async function acaoAcesso(acao,id){
   }catch(e){toast(e.message)}
   ACE_OCUPADO=false;await carregaAcessos();if(ABA==='ace')desenha();
 }
+/* ---------------- backlog: o que tem para melhorar ----------------
+   O que este backlog tem de diferente: o item ligado a um erro mostra se o erro
+   ainda acontece, e o item publicado mostra quantos celulares já estão na versão.
+   Os estados (verde, amarelo, vermelho) vêm sempre com um sinal e um texto. */
+let BKL=null,BKL_FALHA=null,BKL_VISAO='quadro',BKL_ED=null,BKL_OCUPADO=false;
+const BKL_F={sistema:'',tipo:'',q:''};
+const SIS={app_rtm:'App do RTM',painel_rtm:'Painel do RTM',mapa:'Mapa e planejador',app_repositor:'App do repositor',app_lideranca:'App da liderança',
+  painel_merch:'Painel do merch',portal_merch:'Portal Merchandising',auditoria:'Band Auditoria',banco:'Banco de dados',alertas:'Alertas',outro:'Outro'};
+const TIPO_BK={melhoria:'Melhoria',erro:'Erro',ideia:'Ideia'};
+const ETAPA={ideia:'Ideia',planejado:'Planejado',fazendo:'Fazendo',publicado:'Publicado',descartado:'Descartado'};
+const ETAPAS=['ideia','planejado','fazendo','publicado'];
+const NIV3={1:'baixo',2:'médio',3:'alto'};
+const APP_SIS={desenvolvedor:'app_rtm',repositor:'app_repositor',lider:'app_lideranca',painel:'painel_rtm'};
+const MESES=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+async function carregaBacklog(){
+  try{BKL=await rpc('backlog_painel');BKL_FALHA=null}
+  catch(e){if(e.semSessao)return;
+    BKL_FALHA=/ainda não existe no banco/.test(e.message)?'O backlog ainda não existe no banco. Falta rodar o arquivo a07-auditoria-backlog.sql no SQL Editor do Supabase.':e.message}
+  if(ABA==='bkl'||ABA==='err'||ABA==='geral')desenha();
+}
+const bkAberto=x=>x.etapa==='ideia'||x.etapa==='planejado'||x.etapa==='fazendo';
+const bkErroAtivo=x=>!!x.erro&&(x.etapa==='publicado'?(+x.erro.vezes_depois||0)>0:(+x.erro.vezes_7d||0)>0);
+/* pontos: impacto vale 3 cada, esforço tira 1 cada; +2 se o erro ligado ainda acontece; +1 se o item é um erro */
+const bkPontos=x=>(+x.impacto||2)*3-(+x.esforco||2)+(bkErroAtivo(x)?2:0)+(x.tipo==='erro'?1:0);
+const bkAcha=id=>((BKL&&BKL.itens)||[]).find(x=>String(x.id)===String(id));
+function bkItens(){
+  const q=BKL_F.q.trim().toLowerCase();
+  return ((BKL&&BKL.itens)||[]).filter(x=>(!BKL_F.sistema||x.sistema===BKL_F.sistema)&&(!BKL_F.tipo||x.tipo===BKL_F.tipo)&&
+    (!q||(x.titulo+' '+(x.descricao||'')).toLowerCase().indexOf(q)>=0));
+}
+function diasEntre(a,b){
+  const p=s=>{const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(String(s||''));return m?Date.UTC(+m[1],+m[2]-1,+m[3]):NaN};
+  return Math.round((p(b)-p(a))/86400000);
+}
+const bolas=n=>'●'.repeat(n)+'○'.repeat(3-n);
+const vezesTxt=n=>fmt(n)+(+n===1?' vez':' vezes');
+const sinal=(c,i,t)=>'<div class="est '+c+'"><i aria-hidden="true">'+i+'</i><span>'+esc(t)+'</span></div>';
+/* as evidências do item: o erro ainda acontece? a versão já chegou nos celulares? está parado? */
+function bkSinais(x){
+  let h='';const e=x.erro,en=x.entrega;
+  if(e){
+    if(x.etapa==='publicado'){const n=+e.vezes_depois||0;
+      h+=n?sinal('critico','✕','O erro voltou depois da publicação: '+vezesTxt(n)):sinal('bom','✓','O erro não voltou depois da publicação')}
+    else{const n=+e.vezes_7d||0;
+      h+=n?sinal('critico','✕','O erro ainda acontece: '+vezesTxt(n)+' em 7 dias'):sinal('bom','✓','Erro sem ocorrência nos últimos 7 dias')}
+  }
+  if(en){const t=+en.aparelhos||0,n=+en.na_versao||0;
+    if(!t)h+=sinal('aviso','!','Nenhum celular visto em 30 dias para conferir a entrega');
+    else h+=sinal(n>=t?'bom':'aviso',n>=t?'✓':'!',fmt(n)+' de '+fmt(t)+(t===1?' celular já está':' celulares já estão')+' na versão '+x.versao)+
+      '<div class="trilho" aria-hidden="true"><div style="width:'+Math.round(100*n/t)+'%"></div></div>'}
+  if(bkAberto(x)&&(+x.dias_na_etapa||0)>30)h+=sinal('aviso','!','Parado há '+fmt(x.dias_na_etapa)+' dias nesta etapa');
+  return h;
+}
+const bkChips=x=>'<div class="chips"><span class="chip">'+esc(SIS[x.sistema]||x.sistema)+'</span><span class="chip">'+esc(TIPO_BK[x.tipo]||x.tipo)+'</span>'+
+  (x.versao?'<span class="chip">versão '+esc(x.versao)+'</span>':'')+'</div>';
+function bkCartao(x){
+  const i=ETAPAS.indexOf(x.etapa),d=+x.dias_na_etapa||0;
+  const idade=x.etapa==='publicado'?'publicado em '+data(x.publicado_em).slice(0,5):d?'há '+fmt(d)+(d===1?' dia':' dias')+' aqui':'entrou hoje';
+  const seta=(para,s)=>'<button class="mv" data-bk-move="'+x.id+'" data-para="'+para+'" aria-label="Mover para '+ETAPA[para]+'" title="Mover para '+ETAPA[para]+'">'+s+'</button>';
+  return '<article class="item" draggable="true" data-bk-id="'+x.id+'"><button class="tit2" data-bk-abre="'+x.id+'">'+esc(x.titulo)+'</button>'+bkChips(x)+
+    '<div class="medida" aria-label="Impacto '+NIV3[x.impacto]+', esforço '+NIV3[x.esforco]+'">Impacto '+bolas(+x.impacto||2)+' · Esforço '+bolas(+x.esforco||2)+'</div>'+
+    bkSinais(x)+'<div class="pe"><span>'+esc(idade)+'</span><span>'+(i>0?seta(ETAPAS[i-1],'◀'):'')+(i<3?seta(ETAPAS[i+1],'▶'):'')+'</span></div></article>';
+}
+function bkQuadro(it){
+  const fora=it.filter(x=>x.etapa==='descartado');
+  return '<div class="quadro">'+ETAPAS.map(et=>{
+    const l=it.filter(x=>x.etapa===et);
+    if(et==='publicado')l.sort((a,b)=>String(b.publicado_em).localeCompare(String(a.publicado_em)));
+    else l.sort((a,b)=>bkPontos(b)-bkPontos(a)||a.id-b.id);
+    const mostra=et==='publicado'?l.slice(0,8):l;
+    return '<section class="col" data-bk-col="'+et+'" aria-label="'+ETAPA[et]+'"><h3><span>'+ETAPA[et]+'</span><span class="qtd">'+l.length+'</span></h3>'+
+      (mostra.length?mostra.map(bkCartao).join(''):'<div class="nada">Nada aqui.</div>')+
+      (l.length>mostra.length?'<button class="mais" data-bk-visao="tempo">Mais '+(l.length-mostra.length)+' na linha do tempo</button>':'')+'</section>'}).join('')+'</div>'+
+    (fora.length?'<details><summary>Descartados ('+fora.length+')</summary>'+fora.map(x=>'<button class="pil" data-bk-abre="'+x.id+'">'+esc(x.titulo)+'</button>').join('')+'</details>':'');
+}
+function bkPrioridade(it){
+  const ab=it.filter(bkAberto);
+  if(!ab.length)return '<div class="nada">Nenhum item em aberto com esse filtro.</div>';
+  const rot={'3-1':'Fazer primeiro','3-3':'Grande aposta','1-1':'Rápido, mas pouco resultado','1-3':'Deixar para depois'};
+  let h='<div class="cx2"><h3>Impacto por esforço</h3><p>Só os itens em aberto. Quanto mais para cima, mais resultado. Quanto mais para a esquerda, menos trabalho. O quadro destacado é o que vale fazer primeiro.</p>'+
+    '<div class="matriz"><div></div><div class="eixo">Esforço baixo</div><div class="eixo">Esforço médio</div><div class="eixo">Esforço alto</div>';
+  [3,2,1].forEach(im=>{
+    h+='<div class="eixo">Impacto '+NIV3[im]+'</div>';
+    [1,2,3].forEach(es=>{const l=ab.filter(x=>+x.impacto===im&&+x.esforco===es).sort((a,b)=>bkPontos(b)-bkPontos(a));
+      h+='<div class="cel'+(im===3&&es===1?' primeiro':'')+'">'+(rot[im+'-'+es]?'<small>'+rot[im+'-'+es]+'</small>':'')+
+        l.map(x=>'<button class="pil" data-bk-abre="'+x.id+'" title="'+esc(SIS[x.sistema]||'')+' · '+ETAPA[x.etapa]+'">'+esc(x.titulo)+'</button>').join('')+'</div>'});
+  });
+  h+='</div></div><div class="cx2"><h3>Ordem sugerida</h3><p>Pontos = impacto × 3 − esforço, mais 2 se o erro ligado ainda acontece e mais 1 se o item é um erro. É uma sugestão: a decisão é sua.</p><ol class="rank">'+
+    ab.slice().sort((a,b)=>bkPontos(b)-bkPontos(a)||a.id-b.id).slice(0,10).map(x=>
+      '<li><button class="tit2" data-bk-abre="'+x.id+'">'+esc(x.titulo)+'</button><small>'+bkPontos(x)+' pontos · '+esc(SIS[x.sistema]||x.sistema)+' · '+ETAPA[x.etapa]+
+      ' · impacto '+NIV3[x.impacto]+', esforço '+NIV3[x.esforco]+(bkErroAtivo(x)?' · o erro ainda acontece':'')+'</small></li>').join('')+'</ol></div>';
+  return h;
+}
+function bkTempo(it){
+  const p=it.filter(x=>x.etapa==='publicado'&&x.publicado_em).sort((a,b)=>String(b.publicado_em).localeCompare(String(a.publicado_em)));
+  if(!p.length)return '<div class="nada">Nenhuma entrega registrada com esse filtro.</div>';
+  let h='<div class="cx2 tempo"><h3 style="margin-top:0">Linha do tempo das entregas</h3><p>O que saiu em cada mês, da entrega mais nova para a mais antiga.</p>',mes='';
+  p.forEach(x=>{
+    const m=String(x.publicado_em).slice(0,7);
+    if(m!==mes){if(mes)h+='</ol>';mes=m;const n=p.filter(y=>String(y.publicado_em).slice(0,7)===m).length,nm=MESES[+m.slice(5,7)-1]||'';
+      h+='<h3>'+nm.charAt(0).toUpperCase()+nm.slice(1)+' de '+m.slice(0,4)+' <span>· '+n+(n===1?' entrega':' entregas')+'</span></h3><ol>'}
+    const lv=x.dias_ate_publicar;
+    h+='<li><span class="dia">'+data(x.publicado_em).slice(0,5)+'</span><div><button class="tit2" data-bk-abre="'+x.id+'">'+esc(x.titulo)+'</button>'+bkChips(x)+
+      (lv==null?'':'<div class="medida">'+(lv?'levou '+fmt(lv)+(lv===1?' dia':' dias')+' do pedido à publicação':'pedido e publicado no mesmo dia')+'</div>')+bkSinais(x)+'</div></li>'});
+  return h+'</ol></div>';
+}
+function bkTiles(){
+  const it=(BKL.itens||[]).filter(x=>x.etapa!=='descartado'),ab=it.filter(bkAberto),conta=e=>it.filter(x=>x.etapa===e).length;
+  const pub=it.filter(x=>x.etapa==='publicado'&&x.publicado_em),p30=pub.filter(x=>diasEntre(x.publicado_em,BKL.hoje)<=30);
+  const p90=pub.filter(x=>diasEntre(x.publicado_em,BKL.hoje)<=90&&x.dias_ate_publicar!=null);
+  const media=p90.length?p90.reduce((s,x)=>s+(+x.dias_ate_publicar||0),0)/p90.length:null;
+  const parados=ab.filter(x=>(+x.dias_na_etapa||0)>30).length,ativos=it.filter(bkErroAtivo).length;
+  const t=(rot,num,de,est)=>'<div class="tile"><div class="rot">'+rot+'</div><div class="num">'+num+'</div><div class="de">'+de+'</div>'+(est||'')+'</div>';
+  return '<div class="tiles">'+
+    t('Em aberto',fmt(ab.length),fmt(conta('ideia'))+(conta('ideia')===1?' ideia':' ideias')+' · '+fmt(conta('planejado'))+(conta('planejado')===1?' planejado':' planejados'))+
+    t('Fazendo agora',fmt(conta('fazendo')),'em andamento')+
+    t('Publicados em 30 dias',fmt(p30.length),fmt(pub.length)+' no total')+
+    t('Do pedido à publicação',media==null?'–':media.toLocaleString('pt-BR',{maximumFractionDigits:1})+(media===1?' dia':' dias'),'média das entregas de 90 dias')+
+    t('Parados há mais de 30 dias',fmt(parados),'na mesma etapa',parados?sinal('aviso','!','Vale rever ou descartar'):sinal('bom','✓','Nada parado'))+
+    t('Erros ligados acontecendo',fmt(ativos),'itens com erro que ainda ocorre',ativos?sinal('critico','✕','Precisa de atenção'):sinal('bom','✓','Nenhum'))+'</div>';
+}
+const bkCorpo=()=>{const it=bkItens();return BKL_VISAO==='prioridade'?bkPrioridade(it):BKL_VISAO==='tempo'?bkTempo(it):bkQuadro(it)};
+function telaBacklog(){
+  let h='<h1 class="tit">Backlog</h1><p class="sub">O que tem para melhorar nos apps, nos painéis e no banco. O item ligado a um erro mostra se o erro ainda acontece, e cada entrega mostra se a versão já chegou nos celulares.</p>';
+  if(!BKL)return h+(BKL_FALHA?'<div class="alerta" role="alert">'+esc(BKL_FALHA)+'</div>':'<div class="carreg">Carregando…</div>');
+  if(BKL_FALHA)h+='<div class="alerta" role="alert">Não consegui atualizar: '+esc(BKL_FALHA)+'</div>';
+  const opc=(o,sel,todos)=>'<option value="">'+todos+'</option>'+Object.keys(o).map(k=>'<option value="'+k+'"'+(k===sel?' selected':'')+'>'+o[k]+'</option>').join('');
+  const vis=[['quadro','Quadro'],['prioridade','Prioridade'],['tempo','Linha do tempo']];
+  h+='<section class="bk"><div class="topo2"><h2>Quadro de melhorias</h2><div class="seg" role="group" aria-label="Como ver">'+
+    vis.map(v=>'<button data-bk-visao="'+v[0]+'" aria-pressed="'+(BKL_VISAO===v[0])+'">'+v[1]+'</button>').join('')+'</div><div class="filtros">'+
+    '<select data-bk-f="sistema" aria-label="Sistema">'+opc(SIS,BKL_F.sistema,'Todos os sistemas')+'</select>'+
+    '<select data-bk-f="tipo" aria-label="Tipo">'+opc(TIPO_BK,BKL_F.tipo,'Todos os tipos')+'</select>'+
+    '<input type="search" data-bk-q placeholder="Procurar" aria-label="Procurar no backlog" value="'+esc(BKL_F.q)+'">'+
+    '<button class="bt verm" data-bk-novo>+ Novo item</button></div></div>'+bkTiles()+'<div id="bkcorpo">'+bkCorpo()+'</div></section>';
+  return h+'<div class="nota"><b>Como usar:</b> arraste o cartão de uma coluna para outra, ou use as setas do cartão. Clique no título para ver, editar e copiar o pedido pronto para colar na conversa com o Claude. '+
+    'Ao mover para Publicado, informe a versão: é ela que o painel compara com a versão dos celulares. Para ligar um item a um erro, use o botão "Mandar para o backlog" na aba Erros dos apps.</div>';
+}
+/* a coluna "Backlog" da lista de erros agrupados */
+function bkDoErro(x){return ((BKL&&BKL.itens)||[]).find(i=>i.erro&&i.etapa!=='descartado'&&i.erro.app===x.app&&i.erro.tipo===x.tipo&&i.erro.mensagem===x.mensagem)}
+function bkCelulaErro(x){
+  if(!BKL)return '';
+  const i=bkDoErro(x),n=((DADOS.err&&DADOS.err.grupos&&DADOS.err.grupos.linhas)||[]).indexOf(x);
+  return i?'<button class="bt fino" data-bk-abre="'+i.id+'">No backlog: '+ETAPA[i.etapa]+'</button>':'<button class="bt fino" data-bk-erro="'+n+'">Mandar para o backlog</button>';
+}
+/* ---- a janela do item ---- */
+const bkHist=t=>{const p=String(t||'').split(':'),e=(p[1]||'').split('>');
+  return p[0]==='criado'?'Criado em '+(ETAPA[p[1]]||p[1]||''):p[0]==='etapa'?'De '+(ETAPA[e[0]]||e[0])+' para '+(ETAPA[e[1]]||e[1]):p[0]==='versao'?'Versão informada: '+p.slice(1).join(':'):p[0]==='editado'?'Texto ou classificação alterados':String(t||'')};
+function bkDialogo(x){
+  const opc=(o,sel)=>Object.keys(o).map(k=>'<option value="'+k+'"'+(String(k)===String(sel)?' selected':'')+'>'+o[k]+'</option>').join('');
+  const v=k=>esc(x[k]==null?'':x[k]),e=x.erro,niv={1:'Baixo',2:'Médio',3:'Alto'};
+  let h='<div class="cabd"><h2 id="bkdlg_t">'+(x.id?'Item '+x.id:'Novo item')+'</h2><button class="bt fino" data-bkd="fechar" aria-label="Fechar">✕</button></div><div class="corpod">'+
+    '<div class="msg esc" id="bk_msg" role="alert"></div>'+(x._dica?'<div class="dicad">'+esc(x._dica)+'</div>':'')+
+    '<label class="larg">Título<input id="bk_titulo" maxlength="120" value="'+v('titulo')+'"></label>'+
+    '<label class="larg">Descrição<textarea id="bk_desc" maxlength="2000" placeholder="O que precisa mudar e por quê. Não escreva senha nem dado de cliente.">'+v('descricao')+'</textarea></label>'+
+    '<label>Sistema<select id="bk_sistema">'+opc(SIS,x.sistema||'app_rtm')+'</select></label>'+
+    '<label>Tipo<select id="bk_tipo">'+opc(TIPO_BK,x.tipo||'melhoria')+'</select></label>'+
+    '<label>Etapa<select id="bk_etapa">'+opc(ETAPA,x.etapa||'ideia')+'</select></label>'+
+    '<label>Quem pediu<input id="bk_quem" maxlength="80" value="'+v('pedido_por')+'"></label>'+
+    '<label>Impacto (quanto resolve)<select id="bk_impacto">'+opc(niv,x.impacto||2)+'</select></label>'+
+    '<label>Esforço (quanto trabalho dá)<select id="bk_esforco">'+opc(niv,x.esforco||2)+'</select></label>'+
+    '<label>Versão em que saiu<input id="bk_versao" maxlength="30" placeholder="ex.: 2.5.0" autocomplete="off" value="'+v('versao')+'"></label>'+
+    '<label>Data da publicação<input id="bk_pub" type="date" value="'+esc(String(x.publicado_em||'').slice(0,10))+'"></label>';
+  if(e)h+='<div class="cxd" id="bk_erro"><b>Erro ligado</b>'+esc((APPS[e.app]||e.app)+' · '+(TIPOS[e.tipo]||e.tipo)+': '+e.mensagem)+
+    (x.id?bkSinais({erro:e,etapa:x.etapa})+(e.ultima?'<div>Última ocorrência: '+esc(dataHora(e.ultima))+'</div>':''):'')+
+    '<div style="margin-top:8px"><button class="bt fino" data-bkd="semerro">Desligar do erro</button></div></div>';
+  if(x.id&&x.entrega)h+='<div class="cxd"><b>Entrega</b>'+bkSinais({entrega:x.entrega,versao:x.versao,etapa:x.etapa})+'</div>';
+  if(x.id&&(x.historico||[]).length)h+='<div class="cxd"><b>Histórico</b><ul>'+x.historico.map(y=>'<li>'+esc(dataHora(y.em))+' · '+esc(bkHist(y.o_que))+'</li>').join('')+'</ul></div>';
+  return h+'</div><div class="ped"><button class="bt verm" data-bkd="salvar">'+(x.id?'Salvar':'Criar item')+'</button>'+
+    (x.id?'<button class="bt" data-bkd="copiar">Copiar pedido para o Claude</button><button class="bt" data-bkd="apagar">Apagar</button>':'')+
+    '<button class="bt" data-bkd="fechar">Fechar</button></div>';
+}
+function bkAbre(x,foco){
+  if(!x)return;
+  BKL_ED=Object.assign({},x);const d=$('bkdlg');d.innerHTML=bkDialogo(BKL_ED);
+  if(!d.open){if(d.showModal)d.showModal();else d.setAttribute('open','')}
+  const el=$(foco||'bk_titulo');if(el)el.focus();
+}
+function bkFecha(){const d=$('bkdlg');if(d&&d.open){if(d.close)d.close();else d.removeAttribute('open')}BKL_ED=null}
+function bkMsg(t,bom){const m=$('bk_msg');if(m&&$('bkdlg').open){m.textContent=t;m.className=bom?'dicad':'msg'}else toast(t)}
+async function bkSalva(){
+  if(BKL_OCUPADO||!BKL_ED)return;
+  const x=BKL_ED,p={titulo:$('bk_titulo').value.trim(),descricao:$('bk_desc').value.trim(),sistema:$('bk_sistema').value,tipo:$('bk_tipo').value,etapa:$('bk_etapa').value,
+    impacto:+$('bk_impacto').value,esforco:+$('bk_esforco').value,pedido_por:$('bk_quem').value.trim(),versao:$('bk_versao').value.trim()};
+  if(!p.titulo){bkMsg('Informe o título.');$('bk_titulo').focus();return}
+  if(p.versao&&!/^[0-9A-Za-z._-]{1,30}$/.test(p.versao)){bkMsg('A versão só pode ter letras, números, ponto e traço. Exemplo: 2.5.0');$('bk_versao').focus();return}
+  const dt=$('bk_pub').value;
+  if(p.etapa==='publicado'&&dt&&dt!==String(x.publicado_em||'').slice(0,10))p.publicado_em=dt;
+  if(x.id)p.id=x.id;
+  if(x._semErro)p.erro=null;else if(!x.id&&x.erro)p.erro={app:x.erro.app,nivel:x.erro.nivel,tipo:x.erro.tipo,mensagem:x.erro.mensagem};
+  BKL_OCUPADO=true;let ok=false;
+  try{await rpc('backlog_salvar',{p});ok=true}catch(e){bkMsg(e.message)}
+  BKL_OCUPADO=false;
+  if(ok){bkFecha();toast(x.id?'Item salvo.':'Item criado.');await carregaBacklog()}
+}
+async function bkMove(id,etapa){
+  const x=bkAcha(id);if(!x||x.etapa===etapa||BKL_OCUPADO||!ETAPA[etapa])return;
+  /* publicar pede a versão: abre o item já na etapa Publicado, para preencher e salvar */
+  if(etapa==='publicado'){bkAbre(Object.assign({},x,{etapa:'publicado',_dica:'Para publicar, informe a versão em que saiu e clique em Salvar.'}),'bk_versao');return}
+  BKL_OCUPADO=true;
+  try{await rpc('backlog_mover',{p_id:x.id,p_etapa:etapa});toast('Movido para '+ETAPA[etapa]+'.')}catch(e){toast(e.message)}
+  BKL_OCUPADO=false;await carregaBacklog();
+}
+async function bkApaga(){
+  const x=BKL_ED;if(!x||!x.id||BKL_OCUPADO)return;
+  if(!confirm('Apagar o item "'+x.titulo+'" do backlog? O histórico dele some junto. Se a ideia só foi abandonada, prefira a etapa Descartado.'))return;
+  BKL_OCUPADO=true;let ok=false;
+  try{await rpc('backlog_apagar',{p_id:x.id});ok=true}catch(e){bkMsg(e.message)}
+  BKL_OCUPADO=false;
+  if(ok){bkFecha();toast('Item apagado.');await carregaBacklog()}
+}
+/* o texto pronto para colar na conversa com o Claude */
+function bkPedido(x){
+  const e=x.erro,l=['Pedido do backlog do Band Auditoria (item '+x.id+')','Título: '+x.titulo,'Sistema: '+(SIS[x.sistema]||x.sistema),'Tipo: '+(TIPO_BK[x.tipo]||x.tipo),
+    'Etapa: '+(ETAPA[x.etapa]||x.etapa),'Impacto: '+NIV3[x.impacto]+' | Esforço: '+NIV3[x.esforco]];
+  if(x.descricao)l.push('Descrição: '+x.descricao);
+  if(e)l.push('Erro ligado: '+(APPS[e.app]||e.app)+', '+(TIPOS[e.tipo]||e.tipo)+': "'+e.mensagem+'". '+vezesTxt(+e.vezes_7d||0)+' nos últimos 7 dias'+(e.ultima?'; última em '+dataHora(e.ultima):'')+'.');
+  l.push('Antes de alterar qualquer coisa, explique o que muda e espere o meu ok.');
+  return l.join('\n');
+}
+async function bkCopia(){
+  const x=BKL_ED&&bkAcha(BKL_ED.id);if(!x)return;
+  const t=bkPedido(x);let ok=false;
+  try{await navigator.clipboard.writeText(t);ok=true}catch(e){}
+  if(!ok){const a=document.createElement('textarea');a.value=t;$('bkdlg').appendChild(a);a.select();try{ok=document.execCommand('copy')}catch(e){}a.remove()}
+  bkMsg(ok?'Pedido copiado. Cole na conversa com o Claude.':'Não consegui copiar sozinho. Selecione o texto do item e copie à mão.',ok);
+}
+$('bkdlg').addEventListener('click',e=>{
+  const b=e.target.closest('[data-bkd]');if(!b)return;const a=b.dataset.bkd;
+  if(a==='fechar')bkFecha();else if(a==='salvar')bkSalva();else if(a==='apagar')bkApaga();else if(a==='copiar')bkCopia();
+  else if(a==='semerro'&&BKL_ED){BKL_ED._semErro=true;$('bk_erro').innerHTML='<b>Erro ligado</b>O item deixa de ficar ligado ao erro quando você salvar.'}
+});
+$('bkdlg').addEventListener('close',()=>{BKL_ED=null});
+
 /* dica ao passar o mouse (gráficos e medidores) */
 document.addEventListener('mousemove',e=>{
   const el=e.target&&e.target.closest?e.target.closest('[data-dica]'):null,d=$('dica');
@@ -862,9 +1183,45 @@ $('main').addEventListener('click',e=>{
     const el=document.querySelector('[data-abre="'+ab.dataset.abre+'"]');if(el)el.focus();return}
   const cs=e.target.closest('[data-csv]');if(cs){baixaCsv(cs.dataset.csv);return}
   const al=e.target.closest('[data-ale]');if(al){acaoAlerta(al.dataset.ale,al.dataset.id);return}
-  const ac=e.target.closest('[data-ace]');if(ac)acaoAcesso(ac.dataset.ace,ac.dataset.id);
+  const ac=e.target.closest('[data-ace]');if(ac){acaoAcesso(ac.dataset.ace,ac.dataset.id);return}
+  /* backlog */
+  const ia=e.target.closest('[data-ir-aba]');if(ia){ABA=ia.dataset.irAba;desenha();window.scrollTo(0,0);return}
+  const bv=e.target.closest('[data-bk-visao]');if(bv){BKL_VISAO=bv.dataset.bkVisao;desenha();return}
+  const bm=e.target.closest('[data-bk-move]');if(bm){bkMove(bm.dataset.bkMove,bm.dataset.para);return}
+  const ba=e.target.closest('[data-bk-abre]');if(ba){bkAbre(bkAcha(ba.dataset.bkAbre));return}
+  if(e.target.closest('[data-bk-novo]')){bkAbre({etapa:'ideia',tipo:BKL_F.tipo||'melhoria',sistema:BKL_F.sistema||'app_rtm',impacto:2,esforco:2});return}
+  const be=e.target.closest('[data-bk-erro]');
+  if(be){const x=((DADOS.err&&DADOS.err.grupos&&DADOS.err.grupos.linhas)||[])[+be.dataset.bkErro];if(!x)return;
+    bkAbre({titulo:('Corrigir: '+String(x.mensagem||'')).slice(0,120),tipo:'erro',etapa:'ideia',sistema:APP_SIS[x.app]||'outro',
+      impacto:(+x.pessoas||0)>=3?3:2,esforco:2,erro:{app:x.app,nivel:x.nivel,tipo:x.tipo,mensagem:x.mensagem},
+      descricao:'Erro registrado pelos celulares: '+vezesTxt(+x.vezes||0)+', '+fmt(x.pessoas)+((+x.pessoas||0)===1?' pessoa':' pessoas')+' no período.'})}
+});
+/* backlog: filtros (troca só o miolo, para o cursor não sair do campo) e arrastar o cartão */
+$('main').addEventListener('change',e=>{
+  const f=e.target.closest('[data-bk-f]');if(!f)return;
+  BKL_F[f.dataset.bkF]=f.value;const c=$('bkcorpo');if(c)c.innerHTML=bkCorpo();
+});
+$('main').addEventListener('dragstart',e=>{
+  const it=e.target.closest&&e.target.closest('[data-bk-id]');if(!it)return;
+  e.dataTransfer.setData('text/plain',it.dataset.bkId);e.dataTransfer.effectAllowed='move';it.classList.add('indo');
+});
+$('main').addEventListener('dragend',e=>{
+  const it=e.target.closest&&e.target.closest('[data-bk-id]');if(it)it.classList.remove('indo');
+  document.querySelectorAll('.bk .col.alvo').forEach(c=>c.classList.remove('alvo'));
+});
+$('main').addEventListener('dragover',e=>{
+  const c=e.target.closest&&e.target.closest('[data-bk-col]');if(!c)return;
+  e.preventDefault();e.dataTransfer.dropEffect='move';
+  document.querySelectorAll('.bk .col.alvo').forEach(o=>{if(o!==c)o.classList.remove('alvo')});c.classList.add('alvo');
+});
+$('main').addEventListener('drop',e=>{
+  const c=e.target.closest&&e.target.closest('[data-bk-col]');if(!c)return;
+  e.preventDefault();c.classList.remove('alvo');
+  const id=e.dataTransfer.getData('text/plain');if(id)bkMove(id,c.dataset.bkCol);
 });
 $('main').addEventListener('input',e=>{
+  const bq=e.target.closest('[data-bk-q]');
+  if(bq){BKL_F.q=bq.value;const c=$('bkcorpo');if(c)c.innerHTML=bkCorpo();return}
   const b=e.target.closest('[data-busca]');if(!b)return;
   const ch=b.dataset.busca;BUSCA[ch]=b.value;
   /* troca so a tabela, para o cursor nao sair do campo */
