@@ -122,6 +122,39 @@ pre.txt{white-space:pre-wrap;font:inherit;font-size:12.5px;margin:6px 0 2px;colo
 details summary{cursor:pointer}
 .acoes{display:flex;gap:6px;flex-wrap:wrap}
 h2.sec{font-size:15px;margin:0 0 4px}
+/* ---------- infra: sala de controle (superfície escura, cores validadas para gráfico) ---------- */
+.infra{--sup:#1a1a19;--plano:#0d0d0d;--tx:#f0efec;--tx2:#c3c2b7;--mudo:#898781;--grade:#2c2c2a;--base:#383835;--serie:#3987e5;
+  --bom:#0ca30c;--aviso:#fab219;--critico:#d03b3b;background:var(--plano);color:var(--tx);border-radius:16px;padding:18px;margin-bottom:14px}
+.infra h2{font-size:15px;margin:0;color:var(--tx)}
+.infra .topo2{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.infra .pulso{width:9px;height:9px;border-radius:50%;background:var(--bom);box-shadow:0 0 0 0 rgba(12,163,12,.6);animation:pulso 2s infinite}
+@keyframes pulso{70%{box-shadow:0 0 0 9px rgba(12,163,12,0)}100%{box-shadow:0 0 0 0 rgba(12,163,12,0)}}
+.infra .sub2{color:var(--mudo);font-size:12.5px;margin-left:auto}
+.infra .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:12px}
+.infra .tile{background:var(--sup);border:1px solid var(--grade);border-radius:12px;padding:14px}
+.infra .tile .rot{font-size:12px;color:var(--tx2);margin-bottom:4px}
+.infra .tile .num{font-size:24px;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.infra .tile .de{font-size:12px;color:var(--mudo)}
+.infra .est{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;margin-top:6px;color:var(--tx)}
+.infra .est i{font-style:normal;display:inline-flex;width:16px;height:16px;border-radius:50%;align-items:center;justify-content:center;font-size:11px;color:#fff}
+.infra .est.bom i{background:var(--bom)}.infra .est.aviso i{background:var(--aviso);color:#0b0b0b}.infra .est.critico i{background:var(--critico)}
+.infra .gr{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:12px}
+.infra .cx{background:var(--sup);border:1px solid var(--grade);border-radius:12px;padding:14px;min-width:0}
+.infra .cx h3{font-size:13px;margin:0 0 2px;color:var(--tx)}.infra .cx p{font-size:12px;color:var(--mudo);margin:0 0 8px;line-height:1.45}
+.infra svg{display:block;width:100%;height:auto}
+.infra svg text{fill:var(--mudo);font-size:11px;font-family:var(--sans)}
+.infra .calor{display:grid;gap:2px;margin:6px 0 4px}
+.infra .calor i{display:block;height:11px;border-radius:2px;background:var(--grade)}
+.infra .calor i.ok{background:var(--serie)}.infra .calor i.falha{background:var(--critico)}
+.infra table{font-size:12.5px;color:var(--tx)}
+.infra th{background:var(--sup);color:var(--mudo);border-bottom:1px solid var(--base);position:static}
+.infra td{border-bottom:1px solid var(--grade)}
+.infra .rol{border:1px solid var(--grade);max-height:330px}
+.infra .barra2{height:6px;border-radius:3px;background:var(--serie);min-width:2px}
+.infra details{margin-top:8px;color:var(--tx2);font-size:12.5px}
+.infra code{color:var(--tx2)}
+#dica{position:fixed;z-index:30;pointer-events:none;background:#0b0b0b;color:#f0efec;border:1px solid #383835;border-radius:8px;padding:6px 9px;font-size:12px;line-height:1.4;max-width:260px;display:none;white-space:pre-line}
+@media(prefers-reduced-motion:reduce){.infra .pulso{animation:none}}
 #toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;opacity:0;pointer-events:none;transition:.2s;z-index:20;max-width:90vw}
 #toast.on{opacity:1;transform:translate(-50%,0)}
 @media(max-width:640px){.topo .quem{display:none}main{padding:16px 12px 50px}.topo .faixa{padding:10px 12px}.abas{padding:0 8px}}
@@ -149,6 +182,7 @@ h2.sec{font-size:15px;margin:0 0 4px}
   <main id="main"></main>
 </div>
 <div id="toast" role="status"></div>
+<div id="dica" role="tooltip"></div>
 
 <script>
 /* ============================================================================
@@ -158,7 +192,7 @@ h2.sec{font-size:15px;margin:0 0 4px}
    o que protege os dados e o login de administrador e as regras do banco.
    Tudo o que esta pagina guarda no navegador usa chaves com o prefixo aud_.
    ============================================================================ */
-const VERSAO='1.2.2';
+const VERSAO='1.3.0';
 const SUPA={url:'https://kqpdledhaghuzuwjkvrf.supabase.co',chave:'sb_publishable_dMdB5b_G5X5TnXemexGIXQ_GWXS6cid'};
 const K_SESSAO='aud_sessao',K_EMAIL='aud_email',K_DIAS='aud_dias';
 const $=id=>document.getElementById(id);
@@ -382,7 +416,7 @@ async function carrega(){
     else{FALHA[l]=x.reason.message;if(x.reason.semSessao)caiu=true}});
   CARREGANDO=false;$('batualiza').disabled=false;ATUALIZADO=new Date();
   if(caiu){telaEntrada('Sua sessão expirou. Entre de novo.');return}
-  carregaAlertas();
+  carregaAlertas();carregaInfra();carregaAcessos();
   desenha();
 }
 /* da lista de aparelhos saem duas conferências: fila presa e versão antiga */
@@ -458,7 +492,7 @@ function periodo(d){return d&&d.desde?'de '+data(d.desde)+' a '+data(d.hoje):''}
 
 /* ---------------- telas ---------------- */
 function desenha(){
-  const abas=[['geral','Visão geral'],['rep','Repositores'],['dev','Desenvolvedores'],['err','Erros dos apps'],['apa','Aparelhos'],['ale','Alertas']];
+  const abas=[['geral','Visão geral'],['rep','Repositores'],['dev','Desenvolvedores'],['err','Erros dos apps'],['apa','Aparelhos'],['inf','Infra'],['ale','Alertas'],['ace','Acessos']];
   $('abas').innerHTML=abas.map(a=>{
     let c='';
     if(LADOS[a[0]]&&DADOS[a[0]]){const e=pendencias(a[0],'erro'),w=pendencias(a[0],'aviso');
@@ -466,7 +500,7 @@ function desenha(){
     return '<button role="tab" data-aba="'+a[0]+'" aria-selected="'+(ABA===a[0])+'">'+a[1]+c+'</button>'}).join('');
   const m=$('main');
   if(CARREGANDO&&!Object.keys(DADOS).some(l=>DADOS[l])){m.innerHTML='<div class="carreg">Conferindo os dados dos dois apps…</div>';return}
-  m.innerHTML=ABA==='geral'?telaGeral():ABA==='ale'?telaAlertas():telaLado(ABA);
+  m.innerHTML=ABA==='geral'?telaGeral():ABA==='ale'?telaAlertas():ABA==='inf'?telaInfra():ABA==='ace'?telaAcessos():telaLado(ABA);
 }
 /* os números do topo de cada cartão da visão geral */
 function numeros(l,d){
@@ -640,6 +674,183 @@ async function acaoAlerta(acao,id){
   ALE_OCUPADO=false;await carregaAlertas();if(ABA==='ale')desenha();
 }
 
+/* ---------------- infra: sala de controle ----------------
+   Cada gráfico tem uma série só e um eixo só. As cores de estado (verde, amarelo,
+   vermelho) vêm sempre com um sinal e um texto, nunca sozinhas. */
+let INF=null,INF_FALHA=null;
+async function carregaInfra(){
+  try{INF=await rpc('infra_painel',{p_dias:DIAS});INF_FALHA=null}
+  catch(e){INF_FALHA=e.message;if(e.semSessao)return}
+  if(ABA==='inf')desenha();
+}
+const emMb=b=>(+b||0)/1048576;
+function fmtMb(b){const m=emMb(b);return m>=1024?(m/1024).toLocaleString('pt-BR',{maximumFractionDigits:2})+' GB':m>=10?fmt(m)+' MB':m.toLocaleString('pt-BR',{maximumFractionDigits:1})+' MB'}
+const estadoDe=p=>p>=80?['critico','✕','No limite']:p>=60?['aviso','!','Atenção']:['bom','✓','Folgado'];
+function medidor(rot,valor,de,pct,extra){
+  const p=Math.max(0,Math.min(100,+pct||0)),e=estadoDe(p),c=Math.PI*52,cor={bom:'#0ca30c',aviso:'#fab219',critico:'#d03b3b'}[e[0]];
+  return '<div class="tile" data-dica="'+esc(rot+'\n'+valor+' de '+de+' ('+fmt(p)+'% do limite)')+'"><div class="rot">'+esc(rot)+'</div>'+
+    '<svg viewBox="0 0 120 68" role="img" aria-label="'+esc(rot+': '+fmt(p)+'% do limite')+'" style="max-width:150px">'+
+    '<path d="M8 62 A52 52 0 0 1 112 62" fill="none" stroke="#2c2c2a" stroke-width="9" stroke-linecap="round"/>'+
+    (p>0?'<path d="M8 62 A52 52 0 0 1 112 62" fill="none" stroke="'+cor+'" stroke-width="9" stroke-linecap="round" stroke-dasharray="'+(c*p/100).toFixed(1)+' '+(c+20).toFixed(1)+'"/>':'')+
+    '<text x="60" y="58" text-anchor="middle" style="font-size:19px;font-weight:700;fill:#f0efec">'+fmt(p)+'%</text></svg>'+
+    '<div class="num">'+esc(valor)+'</div><div class="de">de '+esc(de)+(extra?' · '+esc(extra):'')+'</div>'+
+    '<div class="est '+e[0]+'"><i>'+e[1]+'</i>'+e[2]+'</div></div>';
+}
+function ladrilho(rot,num,de,est,sinal,texto){
+  return '<div class="tile"><div class="rot">'+esc(rot)+'</div><div class="num">'+esc(num)+'</div><div class="de">'+esc(de)+'</div>'+
+    (est?'<div class="est '+est+'"><i>'+sinal+'</i>'+esc(texto)+'</div>':'')+'</div>';
+}
+const tetoDe=v=>{const p=Math.pow(10,Math.floor(Math.log10(v))),f=v/p;return (f<=1?1:f<=2?2:f<=5?5:10)*p};
+function grafico(dados,tipo,fmtY,nome){
+  const W=600,H=170,L=46,R=10,T=10,B=22,n=dados.length;
+  if(!n)return '<div class="vazio">Sem dados no período.</div>';
+  const teto=tetoDe(Math.max(1,...dados.map(d=>+d.y||0))),larg=W-L-R,y=v=>T+(H-T-B)*(1-v/teto);
+  const esp=tipo==='linha'?(n>1?larg/(n-1):larg):larg/n,x=i=>tipo==='linha'?(n>1?L+esp*i:L+larg/2):L+esp*(i+.5);
+  let s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(nome)+'">';
+  [0,.5,1].forEach(f=>{const yy=y(teto*f).toFixed(1);
+    s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+yy+'" y2="'+yy+'" stroke="'+(f?'#2c2c2a':'#383835')+'"/><text x="'+(L-6)+'" y="'+(+yy+4)+'" text-anchor="end">'+esc(fmtY(teto*f))+'</text>'});
+  if(tipo==='linha'){
+    const pts=dados.map((d,i)=>x(i).toFixed(1)+','+y(+d.y||0).toFixed(1)).join(' ');
+    s+='<polygon points="'+x(0).toFixed(1)+','+y(0)+' '+pts+' '+x(n-1).toFixed(1)+','+y(0)+'" fill="#3987e5" opacity=".14"/>'+
+       '<polyline points="'+pts+'" fill="none" stroke="#3987e5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>'+
+       '<circle cx="'+x(n-1).toFixed(1)+'" cy="'+y(+dados[n-1].y||0).toFixed(1)+'" r="4" fill="#3987e5" stroke="#1a1a19" stroke-width="2"/>';
+  }else{
+    const lw=Math.max(2,Math.min(14,esp-2));
+    dados.forEach((d,i)=>{const v=+d.y||0;if(v<=0)return;const a=x(i)-lw/2,yy=y(v),r=Math.min(4,lw/2,y(0)-yy);
+      s+='<path d="M'+a.toFixed(1)+' '+y(0)+' V'+(yy+r).toFixed(1)+' Q'+a.toFixed(1)+' '+yy.toFixed(1)+' '+(a+r).toFixed(1)+' '+yy.toFixed(1)+
+         ' H'+(a+lw-r).toFixed(1)+' Q'+(a+lw).toFixed(1)+' '+yy.toFixed(1)+' '+(a+lw).toFixed(1)+' '+(yy+r).toFixed(1)+' V'+y(0)+' Z" fill="#3987e5"/>'});
+  }
+  [0,Math.floor((n-1)/2),n-1].filter((v,i,a)=>a.indexOf(v)===i).forEach(i=>{
+    s+='<text x="'+x(i).toFixed(1)+'" y="'+(H-6)+'" text-anchor="'+(n>1&&i===0?'start':n>1&&i===n-1?'end':'middle')+'">'+esc(dados[i].x)+'</text>'});
+  /* a área que responde ao mouse é a coluna inteira, bem maior que a marca */
+  dados.forEach((d,i)=>{s+='<rect x="'+Math.max(L,x(i)-esp/2).toFixed(1)+'" y="'+T+'" width="'+Math.max(4,esp).toFixed(1)+'" height="'+(H-T-B)+'" fill="transparent" data-dica="'+esc(d.x+'\n'+fmtY(+d.y||0))+'"/>'});
+  return s+'</svg>';
+}
+function caixa(titulo,texto,corpo){return '<div class="cx"><h3>'+esc(titulo)+'</h3><p>'+esc(texto)+'</p>'+corpo+'</div>'}
+function telaInfra(){
+  let h='<h1 class="tit">Infra</h1><p class="sub">O estado do banco, do armazenamento e das tarefas agendadas, medido direto no Supabase. Só leitura.</p>';
+  if(!INF)return h+(INF_FALHA?'<div class="alerta" role="alert">'+esc(INF_FALHA)+'</div>':'<div class="carreg">Medindo…</div>');
+  if(INF_FALHA)h+='<div class="alerta" role="alert">Não consegui atualizar: '+esc(INF_FALHA)+'</div>';
+  const d=INF,L=d.limites||{},b=d.banco||{},st=d.storage||[],dias=d.dias||[],tr=d.tarefas_resumo||[],ct=d.contas||{};
+  const stB=st.reduce((s,x)=>s+(+x.bytes||0),0),stA=st.reduce((s,x)=>s+(+x.arquivos||0),0);
+  const ex7=tr.reduce((s,x)=>s+(+x.execucoes_7d||0),0),fa7=tr.reduce((s,x)=>s+(+x.falhas_7d||0),0);
+  const dd=v=>data(v).slice(0,5),num=v=>fmt(v),megas=v=>fmt(v)+' MB';
+  h+='<section class="infra"><div class="topo2"><span class="pulso" aria-hidden="true"></span><h2>Sala de controle</h2>'+
+     '<span class="sub2">medido em '+esc(dataHora(d.gerado_em))+' · gráficos dos últimos '+DIAS+' dias</span></div><div class="tiles">'+
+     medidor('Banco de dados',fmtMb(b.bytes),fmt(L.banco_mb)+' MB',100*emMb(b.bytes)/(L.banco_mb||500))+
+     medidor('Armazenamento',fmtMb(stB),fmt(L.storage_mb)+' MB',100*emMb(stB)/(L.storage_mb||1024),fmt(stA)+' arquivos')+
+     medidor('Conexões abertas',fmt(b.conexoes),fmt(L.conexoes),100*(+b.conexoes||0)/(L.conexoes||60),fmt(b.conexoes_ativas)+' trabalhando agora')+
+     ladrilho('Tarefas agendadas',fmt(ex7),'execuções em 7 dias',fa7?'critico':'bom',fa7?'✕':'✓',fa7?fmt(fa7)+' com falha':'Nenhuma falha')+
+     ladrilho('Leitura pela memória',(b.cache_pct==null?'–':String(b.cache_pct).replace('.',',')+'%'),'quanto mais perto de 100%, mais rápido',
+       b.cache_pct==null?'':(b.cache_pct>=95?'bom':'aviso'),b.cache_pct>=95?'✓':'!',b.cache_pct>=95?'Saudável':'Abaixo do ideal')+
+     ladrilho('Contas de acesso',fmt(ct.total),fmt(ct.entraram_7d)+' entraram em 7 dias · '+fmt(ct.entraram_24h)+' em 24 horas')+'</div>';
+  /* previsão do armazenamento, pelo ritmo do período */
+  const serieSt=dias.map(x=>({x:dd(x.dia),y:emMb(x.storage_bytes)}));
+  let prev='Sem crescimento no período.';
+  if(serieSt.length>1){const porDia=(serieSt[serieSt.length-1].y-serieSt[0].y)/(serieSt.length-1),falta=(L.storage_mb||1024)-serieSt[serieSt.length-1].y;
+    if(porDia>0.001){const meses=falta/porDia/30;prev='No ritmo deste período (+'+porDia.toLocaleString('pt-BR',{maximumFractionDigits:1})+' MB por dia), enche em cerca de '+
+      (meses>=24?fmt(meses/12)+' anos':meses>=1?fmt(meses)+' meses':fmt(falta/porDia)+' dias')+'.'}}
+  const serieBanco=dias.filter(x=>x.banco_bytes!=null).map(x=>({x:dd(x.dia),y:emMb(x.banco_bytes)}));
+  h+='<div class="gr">'+
+     caixa('Armazenamento acumulado',prev,grafico(serieSt,'linha',megas,'Armazenamento acumulado em MB por dia'))+
+     caixa('Tamanho do banco',serieBanco.length>1?'O maior valor medido em cada dia.':'O histórico do tamanho começa agora: o banco guarda uma medição por hora. O gráfico aparece a partir de amanhã.',
+       serieBanco.length>1?grafico(serieBanco,'linha',megas,'Tamanho do banco em MB por dia'):'<div class="vazio" style="color:#898781">Hoje: '+esc(fmtMb(b.bytes))+'</div>')+
+     caixa('Visitas dos repositores','Visitas registradas por dia no app do merch.',grafico(dias.map(x=>({x:dd(x.dia),y:x.visitas_merch})),'barra',num,'Visitas dos repositores por dia'))+
+     caixa('Visitas dos desenvolvedores','Visitas registradas por dia no app do RTM.',grafico(dias.map(x=>({x:dd(x.dia),y:x.visitas_rtm})),'barra',num,'Visitas dos desenvolvedores por dia'))+
+     caixa('Arquivos enviados','Fotos e arquivos que chegaram ao armazenamento por dia.',grafico(dias.map(x=>({x:dd(x.dia),y:x.arquivos_novos})),'barra',num,'Arquivos enviados por dia'))+
+     caixa('Erros dos apps','Erros registrados pelos celulares por dia.',grafico(dias.map(x=>({x:dd(x.dia),y:x.erros})),'barra',num,'Erros dos apps por dia'))+'</div>';
+  h+='<details><summary>Ver os números dos gráficos em tabela</summary><div class="rol" style="margin-top:8px"><table><thead><tr><th>Dia</th><th class="num">Repositores</th><th class="num">Desenvolvedores</th><th class="num">Arquivos</th><th class="num">Erros</th><th class="num">Armazenamento</th><th class="num">Banco</th></tr></thead><tbody>'+
+     dias.slice().reverse().map(x=>'<tr><td>'+esc(data(x.dia))+'</td><td class="num">'+fmt(x.visitas_merch)+'</td><td class="num">'+fmt(x.visitas_rtm)+'</td><td class="num">'+fmt(x.arquivos_novos)+
+       '</td><td class="num">'+fmt(x.erros)+'</td><td class="num">'+esc(fmtMb(x.storage_bytes))+'</td><td class="num">'+(x.banco_bytes==null?'–':esc(fmtMb(x.banco_bytes)))+'</td></tr>').join('')+'</tbody></table></div></details>';
+  /* tarefas agendadas: uma célula por hora, últimos 7 dias */
+  const m=/^(\d{4})-(\d{2})-(\d{2}) (\d{2})/.exec(String(d.gerado_em||'')),fim=m?new Date(+m[1],+m[2]-1,+m[3],+m[4]):new Date(),p2=v=>('0'+v).slice(-2);
+  const horas=[];for(let i=167;i>=0;i--){const t=new Date(fim.getTime()-i*3600000);horas.push(t.getFullYear()+'-'+p2(t.getMonth()+1)+'-'+p2(t.getDate())+' '+p2(t.getHours()))}
+  const cel={};(d.tarefas||[]).forEach(x=>{cel[x.tarefa+'|'+x.hora]=x});
+  h+='<div class="cx" style="margin-top:12px"><h3>Tarefas agendadas, hora a hora</h3><p>Cada quadradinho é uma hora dos últimos 7 dias. Azul: rodou sem falha. Vermelho: teve falha. Cinza: não rodou nessa hora. Passe o mouse para ver o detalhe.</p>';
+  tr.forEach(t=>{
+    h+='<div style="margin-top:10px"><b style="font-size:12.5px">'+esc(t.tarefa)+'</b> <span style="color:#898781;font-size:12px">· '+fmt(t.execucoes_7d)+' execuções · '+
+       (t.falhas_7d?'✕ '+fmt(t.falhas_7d)+' com falha':'✓ nenhuma falha')+' · última em '+esc(dataHora(t.ultima))+(t.ativa?'':' · DESLIGADA')+'</span>'+
+       '<div class="calor" style="grid-template-columns:repeat(84,1fr)">'+horas.map(hh=>{const c=cel[t.tarefa+'|'+hh];
+         return '<i class="'+(c?(c.falhas?'falha':'ok'):'')+'" data-dica="'+esc(dataHora(hh+':00')+'\n'+(c?fmt(c.execucoes)+' execução(ões), '+fmt(c.falhas)+' falha(s), a mais demorada levou '+String(c.seg_max).replace('.',',')+' s':'não rodou'))+'"></i>'}).join('')+'</div></div>'});
+  h+='</div>';
+  /* maiores tabelas e consultas mais pesadas */
+  const tb=d.tabelas||[],maxT=Math.max(1,...tb.map(x=>+x.bytes||0)),cq=d.consultas||[];
+  h+='<div class="gr" style="margin-top:12px"><div class="cx"><h3>Maiores tabelas</h3><p>Onde o espaço do banco está. "Linhas mortas" é espaço que o banco ainda vai limpar sozinho.</p><div class="rol"><table><thead><tr><th>Tabela</th><th>Tamanho</th><th class="num">Linhas</th><th class="num">Linhas mortas</th></tr></thead><tbody>'+
+     tb.map(x=>'<tr><td>'+esc(x.tabela)+'</td><td style="min-width:120px"><div class="barra2" style="width:'+Math.max(2,100*(+x.bytes||0)/maxT).toFixed(0)+'%"></div>'+esc(fmtMb(x.bytes))+'</td><td class="num">'+fmt(x.linhas)+'</td><td class="num">'+fmt(x.linhas_mortas)+'</td></tr>').join('')+'</tbody></table></div></div>'+
+     '<div class="cx"><h3>Consultas mais pesadas</h3><p>As 10 que mais gastaram tempo do banco. O limite de cada consulta é 8 segundos: acima de 6, vale olhar.</p><div class="rol"><table><thead><tr><th>Consulta</th><th class="num">Chamadas</th><th class="num">Média</th><th class="num">Pior caso</th><th class="num">Tempo total</th></tr></thead><tbody>'+
+     cq.map(x=>'<tr><td class="larga" style="min-width:200px"><code>'+esc(x.consulta)+'</code></td><td class="num">'+fmt(x.chamadas)+'</td><td class="num">'+fmt(x.ms_medio)+' ms</td>'+
+       '<td class="num">'+fmt(x.ms_max)+' ms'+(x.ms_max>=6000?'<br><b>! perto do limite</b>':'')+'</td><td class="num">'+fmt(x.seg_total)+' s</td></tr>').join('')+'</tbody></table></div></div></div>';
+  h+='<div class="cx" style="margin-top:12px"><h3>Armazenamento por pasta</h3><p>Onde estão as fotos e os arquivos.</p><div class="rol"><table><thead><tr><th>Pasta</th><th class="num">Arquivos</th><th class="num">Tamanho</th></tr></thead><tbody>'+
+     st.map(x=>'<tr><td>'+esc(x.pasta)+'</td><td class="num">'+fmt(x.arquivos)+'</td><td class="num">'+esc(fmtMb(x.bytes))+'</td></tr>').join('')+'</tbody></table></div></div>';
+  return h+'</section><div class="nota"><b>O que não aparece aqui:</b> uso de processador e de memória do servidor, quantidade de chamadas da API e tráfego. Isso só o site do Supabase mostra. '+
+    'Os limites usados nos medidores são os do plano gratuito ('+fmt(L.banco_mb)+' MB de banco e '+fmt(L.storage_mb)+' MB de armazenamento).</div>';
+}
+
+/* ---------------- acessos: diretório dos sistemas (sem senhas) ---------------- */
+let ACE=null,ACE_FALHA=null,ACE_EDIT=null,ACE_OCUPADO=false;
+async function carregaAcessos(){
+  try{ACE=await rpc('acessos_lista');ACE_FALHA=null}
+  catch(e){ACE_FALHA=e.message;if(e.semSessao)return}
+  if(ABA==='ace')desenha();
+}
+function telaAcessos(){
+  let h='<h1 class="tit">Acessos</h1><p class="sub">Todos os sistemas num lugar só: o endereço, o usuário de login e onde a senha está guardada.</p>'+
+    '<div class="nota"><b>Este módulo não guarda senhas.</b> Ele diz onde cada senha está (por exemplo "gerenciador de senhas do navegador" ou "cofre da TI"). Não escreva a senha em nenhum campo.</div>';
+  if(!ACE)return h+(ACE_FALHA?'<div class="alerta" role="alert">'+esc(ACE_FALHA)+'</div>':'<div class="carreg">Carregando…</div>');
+  if(ACE_FALHA)h+='<div class="alerta" role="alert">Não consegui atualizar: '+esc(ACE_FALHA)+'</div>';
+  const ed=ACE_EDIT?ACE.find(x=>x.id===ACE_EDIT)||{}:{},v=k=>esc(ed[k]||'');
+  h+='<section class="cartao" style="margin-bottom:14px"><h2 class="sec">Sistemas</h2>';
+  if(ACE.length){
+    h+='<div class="rol"><table><thead><tr><th>Sistema</th><th>Usuário de login</th><th>Responsável</th><th>Onde está a senha</th><th>Última troca da senha</th><th>Observação</th><th></th></tr></thead><tbody>'+
+      ACE.map(x=>{const link=/^https?:\/\//i.test(x.endereco||'');
+        return '<tr><td class="larga"><b>'+esc(x.sistema)+'</b>'+(x.endereco?'<br>'+(link?'<a href="'+esc(x.endereco)+'" target="_blank" rel="noopener noreferrer">'+esc(x.endereco)+'</a>':esc(x.endereco)):'')+'</td>'+
+          '<td>'+esc(x.usuario||'–')+'</td><td>'+esc(x.responsavel||'–')+'</td><td class="larga">'+esc(x.onde_senha||'–')+'</td>'+
+          '<td>'+(x.trocada_em?esc(data(x.trocada_em))+'<br><small>'+(x.dias_da_troca>180?'<b>há '+fmt(x.dias_da_troca)+' dias: vale trocar</b>':'há '+fmt(x.dias_da_troca)+' dias')+'</small>':'–')+'</td>'+
+          '<td class="larga">'+esc(x.observacao||'')+'</td><td><div class="acoes"><button class="bt fino" data-ace="editar" data-id="'+x.id+'">Editar</button>'+
+          '<button class="bt fino" data-ace="remover" data-id="'+x.id+'">Remover</button></div></td></tr>'}).join('')+'</tbody></table></div>';
+  }else h+='<div class="vazio">Nenhum sistema cadastrado ainda.</div>';
+  h+='</section><section class="cartao"><h2 class="sec">'+(ACE_EDIT?'Editar: '+v('sistema'):'Adicionar sistema')+'</h2><div class="formlin">'+
+    '<input id="ac_sistema" placeholder="Sistema (ex.: Painel do RTM)" aria-label="Sistema" maxlength="80" value="'+v('sistema')+'">'+
+    '<input id="ac_endereco" placeholder="Endereço (https://...)" aria-label="Endereço" maxlength="300" value="'+v('endereco')+'">'+
+    '<input id="ac_usuario" placeholder="Usuário de login" aria-label="Usuário de login" maxlength="120" autocomplete="off" value="'+v('usuario')+'">'+
+    '<input id="ac_responsavel" placeholder="Responsável" aria-label="Responsável" maxlength="80" value="'+v('responsavel')+'">'+
+    '<input id="ac_onde" placeholder="Onde a senha está guardada" aria-label="Onde a senha está guardada" maxlength="120" value="'+v('onde_senha')+'">'+
+    '<input id="ac_troca" type="date" aria-label="Data da última troca da senha" title="Data da última troca da senha" value="'+v('trocada_em')+'">'+
+    '<input id="ac_obs" placeholder="Observação" aria-label="Observação" maxlength="300" value="'+v('observacao')+'">'+
+    '</div><div class="acoes"><button class="bt verm" data-ace="salvar"'+(ACE_OCUPADO?' disabled':'')+'>'+(ACE_EDIT?'Salvar alteração':'Adicionar')+'</button>'+
+    (ACE_EDIT?'<button class="bt" data-ace="cancelar">Cancelar</button>':'')+'</div></section>';
+  return h;
+}
+async function acaoAcesso(acao,id){
+  if(ACE_OCUPADO)return;
+  const d=(ACE||[]).find(x=>String(x.id)===String(id));
+  try{
+    if(acao==='editar'&&d){ACE_EDIT=d.id;desenha();const el=$('ac_sistema');if(el){el.scrollIntoView({block:'center'});el.focus()}return}
+    if(acao==='cancelar'){ACE_EDIT=null;desenha();return}
+    if(acao==='salvar'){
+      const p={sistema:$('ac_sistema').value.trim(),endereco:$('ac_endereco').value.trim(),usuario:$('ac_usuario').value.trim(),responsavel:$('ac_responsavel').value.trim(),
+        onde_senha:$('ac_onde').value.trim(),trocada_em:$('ac_troca').value,observacao:$('ac_obs').value.trim()};
+      if(!p.sistema){toast('Informe o nome do sistema.');$('ac_sistema').focus();return}
+      if(p.endereco&&!/^https?:\/\/\S+$/i.test(p.endereco)){toast('O endereço precisa começar com http:// ou https://');$('ac_endereco').focus();return}
+      if(ACE_EDIT)p.id=ACE_EDIT;
+      ACE_OCUPADO=true;await rpc('acesso_salvar',{p});toast(ACE_EDIT?'Alteração salva.':'Sistema adicionado.');ACE_EDIT=null;
+    }else if(acao==='remover'&&d){
+      if(!confirm('Remover '+d.sistema+' do diretório de acessos?'))return;
+      ACE_OCUPADO=true;await rpc('acesso_apagar',{p_id:d.id});toast('Removido.');if(ACE_EDIT===d.id)ACE_EDIT=null;
+    }else return;
+  }catch(e){toast(e.message)}
+  ACE_OCUPADO=false;await carregaAcessos();if(ABA==='ace')desenha();
+}
+/* dica ao passar o mouse (gráficos e medidores) */
+document.addEventListener('mousemove',e=>{
+  const el=e.target&&e.target.closest?e.target.closest('[data-dica]'):null,d=$('dica');
+  if(!el){d.style.display='none';return}
+  d.textContent=el.getAttribute('data-dica');d.style.display='block';
+  const w=d.offsetWidth,hh=d.offsetHeight;
+  d.style.left=Math.max(6,Math.min(window.innerWidth-w-6,e.clientX+14))+'px';
+  d.style.top=(e.clientY+18+hh>window.innerHeight?e.clientY-hh-10:e.clientY+18)+'px';
+});
+
 /* ---------------- cliques ---------------- */
 $('abas').addEventListener('click',e=>{const b=e.target.closest('[data-aba]');if(!b)return;ABA=b.dataset.aba;desenha();window.scrollTo(0,0)});
 $('main').addEventListener('click',e=>{
@@ -650,7 +861,8 @@ $('main').addEventListener('click',e=>{
   if(ab){ABERTAS[ab.dataset.abre]=!ABERTAS[ab.dataset.abre];desenha();
     const el=document.querySelector('[data-abre="'+ab.dataset.abre+'"]');if(el)el.focus();return}
   const cs=e.target.closest('[data-csv]');if(cs){baixaCsv(cs.dataset.csv);return}
-  const al=e.target.closest('[data-ale]');if(al)acaoAlerta(al.dataset.ale,al.dataset.id);
+  const al=e.target.closest('[data-ale]');if(al){acaoAlerta(al.dataset.ale,al.dataset.id);return}
+  const ac=e.target.closest('[data-ace]');if(ac)acaoAcesso(ac.dataset.ace,ac.dataset.id);
 });
 $('main').addEventListener('input',e=>{
   const b=e.target.closest('[data-busca]');if(!b)return;
