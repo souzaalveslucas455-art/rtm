@@ -158,7 +158,7 @@ h2.sec{font-size:15px;margin:0 0 4px}
    o que protege os dados e o login de administrador e as regras do banco.
    Tudo o que esta pagina guarda no navegador usa chaves com o prefixo aud_.
    ============================================================================ */
-const VERSAO='1.2.1';
+const VERSAO='1.2.2';
 const SUPA={url:'https://kqpdledhaghuzuwjkvrf.supabase.co',chave:'sb_publishable_dMdB5b_G5X5TnXemexGIXQ_GWXS6cid'};
 const K_SESSAO='aud_sessao',K_EMAIL='aud_email',K_DIAS='aud_dias';
 const $=id=>document.getElementById(id);
@@ -259,7 +259,7 @@ CONF.err=[
    oque:'Os registros na ordem em que chegaram, com a tela em que a pessoa estava e o detalhe técnico.',
    fazer:'Use para ver a sequência do que aconteceu com uma pessoa. "Aconteceu em" é a hora no celular; "Chegou em" é quando o app conseguiu mandar.',
    cols:[['recebido','Chegou em','dh'],['quando','Aconteceu em','dh'],['app','App','app'],['nivel','Gravidade','nivel'],['tipo','Onde','tipo'],
-     ['mensagem','Mensagem','larga'],['tela','Tela'],['quem','Quem'],['versao','Versão'],['vezes','Vezes','n'],['detalhe','Detalhe técnico','larga']]}
+     ['mensagem','Mensagem','larga'],['tela','Tela'],['quem','Quem'],['versao','Versão'],['vezes','Vezes','n'],['detalhe','Últimos passos e detalhe técnico','det']]}
 ];
 CONF.apa=[
   {id:'fila_presa',nivel:'aviso',t:'Aparelhos com visita ou foto presa há 1 dia ou mais',
@@ -417,7 +417,24 @@ function celula(v,f){
   if(f==='nivel')return NIVEIS[v]||String(v||'');
   if(f==='tipo')return TIPOS[v]||String(v||'');
   if(f==='agente')return aparelhoDe(v);
+  if(f==='det')return detalheDe(v);
   return v==null?'':(ACENTO[v]||String(v));
+}
+/* o detalhe do erro vem como texto JSON: mostra primeiro os últimos passos da pessoa no app */
+function detalheDe(v){
+  const t=String(v||'');if(!t)return '';
+  let o=null;try{o=JSON.parse(t)}catch(e){}
+  if(!o||typeof o!=='object'){
+    const m=/"passos":\s*"((?:[^"\\]|\\.)*)/.exec(t);
+    return m?'Últimos passos: '+m[1].replace(/\\"/g,'"')+' | (o resto do detalhe veio cortado)':t;
+  }
+  const p=[];
+  if(o.passos)p.push('Últimos passos: '+o.passos);
+  if(o.arquivo||o.linha)p.push('Código: '+(o.arquivo||'?')+', linha '+(o.linha||'?'));
+  if(o.funcao)p.push('Função do banco: '+o.funcao);
+  if(o.status)p.push('Resposta HTTP '+o.status+(o.codigo?' ('+o.codigo+')':''));
+  if(o.pilha)p.push('Pilha: '+String(o.pilha).slice(0,300));
+  return p.join(' | ')||t;
 }
 function dataHora(v){const m=/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}:\d{2})/.exec(String(v||''));return m?m[3]+'/'+m[2]+'/'+m[1]+' '+m[4]:(v==null?'':String(v))}
 const APPS={desenvolvedor:'Desenvolvedores',repositor:'Repositores',lider:'Liderança',painel:'Painel'};
@@ -523,7 +540,7 @@ function blocoConf(l,c,d){
 }
 function tabela(c,lin){
   return '<table><thead><tr>'+c.cols.map(k=>'<th'+(ehNum(k[2])?' class="num"':'')+'>'+esc(k[1])+'</th>').join('')+'</tr></thead><tbody>'+
-    (lin.length?lin.map(x=>'<tr>'+c.cols.map(k=>'<td class="'+(ehNum(k[2])?'num':k[2]==='larga'?'larga':'')+'">'+esc(celula(x[k[0]],k[2]))+'</td>').join('')+'</tr>').join('')
+    (lin.length?lin.map(x=>'<tr>'+c.cols.map(k=>'<td class="'+(ehNum(k[2])?'num':(k[2]==='larga'||k[2]==='det')?'larga':'')+'">'+esc(celula(x[k[0]],k[2]))+'</td>').join('')+'</tr>').join('')
                :'<tr><td colspan="'+c.cols.length+'" class="vazio">Nada com esse filtro.</td></tr>')+'</tbody></table>';
 }
 function acha(ch){const p=ch.split('.');return {l:p[0],c:CONF[p[0]].find(x=>x.id===p[1])}}

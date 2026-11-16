@@ -549,7 +549,7 @@ body.comacao #toast{bottom:calc(env(safe-area-inset-bottom) + 108px)}
    A base vem embutida e funciona sem internet. As respostas ficam no aparelho
    e sobem para a planilha assim que houver sinal.
    =========================================================================== */
-const VERSAO='2.3.0';
+const VERSAO='2.4.0';
 
 /* ---------------- auditoria: erros do app e "estou vivo" ----------------
    Guarda no aparelho os erros que acontecem e manda para o painel de auditoria,
@@ -584,14 +584,43 @@ function audita(nivel,tipo,mensagem,detalhe){
       const d={};
       Object.keys(detalhe).slice(0,8).forEach(k=>{const v=detalhe[k];
         if(typeof v==='number'||typeof v==='boolean')d[k]=v;
-        else if(v!=null)d[k]=audLimpa(v,1200)});
+        else if(v!=null)d[k]=audLimpa(v,500)});
       ev.detalhe=d;
     }
+    /* junto do erro vão os últimos passos da pessoa no app (só nomes de tela e de botão) */
+    if(AUD.passos&&AUD.passos.length){ev.detalhe=ev.detalhe||{};ev.detalhe.passos=AUD.passos.join(' > ').slice(-600)}
     AUD.fila.push(ev);
     if(AUD.fila.length>60)AUD.fila.splice(0,AUD.fila.length-60);
     audGuarda();
   }catch(e){}
 }
+/* Últimos passos da pessoa no app, para entender o caminho até um erro.
+   Guarda só o nome da tela, o nome da função ou do botão tocado e as mudanças de
+   sinal. Nunca guarda o que foi digitado nem o texto de um cartão de cliente.
+   Fica só na memória (os 12 últimos) e só sai do aparelho junto com um erro. */
+function audPasso(t){
+  try{
+    const d=new Date(),h=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+':'+('0'+d.getSeconds()).slice(-2);
+    if(!AUD.passos)AUD.passos=[];
+    AUD.passos.push(h+' '+audLimpa(t,60));
+    if(AUD.passos.length>12)AUD.passos.shift();
+  }catch(e){}
+}
+document.addEventListener('click',ev=>{
+  try{
+    const el=ev.target&&ev.target.closest?ev.target.closest('[onclick],button,a,input[type=button],input[type=submit],[role=button]'):null;
+    if(!el)return;
+    const fn=(/^\s*([A-Za-z_$][\w$.]*)\s*\(/.exec(el.getAttribute('onclick')||'')||[])[1];
+    let nome=fn?fn+'()':(el.id?'#'+el.id:'');
+    if(!nome&&el.tagName==='BUTTON'){const tx=(el.textContent||'').replace(/\s+/g,' ').trim();if(tx&&tx.length<=30)nome='"'+tx+'"'}
+    if(!nome)nome=el.tagName.toLowerCase()+(el.className&&typeof el.className==='string'?'.'+el.className.split(/\s+/)[0]:'');
+    audPasso('toque '+nome);
+  }catch(e){}
+},true);
+window.addEventListener('online',()=>audPasso('voltou o sinal'));
+window.addEventListener('offline',()=>audPasso('ficou sem sinal'));
+document.addEventListener('visibilitychange',()=>audPasso(document.hidden?'saiu do app':'voltou ao app'));
+
 /* Manda a fila e o "estou vivo". Com erro na fila, manda no máximo 1 vez por
    minuto; sem erro, 1 vez a cada "intervalo" (30 minutos se não for dito). */
 function audEnvia(intervalo){
@@ -1503,7 +1532,7 @@ const TITULOS={visitas:'Visitas',clientes:'Clientes',resultados:'Indicadores',
    Cada tela empilha um estado no histórico do navegador. */
 let pilha=[];
 function tela(t,semHistorico){
-  tela_=t;$('app').scrollTop=0;
+  tela_=t;$('app').scrollTop=0;audPasso('tela '+t);
   if(!semHistorico){
     pilha.push(t);
     try{history.pushState({t,i:pilha.length},'','#'+t)}catch(e){}
