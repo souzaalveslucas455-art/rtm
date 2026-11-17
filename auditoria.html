@@ -185,6 +185,8 @@ h2.sec{font-size:15px;margin:0 0 4px}
 .bk .tit2:focus-visible,.bk .pil:focus-visible{outline:2px solid var(--serie);outline-offset:2px}
 .bk .chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
 :is(.bk,#bkdlg) .chip{font-size:11px;padding:2px 7px;border-radius:99px;border:1px solid var(--base);color:var(--tx2);white-space:nowrap}
+.bk .chip.proj{color:var(--tx);border-color:#6a6a64;font-weight:600}
+#bkdlg .cxd li{margin:3px 0}#bkdlg .cxd li b{color:var(--tx)}
 .bk .medida{font-size:11.5px;color:var(--mudo);margin-top:7px}
 .bk .trilho{height:5px;border-radius:3px;background:var(--grade);margin-top:5px;overflow:hidden}
 .bk .trilho div{height:100%;background:var(--serie);border-radius:3px}
@@ -268,7 +270,7 @@ h2.sec{font-size:15px;margin:0 0 4px}
    o que protege os dados e o login de administrador e as regras do banco.
    Tudo o que esta pagina guarda no navegador usa chaves com o prefixo aud_.
    ============================================================================ */
-const VERSAO='1.4.0';
+const VERSAO='1.5.0';
 const SUPA={url:'https://kqpdledhaghuzuwjkvrf.supabase.co',chave:'sb_publishable_dMdB5b_G5X5TnXemexGIXQ_GWXS6cid'};
 const K_SESSAO='aud_sessao',K_EMAIL='aud_email',K_DIAS='aud_dias';
 const $=id=>document.getElementById(id);
@@ -933,8 +935,15 @@ async function acaoAcesso(acao,id){
    O que este backlog tem de diferente: o item ligado a um erro mostra se o erro
    ainda acontece, e o item publicado mostra quantos celulares já estão na versão.
    Os estados (verde, amarelo, vermelho) vêm sempre com um sinal e um texto. */
-let BKL=null,BKL_FALHA=null,BKL_VISAO='quadro',BKL_ED=null,BKL_OCUPADO=false;
-const BKL_F={sistema:'',tipo:'',q:''};
+let BKL=null,BKL_FALHA=null,BKL_VISAO='quadro',BKL_ED=null,BKL_OCUPADO=false,BKL_IMP=null;
+const BKL_F={projeto:'',sistema:'',tipo:'',q:''};
+/* O projeto é texto livre: o backlog acompanha também itens de outros projetos, só para conhecimento.
+   Os três projetos daqui têm os seus sistemas; nos outros, o sistema fica "Outro" e não aparece. */
+const PROJ_SIS={RTM:['app_rtm','painel_rtm','mapa'],Merch:['app_repositor','app_lideranca','painel_merch','portal_merch'],'Band Auditoria':['auditoria','alertas','banco']};
+const projetoDoSistema=s=>Object.keys(PROJ_SIS).find(p=>PROJ_SIS[p].indexOf(s)>=0)||'Outros';
+const projetoDe=x=>String(x.projeto||'').trim()||projetoDoSistema(x.sistema);
+const projetoCerto=t=>{const v=String(t||'').replace(/\s+/g,' ').trim();return Object.keys(PROJ_SIS).find(p=>p.toLowerCase()===v.toLowerCase())||v};
+function bkProjetos(){const s=new Set(Object.keys(PROJ_SIS));((BKL&&BKL.itens)||[]).forEach(x=>s.add(projetoDe(x)));return [...s].sort((a,b)=>a.localeCompare(b,'pt-BR'))}
 const SIS={app_rtm:'App do RTM',painel_rtm:'Painel do RTM',mapa:'Mapa e planejador',app_repositor:'App do repositor',app_lideranca:'App da liderança',
   painel_merch:'Painel do merch',portal_merch:'Portal Merchandising',auditoria:'Band Auditoria',banco:'Banco de dados',alertas:'Alertas',outro:'Outro'};
 const TIPO_BK={melhoria:'Melhoria',erro:'Erro',ideia:'Ideia'};
@@ -956,8 +965,8 @@ const bkPontos=x=>(+x.impacto||2)*3-(+x.esforco||2)+(bkErroAtivo(x)?2:0)+(x.tipo
 const bkAcha=id=>((BKL&&BKL.itens)||[]).find(x=>String(x.id)===String(id));
 function bkItens(){
   const q=BKL_F.q.trim().toLowerCase();
-  return ((BKL&&BKL.itens)||[]).filter(x=>(!BKL_F.sistema||x.sistema===BKL_F.sistema)&&(!BKL_F.tipo||x.tipo===BKL_F.tipo)&&
-    (!q||(x.titulo+' '+(x.descricao||'')).toLowerCase().indexOf(q)>=0));
+  return ((BKL&&BKL.itens)||[]).filter(x=>(!BKL_F.projeto||projetoDe(x)===BKL_F.projeto)&&(!BKL_F.sistema||x.sistema===BKL_F.sistema)&&(!BKL_F.tipo||x.tipo===BKL_F.tipo)&&
+    (!q||(x.titulo+' '+(x.descricao||'')+' '+projetoDe(x)).toLowerCase().indexOf(q)>=0));
 }
 function diasEntre(a,b){
   const p=s=>{const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(String(s||''));return m?Date.UTC(+m[1],+m[2]-1,+m[3]):NaN};
@@ -982,7 +991,11 @@ function bkSinais(x){
   if(bkAberto(x)&&(+x.dias_na_etapa||0)>30)h+=sinal('aviso','!','Parado há '+fmt(x.dias_na_etapa)+' dias nesta etapa');
   return h;
 }
-const bkChips=x=>'<div class="chips"><span class="chip">'+esc(SIS[x.sistema]||x.sistema)+'</span><span class="chip">'+esc(TIPO_BK[x.tipo]||x.tipo)+'</span>'+
+/* o sistema só aparece quando diz algo além do projeto ("Band Auditoria · Band Auditoria" não ajuda) */
+const bkSisRot=x=>x.sistema==='outro'||(SIS[x.sistema]||x.sistema)===projetoDe(x)?'':(SIS[x.sistema]||x.sistema);
+const bkOnde=x=>projetoDe(x)+(bkSisRot(x)?' · '+bkSisRot(x):'');
+const bkChips=x=>'<div class="chips"><span class="chip proj">'+esc(projetoDe(x))+'</span>'+(bkSisRot(x)?'<span class="chip">'+esc(bkSisRot(x))+'</span>':'')+
+  '<span class="chip">'+esc(TIPO_BK[x.tipo]||x.tipo)+'</span>'+
   (x.versao?'<span class="chip">versão '+esc(x.versao)+'</span>':'')+'</div>';
 function bkCartao(x){
   const i=ETAPAS.indexOf(x.etapa),d=+x.dias_na_etapa||0;
@@ -1014,11 +1027,11 @@ function bkPrioridade(it){
     h+='<div class="eixo">Impacto '+NIV3[im]+'</div>';
     [1,2,3].forEach(es=>{const l=ab.filter(x=>+x.impacto===im&&+x.esforco===es).sort((a,b)=>bkPontos(b)-bkPontos(a));
       h+='<div class="cel'+(im===3&&es===1?' primeiro':'')+'">'+(rot[im+'-'+es]?'<small>'+rot[im+'-'+es]+'</small>':'')+
-        l.map(x=>'<button class="pil" data-bk-abre="'+x.id+'" title="'+esc(SIS[x.sistema]||'')+' · '+ETAPA[x.etapa]+'">'+esc(x.titulo)+'</button>').join('')+'</div>'});
+        l.map(x=>'<button class="pil" data-bk-abre="'+x.id+'" title="'+esc(bkOnde(x))+' · '+ETAPA[x.etapa]+'">'+esc(x.titulo)+'</button>').join('')+'</div>'});
   });
   h+='</div></div><div class="cx2"><h3>Ordem sugerida</h3><p>Pontos = impacto × 3 − esforço, mais 2 se o erro ligado ainda acontece e mais 1 se o item é um erro. É uma sugestão: a decisão é sua.</p><ol class="rank">'+
     ab.slice().sort((a,b)=>bkPontos(b)-bkPontos(a)||a.id-b.id).slice(0,10).map(x=>
-      '<li><button class="tit2" data-bk-abre="'+x.id+'">'+esc(x.titulo)+'</button><small>'+bkPontos(x)+' pontos · '+esc(SIS[x.sistema]||x.sistema)+' · '+ETAPA[x.etapa]+
+      '<li><button class="tit2" data-bk-abre="'+x.id+'">'+esc(x.titulo)+'</button><small>'+bkPontos(x)+' pontos · '+esc(bkOnde(x))+' · '+ETAPA[x.etapa]+
       ' · impacto '+NIV3[x.impacto]+', esforço '+NIV3[x.esforco]+(bkErroAtivo(x)?' · o erro ainda acontece':'')+'</small></li>').join('')+'</ol></div>';
   return h;
 }
@@ -1059,12 +1072,16 @@ function telaBacklog(){
   const vis=[['quadro','Quadro'],['prioridade','Prioridade'],['tempo','Linha do tempo']];
   h+='<section class="bk"><div class="topo2"><h2>Quadro de melhorias</h2><div class="seg" role="group" aria-label="Como ver">'+
     vis.map(v=>'<button data-bk-visao="'+v[0]+'" aria-pressed="'+(BKL_VISAO===v[0])+'">'+v[1]+'</button>').join('')+'</div><div class="filtros">'+
+    '<select data-bk-f="projeto" aria-label="Projeto"><option value="">Todos os projetos</option>'+bkProjetos().map(p=>'<option value="'+esc(p)+'"'+(p===BKL_F.projeto?' selected':'')+'>'+esc(p)+'</option>').join('')+'</select>'+
     '<select data-bk-f="sistema" aria-label="Sistema">'+opc(SIS,BKL_F.sistema,'Todos os sistemas')+'</select>'+
     '<select data-bk-f="tipo" aria-label="Tipo">'+opc(TIPO_BK,BKL_F.tipo,'Todos os tipos')+'</select>'+
     '<input type="search" data-bk-q placeholder="Procurar" aria-label="Procurar no backlog" value="'+esc(BKL_F.q)+'">'+
+    '<button class="bt" data-bk-imp style="background:var(--sup);border-color:var(--base);color:var(--tx)">Importar do Claude</button>'+
     '<button class="bt verm" data-bk-novo>+ Novo item</button></div></div>'+bkTiles()+'<div id="bkcorpo">'+bkCorpo()+'</div></section>';
   return h+'<div class="nota"><b>Como usar:</b> arraste o cartão de uma coluna para outra, ou use as setas do cartão. Clique no título para ver, editar e copiar o pedido pronto para colar na conversa com o Claude. '+
-    'Ao mover para Publicado, informe a versão: é ela que o painel compara com a versão dos celulares. Para ligar um item a um erro, use o botão "Mandar para o backlog" na aba Erros dos apps.</div>';
+    'Ao mover para Publicado, informe a versão: é ela que o painel compara com a versão dos celulares. Para ligar um item a um erro, use o botão "Mandar para o backlog" na aba Erros dos apps. '+
+    'O campo Projeto é livre: serve também para acompanhar itens de outros projetos. Para eles, o aviso de erro e a conta de celulares não aparecem. '+
+    'O botão "Importar do Claude" cria e atualiza vários itens de uma vez, a partir do bloco que o Claude manda no fim de cada pedido.</div>';
 }
 /* a coluna "Backlog" da lista de erros agrupados */
 function bkDoErro(x){return ((BKL&&BKL.itens)||[]).find(i=>i.erro&&i.etapa!=='descartado'&&i.erro.app===x.app&&i.erro.tipo===x.tipo&&i.erro.mensagem===x.mensagem)}
@@ -1083,7 +1100,9 @@ function bkDialogo(x){
     '<div class="msg esc" id="bk_msg" role="alert"></div>'+(x._dica?'<div class="dicad">'+esc(x._dica)+'</div>':'')+
     '<label class="larg">Título<input id="bk_titulo" maxlength="120" value="'+v('titulo')+'"></label>'+
     '<label class="larg">Descrição<textarea id="bk_desc" maxlength="2000" placeholder="O que precisa mudar e por quê. Não escreva senha nem dado de cliente.">'+v('descricao')+'</textarea></label>'+
-    '<label>Sistema<select id="bk_sistema">'+opc(SIS,x.sistema||'app_rtm')+'</select></label>'+
+    '<label>Projeto<input id="bk_projeto" list="bk_projetos" maxlength="60" autocomplete="off" placeholder="RTM, Merch ou outro nome" value="'+esc(projetoDe(x))+'"></label>'+
+    '<datalist id="bk_projetos">'+bkProjetos().map(p=>'<option value="'+esc(p)+'">').join('')+'</datalist>'+
+    '<label id="bk_sis_lab">Sistema<select id="bk_sistema" data-atual="'+esc(x.sistema||'')+'">'+opc(SIS,x.sistema||'outro')+'</select></label>'+
     '<label>Tipo<select id="bk_tipo">'+opc(TIPO_BK,x.tipo||'melhoria')+'</select></label>'+
     '<label>Etapa<select id="bk_etapa">'+opc(ETAPA,x.etapa||'ideia')+'</select></label>'+
     '<label>Quem pediu<input id="bk_quem" maxlength="80" value="'+v('pedido_por')+'"></label>'+
@@ -1102,17 +1121,29 @@ function bkDialogo(x){
 }
 function bkAbre(x,foco){
   if(!x)return;
-  BKL_ED=Object.assign({},x);const d=$('bkdlg');d.innerHTML=bkDialogo(BKL_ED);
+  BKL_ED=Object.assign({},x);BKL_IMP=null;const d=$('bkdlg');d.innerHTML=bkDialogo(BKL_ED);bkAjustaSistema();
   if(!d.open){if(d.showModal)d.showModal();else d.setAttribute('open','')}
   const el=$(foco||'bk_titulo');if(el)el.focus();
 }
-function bkFecha(){const d=$('bkdlg');if(d&&d.open){if(d.close)d.close();else d.removeAttribute('open')}BKL_ED=null}
+/* O sistema só existe nos projetos daqui: mostra os sistemas do projeto escolhido; em outro projeto, some e fica "Outro". */
+function bkAjustaSistema(){
+  const p=$('bk_projeto'),l=$('bk_sis_lab'),s=$('bk_sistema');if(!p||!l||!s)return;
+  const lista=PROJ_SIS[projetoCerto(p.value)],atual=s.value||s.dataset.atual;
+  l.classList.toggle('esc',!lista);
+  if(!lista){s.innerHTML='<option value="outro">Outro</option>';s.value='outro';return}
+  const ops=lista.concat(['outro']);
+  s.innerHTML=ops.map(k=>'<option value="'+k+'">'+SIS[k]+'</option>').join('');
+  s.value=ops.indexOf(atual)>=0?atual:ops[0];
+}
+function bkFecha(){const d=$('bkdlg');if(d&&d.open){if(d.close)d.close();else d.removeAttribute('open')}BKL_ED=null;BKL_IMP=null}
 function bkMsg(t,bom){const m=$('bk_msg');if(m&&$('bkdlg').open){m.textContent=t;m.className=bom?'dicad':'msg'}else toast(t)}
 async function bkSalva(){
   if(BKL_OCUPADO||!BKL_ED)return;
-  const x=BKL_ED,p={titulo:$('bk_titulo').value.trim(),descricao:$('bk_desc').value.trim(),sistema:$('bk_sistema').value,tipo:$('bk_tipo').value,etapa:$('bk_etapa').value,
+  const x=BKL_ED,p={titulo:$('bk_titulo').value.trim(),descricao:$('bk_desc').value.trim(),projeto:projetoCerto($('bk_projeto').value).slice(0,60),
+    sistema:$('bk_sistema').value||'outro',tipo:$('bk_tipo').value,etapa:$('bk_etapa').value,
     impacto:+$('bk_impacto').value,esforco:+$('bk_esforco').value,pedido_por:$('bk_quem').value.trim(),versao:$('bk_versao').value.trim()};
   if(!p.titulo){bkMsg('Informe o título.');$('bk_titulo').focus();return}
+  if(!p.projeto)p.projeto=projetoDoSistema(p.sistema);
   if(p.versao&&!/^[0-9A-Za-z._-]{1,30}$/.test(p.versao)){bkMsg('A versão só pode ter letras, números, ponto e traço. Exemplo: 2.5.0');$('bk_versao').focus();return}
   const dt=$('bk_pub').value;
   if(p.etapa==='publicado'&&dt&&dt!==String(x.publicado_em||'').slice(0,10))p.publicado_em=dt;
@@ -1141,8 +1172,8 @@ async function bkApaga(){
 }
 /* o texto pronto para colar na conversa com o Claude */
 function bkPedido(x){
-  const e=x.erro,l=['Pedido do backlog do Band Auditoria (item '+x.id+')','Título: '+x.titulo,'Sistema: '+(SIS[x.sistema]||x.sistema),'Tipo: '+(TIPO_BK[x.tipo]||x.tipo),
-    'Etapa: '+(ETAPA[x.etapa]||x.etapa),'Impacto: '+NIV3[x.impacto]+' | Esforço: '+NIV3[x.esforco]];
+  const e=x.erro,l=['Pedido do backlog do Band Auditoria (item '+x.id+')','Título: '+x.titulo,'Projeto: '+projetoDe(x)].concat(x.sistema==='outro'?[]:['Sistema: '+(SIS[x.sistema]||x.sistema)],['Tipo: '+(TIPO_BK[x.tipo]||x.tipo),
+    'Etapa: '+(ETAPA[x.etapa]||x.etapa),'Impacto: '+NIV3[x.impacto]+' | Esforço: '+NIV3[x.esforco]]);
   if(x.descricao)l.push('Descrição: '+x.descricao);
   if(e)l.push('Erro ligado: '+(APPS[e.app]||e.app)+', '+(TIPOS[e.tipo]||e.tipo)+': "'+e.mensagem+'". '+vezesTxt(+e.vezes_7d||0)+' nos últimos 7 dias'+(e.ultima?'; última em '+dataHora(e.ultima):'')+'.');
   l.push('Antes de alterar qualquer coisa, explique o que muda e espere o meu ok.');
@@ -1155,12 +1186,111 @@ async function bkCopia(){
   if(!ok){const a=document.createElement('textarea');a.value=t;$('bkdlg').appendChild(a);a.select();try{ok=document.execCommand('copy')}catch(e){}a.remove()}
   bkMsg(ok?'Pedido copiado. Cole na conversa com o Claude.':'Não consegui copiar sozinho. Selecione o texto do item e copie à mão.',ok);
 }
+/* ---- Importar do Claude ----
+   O Claude só lê o banco. No fim de cada pedido ele manda um bloco de texto com os itens novos e as
+   mudanças de etapa; aqui o bloco é colado, conferido e gravado pelo administrador. O bloco é lido
+   só como dados (uma lista de itens), campo por campo, e nada dele é executado. */
+const IMP_CAMPOS=['titulo','descricao','projeto','sistema','tipo','etapa','impacto','esforco','pedido_por','versao','publicado_em'];
+function bkImpLe(texto){
+  const t=String(texto||''),a=t.indexOf('['),b=t.lastIndexOf(']');
+  if(a<0||b<=a)throw new Error('Não achei a lista de itens no texto. Cole o bloco inteiro que o Claude mandou, do [ até o ].');
+  let l;try{l=JSON.parse(t.slice(a,b+1))}catch(e){throw new Error('O bloco está incompleto ou foi alterado. Copie de novo, inteiro.')}
+  if(!Array.isArray(l)||!l.length)throw new Error('O bloco não tem itens.');
+  if(l.length>40)throw new Error('O bloco tem '+l.length+' itens. O limite é 40 por vez.');
+  return l;
+}
+/* para cada item do bloco: criar, atualizar (só o que mudou), sem mudança ou ignorar (com o motivo) */
+function bkImpPlano(lista){
+  const itens=(BKL&&BKL.itens)||[];
+  const rot={titulo:'título',descricao:'descrição',projeto:'projeto',sistema:'sistema',tipo:'tipo',etapa:'etapa',impacto:'impacto',esforco:'esforço',pedido_por:'quem pediu',versao:'versão'};
+  const max={titulo:120,descricao:2000,projeto:60,pedido_por:80,versao:30};
+  const txt=(k,v)=>k==='etapa'?ETAPA[v]:k==='sistema'?SIS[v]:k==='tipo'?TIPO_BK[v]:k==='impacto'||k==='esforco'?NIV3[v]:k==='descricao'?'texto':(String(v==null?'':v)||'vazio');
+  return lista.map(o=>{
+    if(!o||typeof o!=='object'||Array.isArray(o))return {acao:'ignorar',motivo:'não é um item',titulo:'(sem título)'};
+    const n={};IMP_CAMPOS.forEach(k=>{const v=o[k];if(v==null||v===''||typeof v==='object')return;
+      n[k]=typeof v==='number'?v:String(v).replace(/[\u0000-\u001f]+/g,' ').trim().slice(0,max[k]||40)});
+    if(n.projeto)n.projeto=projetoCerto(n.projeto);
+    const erro=m=>({acao:'ignorar',motivo:m,titulo:n.titulo||('item '+(o.id==null?'sem título':o.id))});
+    if(n.sistema&&!SIS[n.sistema])return erro('sistema desconhecido: '+n.sistema);
+    if(n.tipo&&!TIPO_BK[n.tipo])return erro('tipo desconhecido: '+n.tipo);
+    if(n.etapa&&!ETAPA[n.etapa])return erro('etapa desconhecida: '+n.etapa);
+    for(const k of ['impacto','esforco'])if(n[k]!=null){n[k]=+n[k];if([1,2,3].indexOf(n[k])<0)return erro(rot[k]+' precisa ser 1, 2 ou 3')}
+    if(n.versao&&!/^[0-9A-Za-z._-]{1,30}$/.test(n.versao))return erro('versão inválida: '+n.versao);
+    if(n.publicado_em&&!/^\d{4}-\d{2}-\d{2}$/.test(n.publicado_em))return erro('data de publicação inválida: '+n.publicado_em);
+    let x=null;
+    if(o.id!=null){x=itens.find(i=>String(i.id)===String(o.id));if(!x)return erro('o item '+String(o.id).slice(0,12)+' não existe no backlog')}
+    else if(n.titulo){x=itens.find(i=>i.etapa!=='descartado'&&String(i.titulo).trim().toLowerCase()===n.titulo.toLowerCase())||null;
+      if(x)delete n.titulo}   /* achado pelo título: o título fica como está no backlog */
+    if(!x){
+      if(!n.titulo)return erro('item novo sem título');
+      const sis=n.sistema||'outro';
+      const p={titulo:n.titulo,descricao:n.descricao||'',projeto:n.projeto||projetoDoSistema(sis),sistema:sis,tipo:n.tipo||'melhoria',etapa:n.etapa||'ideia',
+        impacto:n.impacto||2,esforco:n.esforco||2,pedido_por:n.pedido_por||'',versao:n.versao||''};
+      if(p.etapa==='publicado'&&n.publicado_em)p.publicado_em=n.publicado_em;
+      return {acao:'criar',titulo:p.titulo,p,resumo:bkOnde(p)+' · '+TIPO_BK[p.tipo]+' · '+ETAPA[p.etapa]+(p.versao?' · versão '+p.versao:'')};
+    }
+    const p={id:x.id,titulo:x.titulo,descricao:x.descricao||'',projeto:projetoDe(x),sistema:x.sistema,tipo:x.tipo,etapa:x.etapa,impacto:+x.impacto,esforco:+x.esforco,
+      pedido_por:x.pedido_por||'',versao:x.versao||''},mud=[];
+    Object.keys(rot).forEach(k=>{if(n[k]==null||String(n[k])===String(p[k]==null?'':p[k]))return;
+      mud.push(rot[k]+': '+txt(k,p[k])+' → '+txt(k,n[k]));p[k]=n[k]});
+    if(p.etapa==='publicado'&&n.publicado_em&&n.publicado_em!==String(x.publicado_em||'').slice(0,10)){p.publicado_em=n.publicado_em;mud.push('data da publicação: '+data(n.publicado_em))}
+    return mud.length?{acao:'atualizar',titulo:x.titulo,id:x.id,p,resumo:mud.join('; ')}:{acao:'igual',titulo:x.titulo,id:x.id};
+  });
+}
+function bkImpDialogo(){
+  const s=BKL_IMP||{},pl=s.plano;
+  let h='<div class="cabd"><h2 id="bkdlg_t">Importar do Claude</h2><button class="bt fino" data-bkd="fechar" aria-label="Fechar">✕</button></div><div class="corpod">'+
+    '<div class="msg esc" id="bk_msg" role="alert"></div>';
+  if(!pl){
+    h+='<div class="dicad">Cole aqui o bloco que o Claude manda no fim de cada pedido. Antes de gravar, o painel mostra o que vai criar e o que vai mudar.</div>'+
+      '<label class="larg">Bloco do Claude<textarea id="bk_imp" spellcheck="false" placeholder="Cole aqui" style="min-height:230px;font-family:ui-monospace,Consolas,monospace;font-size:12px">'+esc(s.texto||'')+'</textarea></label>'+
+      '</div><div class="ped"><button class="bt verm" data-bkd="imp-conferir">Conferir</button><button class="bt" data-bkd="fechar">Fechar</button></div>';
+    return h;
+  }
+  const grupo=(acao,tit,fn)=>{const l=pl.filter(a=>a.acao===acao);
+    return l.length?'<div class="cxd"><b>'+tit+' ('+l.length+')</b><ul>'+l.map(a=>'<li>'+fn(a)+
+      (a.ok?' <span style="color:#7fd67f;font-weight:700">✓ gravado</span>':a.falha?' <span style="color:#ffb3bd;font-weight:700">✕ não gravou: '+esc(a.falha)+'</span>':'')+'</li>').join('')+'</ul></div>':''};
+  const fazer=pl.filter(a=>a.acao==='criar'||a.acao==='atualizar').length;
+  if(s.feito)h+='<div class="dicad">'+(s.ok===fazer?'Pronto: '+fmt(s.ok)+(s.ok===1?' item gravado.':' itens gravados.'):'Gravei '+fmt(s.ok)+' de '+fmt(fazer)+'. Veja abaixo o que não gravou.')+'</div>';
+  else if(!fazer)h+='<div class="dicad">Não há nada para gravar neste bloco.</div>';
+  h+=grupo('criar','Criar',a=>'<b>'+esc(a.titulo)+'</b> · '+esc(a.resumo))+
+     grupo('atualizar','Atualizar',a=>'<b>Item '+a.id+', '+esc(a.titulo)+'</b>: '+esc(a.resumo))+
+     grupo('igual','Sem mudança',a=>'Item '+a.id+', '+esc(a.titulo))+
+     grupo('ignorar','Ignorar',a=>'<b>'+esc(a.titulo)+'</b>: '+esc(a.motivo));
+  return h+'</div><div class="ped">'+(s.feito?'':(fazer?'<button class="bt verm" data-bkd="imp-gravar">Gravar '+fmt(fazer)+(fazer===1?' item':' itens')+'</button>':'')+
+    '<button class="bt" data-bkd="imp-voltar">Voltar</button>')+'<button class="bt" data-bkd="fechar">Fechar</button></div>';
+}
+function bkAbreImp(){
+  if(!BKL){toast('O backlog ainda não carregou.');return}
+  BKL_ED=null;BKL_IMP={texto:'',plano:null};const d=$('bkdlg');d.innerHTML=bkImpDialogo();
+  if(!d.open){if(d.showModal)d.showModal();else d.setAttribute('open','')}
+  const t=$('bk_imp');if(t)t.focus();
+}
+function bkImpConfere(){
+  if(!BKL_IMP)return;const t=$('bk_imp');BKL_IMP.texto=t?t.value:'';
+  let l;try{l=bkImpLe(BKL_IMP.texto)}catch(e){bkMsg(e.message);return}
+  BKL_IMP.plano=bkImpPlano(l);$('bkdlg').innerHTML=bkImpDialogo();
+}
+async function bkImpGrava(){
+  if(BKL_OCUPADO||!BKL_IMP||!BKL_IMP.plano||BKL_IMP.feito)return;
+  const s=BKL_IMP,fazer=s.plano.filter(a=>a.acao==='criar'||a.acao==='atualizar');if(!fazer.length)return;
+  BKL_OCUPADO=true;const b=document.querySelector('#bkdlg [data-bkd="imp-gravar"]');if(b){b.disabled=true;b.textContent='Gravando…'}
+  let ok=0;
+  for(const a of fazer){try{await rpc('backlog_salvar',{p:a.p});a.ok=true;ok++}catch(e){a.falha=e.message;if(e.semSessao)break}}
+  BKL_OCUPADO=false;s.feito=true;s.ok=ok;
+  await carregaBacklog();
+  if(BKL_IMP===s)$('bkdlg').innerHTML=bkImpDialogo();
+}
+$('bkdlg').addEventListener('input',e=>{if(e.target&&e.target.id==='bk_projeto')bkAjustaSistema()});
 $('bkdlg').addEventListener('click',e=>{
   const b=e.target.closest('[data-bkd]');if(!b)return;const a=b.dataset.bkd;
+  if(a==='imp-conferir'){bkImpConfere();return}
+  if(a==='imp-gravar'){bkImpGrava();return}
+  if(a==='imp-voltar'){if(BKL_IMP){BKL_IMP.plano=null;$('bkdlg').innerHTML=bkImpDialogo()}return}
   if(a==='fechar')bkFecha();else if(a==='salvar')bkSalva();else if(a==='apagar')bkApaga();else if(a==='copiar')bkCopia();
   else if(a==='semerro'&&BKL_ED){BKL_ED._semErro=true;$('bk_erro').innerHTML='<b>Erro ligado</b>O item deixa de ficar ligado ao erro quando você salvar.'}
 });
-$('bkdlg').addEventListener('close',()=>{BKL_ED=null});
+$('bkdlg').addEventListener('close',()=>{BKL_ED=null;BKL_IMP=null});
 
 /* dica ao passar o mouse (gráficos e medidores) */
 document.addEventListener('mousemove',e=>{
@@ -1189,7 +1319,9 @@ $('main').addEventListener('click',e=>{
   const bv=e.target.closest('[data-bk-visao]');if(bv){BKL_VISAO=bv.dataset.bkVisao;desenha();return}
   const bm=e.target.closest('[data-bk-move]');if(bm){bkMove(bm.dataset.bkMove,bm.dataset.para);return}
   const ba=e.target.closest('[data-bk-abre]');if(ba){bkAbre(bkAcha(ba.dataset.bkAbre));return}
-  if(e.target.closest('[data-bk-novo]')){bkAbre({etapa:'ideia',tipo:BKL_F.tipo||'melhoria',sistema:BKL_F.sistema||'app_rtm',impacto:2,esforco:2});return}
+  if(e.target.closest('[data-bk-novo]')){const pj=BKL_F.projeto||(BKL_F.sistema?projetoDoSistema(BKL_F.sistema):'RTM');
+    bkAbre({etapa:'ideia',tipo:BKL_F.tipo||'melhoria',projeto:pj,sistema:BKL_F.sistema||(PROJ_SIS[pj]?PROJ_SIS[pj][0]:'outro'),impacto:2,esforco:2});return}
+  if(e.target.closest('[data-bk-imp]')){bkAbreImp();return}
   const be=e.target.closest('[data-bk-erro]');
   if(be){const x=((DADOS.err&&DADOS.err.grupos&&DADOS.err.grupos.linhas)||[])[+be.dataset.bkErro];if(!x)return;
     bkAbre({titulo:('Corrigir: '+String(x.mensagem||'')).slice(0,120),tipo:'erro',etapa:'ideia',sistema:APP_SIS[x.app]||'outro',
