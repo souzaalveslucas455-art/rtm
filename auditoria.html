@@ -270,7 +270,7 @@ h2.sec{font-size:15px;margin:0 0 4px}
    o que protege os dados e o login de administrador e as regras do banco.
    Tudo o que esta pagina guarda no navegador usa chaves com o prefixo aud_.
    ============================================================================ */
-const VERSAO='1.5.0';
+const VERSAO='1.5.1';
 const SUPA={url:'https://kqpdledhaghuzuwjkvrf.supabase.co',chave:'sb_publishable_dMdB5b_G5X5TnXemexGIXQ_GWXS6cid'};
 const K_SESSAO='aud_sessao',K_EMAIL='aud_email',K_DIAS='aud_dias';
 const $=id=>document.getElementById(id);
@@ -624,8 +624,8 @@ function telaGeral(){
   h+='<div class="nota">'+NOTA_APPS+'</div>';
   return h;
 }
-const NOTA_APPS='<b>Quem manda erros e versão:</b> o app dos desenvolvedores, a partir da versão 2.3.0. '+
-  'Os apps do merch (repositores e liderança) ainda não mandam; isso é a fase 3.';
+const NOTA_APPS='<b>Quem manda erros e versão:</b> o app dos desenvolvedores (desde a versão 2.3.0) e os apps do merch, do repositor e da liderança (desde a versão 2026-11-17a). '+
+  'Um celular só aparece aqui depois de abrir o app na versão nova, com internet.';
 function telaLado(l){
   const d=DADOS[l],L=LADOS[l];
   let h='<h1 class="tit">'+L.t+'</h1><p class="sub">'+L.sub+' · '+(d?periodo(d):'')+(CARREGANDO?' · atualizando…':'')+'</p>';
@@ -1092,7 +1092,8 @@ function bkCelulaErro(x){
 }
 /* ---- a janela do item ---- */
 const bkHist=t=>{const p=String(t||'').split(':'),e=(p[1]||'').split('>');
-  return p[0]==='criado'?'Criado em '+(ETAPA[p[1]]||p[1]||''):p[0]==='etapa'?'De '+(ETAPA[e[0]]||e[0])+' para '+(ETAPA[e[1]]||e[1]):p[0]==='versao'?'Versão informada: '+p.slice(1).join(':'):p[0]==='editado'?'Texto ou classificação alterados':String(t||'')};
+  return p[0]==='criado'?'Criado em '+(ETAPA[p[1]]||p[1]||''):p[0]==='etapa'?'De '+(ETAPA[e[0]]||e[0])+' para '+(ETAPA[e[1]]||e[1]):p[0]==='versao'?'Versão informada: '+p.slice(1).join(':'):p[0]==='editado'?'Texto ou classificação alterados':
+    p[0]==='por'?'Gravado pelo '+(p[1]==='claude'?'Claude':(p[1]||'')):String(t||'')};
 function bkDialogo(x){
   const opc=(o,sel)=>Object.keys(o).map(k=>'<option value="'+k+'"'+(String(k)===String(sel)?' selected':'')+'>'+o[k]+'</option>').join('');
   const v=k=>esc(x[k]==null?'':x[k]),e=x.erro,niv={1:'Baixo',2:'Médio',3:'Alto'};
