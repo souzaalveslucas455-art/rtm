@@ -516,6 +516,31 @@ body.comacao #toast{bottom:calc(env(safe-area-inset-bottom) + 108px)}
 #login .dica{margin:0 0 14px;font-size:14px;line-height:1.45;color:rgba(255,255,255,.9)}
 #login .dica b{color:#fff}
 #login input.pin{letter-spacing:.6em;font-size:22px;text-align:center}
+/* ---- pesquisa com clientes BAND ---- */
+.pqst{border-radius:7px;padding:2px 7px;font-size:11.5px;font-weight:700}
+.pqst.p{background:var(--ok-bg);color:var(--ok)}.pqst.w{background:var(--wa-bg);color:var(--wa)}
+.pqbt{margin-top:9px;background:var(--red);color:#fff;border-radius:10px;padding:10px 13px;font-size:13.5px;font-weight:700;min-height:40px}
+.pqbt.o{background:#fff;color:var(--ink2);border:1.5px solid var(--line)}
+.pqcab{background:#fff;border-radius:13px;box-shadow:var(--sh);padding:11px 14px;margin-top:10px}
+.pqcab b{display:block;font-size:15.5px;line-height:1.25}.pqcab span{font-size:12.5px;color:var(--ink2)}
+.pqprog{display:flex;justify-content:space-between;gap:10px;font-size:11.5px;font-weight:700;color:var(--ink2);
+ margin:14px 2px 0;text-transform:uppercase;letter-spacing:.03em}
+.pqq{font-size:20px!important;line-height:1.25;margin:14px 0 12px!important}
+.pqnota{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}
+.pqnota button{background:#fff;border:1.5px solid var(--line);border-radius:11px;min-height:52px;font-size:17px;font-weight:700}
+.pqnota button.on{color:#fff}
+.pqnota button.on.p{background:var(--ok);border-color:var(--ok)}
+.pqnota button.on.w{background:var(--wa);border-color:var(--wa)}
+.pqnota button.on.n{background:var(--no);border-color:var(--no)}
+.pqesc{display:flex;justify-content:space-between;font-size:12px;color:var(--ink3);margin-top:7px}
+textarea.pqou{min-height:58px;margin:-1px 0 9px;border-color:var(--blue)}
+.pqres{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid var(--line);font-size:13.5px}
+.pqres:first-child{border-top:0}.pqres span{color:var(--ink2);flex:1}.pqres b{text-align:right;max-width:58%}
+.pqac{border-left:4px solid var(--ink3);padding:7px 10px;margin-top:8px;background:#F7F8FA;border-radius:0 9px 9px 0}
+.pqac b{display:block;font-size:13.5px;line-height:1.3}.pqac span{font-size:12px;color:var(--ink2)}
+.pqac.urgente{border-left-color:var(--no);background:var(--no-bg)}
+.pqac.alto{border-left-color:var(--wa);background:var(--wa-bg)}
+.pqac.oportunidade{border-left-color:var(--ok);background:var(--ok-bg)}
 </style>
 </head>
 <body>
@@ -549,7 +574,7 @@ body.comacao #toast{bottom:calc(env(safe-area-inset-bottom) + 108px)}
    A base vem embutida e funciona sem internet. As respostas ficam no aparelho
    e sobem para a planilha assim que houver sinal.
    =========================================================================== */
-const VERSAO='2.4.0';
+const VERSAO='2.5.0';
 
 /* ---------------- auditoria: erros do app e "estou vivo" ----------------
    Guarda no aparelho os erros que acontecem e manda para o painel de auditoria,
@@ -950,6 +975,7 @@ const IC={
  sino:'<path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/>',
  aviso:'<path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L2.4 17a2 2 0 001.7 3h15.8a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/>',
  ok:'<path d="M20 6L9 17l-5-5"/>',
+ pesquisa:'<path d="M9 3.5h6v3H9z"/><path d="M9 5H6v16h12V5h-3"/><path d="M9 12h6M9 16h4"/>',
  foto:'<path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/>',
  sinc:'<path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0115-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 01-15 6.7L3 16"/>'};
 const svg=(k,w)=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="'+
@@ -1161,6 +1187,9 @@ function trocaDeUsuario(){
       k==='rtm_plano_dados'||k===K_PIN).forEach(k=>localStorage.removeItem(k));
   }catch(e){}
   BASE.length=0;PLANO=null;VIZ={};MSGS.lista=[];MSGS.novas=0;FEITAS.lista=null;
+  /* a pesquisa também é de cada desenvolvedor */
+  S.pesq={r:{},andamento:null};PESQ=null;PQ=null;
+  try{localStorage.removeItem('rtm_pesquisa')}catch(e){}
 }
 function pintaNovaSenha(erro){
   telaEntrada(erro,
@@ -1313,6 +1342,7 @@ function pacote(ids){
    inválido) sai da fila com um aviso, em vez de ficar tentando para sempre. */
 function enviar(silencioso){
   if(!SESSAO){if(!silencioso)toast('Entre com a sua senha para enviar');return}
+  enviaPesquisas(true);   /* as respostas da pesquisa sobem junto, numa fila própria */
   if(enviando){refazer=true;return}
   const ids=pendentes().slice(0,200);
   if(!ids.length){if(!silencioso)toast('Tudo já enviado');return}
@@ -1493,6 +1523,7 @@ function sincroniza(silencioso,restaurar){
        }
      }
      S.sync.ultimaBusca=agora().hora; save();
+     buscaPesquisa();   /* a pesquisa com clientes BAND vem numa chamada à parte */
      if(!silencioso)
        toast(novidade.length?novidade.join(' e '):'Tudo em dia ('+(Date.now()-t0)+' ms)');
      atualizaTela(!!novidade.length);
@@ -1527,7 +1558,8 @@ const TITULOS={visitas:'Visitas',clientes:'Clientes',resultados:'Indicadores',
   base:'Conta e envio',plano:'Plano de visita',cancelar:'Cancelar visita',
   perto:'Na região de hoje',feitas:'Visitas feitas',feita:'Visita',
   form:'Visita',ok:'Visita registrada',
-  avisos:'Notificações',aviso:'Mensagem'};
+  avisos:'Notificações',aviso:'Mensagem',
+  pesquisa:'Pesquisa',pesqform:'Pesquisa',pesqfeita:'Pesquisa'};
 /* O botão físico de voltar precisa navegar dentro do app, não sair dele.
    Cada tela empilha um estado no histórico do navegador. */
 let pilha=[];
@@ -1548,6 +1580,9 @@ window.addEventListener('popstate',()=>{
   }
   /* do detalhe da mensagem, voltar leva à lista de notificações, não à raiz */
   if(tela_==='aviso'){tela_='avisos';render();empilha();return}
+  /* na pesquisa, voltar leva à pergunta anterior; da primeira pergunta, à lista */
+  if(tela_==='pesqform'){pqAnterior(true);empilha();return}
+  if(tela_==='pesqfeita'){tela_='pesquisa';render();empilha();return}
   if(tela_!=='visitas'){tela_='visitas';render();empilha();return}
   /* já está na tela inicial: mantém o app aberto */
   empilha();
@@ -1581,7 +1616,7 @@ function render(){
 }
 function renderInterno(){
   if(!DESBLOQ){if(!$('login').classList.contains('on'))abreEntrada();return}
-  if(!SESSAO&&tela_!=='form'&&tela_!=='plano'){
+  if(!SESSAO&&tela_!=='form'&&tela_!=='plano'&&tela_!=='pesqform'){
     pintaLogin('Sua sessão expirou. Entre de novo com a senha.');return}
   /* Se o formulário está aberto, o que já foi digitado é recolhido antes de
      qualquer redesenho. Sem isto, a sincronização apagava a tela por baixo. */
@@ -1607,6 +1642,7 @@ function renderInterno(){
     tela_==='clientes'?vClientes(): tela_==='resultados'?vResultados():
     tela_==='feitas'?vFeitas(): tela_==='feita'?vFeitaDet():
     tela_==='perto'?vPerto():
+    tela_==='pesquisa'?vPesquisa(): tela_==='pesqform'?vPesqForm(): tela_==='pesqfeita'?vPesqFeita():
     tela_==='plano'?vPlanoVisita(): tela_==='cancelar'?vCancelar():
     tela_==='avisos'?vAvisos(): tela_==='aviso'?vAviso():
     tela_==='base'?vBase(): vLista();
@@ -1614,13 +1650,17 @@ function renderInterno(){
   if(tela_==='clientes')ligaBuscaCli();
   if(tela_==='feitas')ligaBuscaFeitas();
   if(tela_==='perto')ligaPerto();
+  if(tela_==='pesquisa')pqLiga();
   if(tela_==='plano')ligaCronometro(); else clearInterval(cronT);
   if(tela_==='form')ligaFoto();
-  const a=$('acao');
-  document.body.classList.toggle('comacao',tela_==='form');
+  const a=$('acao'),naPesq=tela_==='pesqform'&&!!PQ;
+  document.body.classList.toggle('comacao',tela_==='form'||naPesq);
   if(tela_==='form'){a.classList.add('on');
     a.innerHTML='<button class="v" onclick="tela(\'visitas\')">Voltar</button>'+
       '<button class="s" onclick="salvar()">Salvar visita</button>'}
+  else if(naPesq){a.classList.add('on');
+    a.innerHTML='<button class="v" onclick="pqAnterior()">Voltar</button>'+
+      '<button class="s" onclick="'+(PQ.fim?'pqSalva()':'pqAvanca()')+'">'+(PQ.fim?'Salvar pesquisa':'Continuar')+'</button>'}
   else a.classList.remove('on');
   if(tela_==='visitas'&&!modoLista)setTimeout(pintaMapa,30);
   if(tela_==='visitas'&&modoLista)setTimeout(centraDia,30);
@@ -3010,14 +3050,14 @@ function localizaPerto(){
     BUSCANDOGPS=false;
     GPSPERTO={lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy,t:Date.now()};
     EU_POS=GPSPERTO;
-    if(tela_!=='perto')return;
-    if(PERTO.modo==='mapa'&&mapaPerto){marcaPerto();mapaPerto.setView([GPSPERTO.lat,GPSPERTO.lon],Math.max(mapaPerto.getZoom(),16));
+    if(tela_!=='perto'&&tela_!=='pesquisa')return;
+    if(tela_==='perto'&&PERTO.modo==='mapa'&&mapaPerto){marcaPerto();mapaPerto.setView([GPSPERTO.lat,GPSPERTO.lon],Math.max(mapaPerto.getZoom(),16));
       const b2=$('fabgps');if(b2){b2.classList.remove('gira','velho');b2.querySelector('span').textContent='Atualizar posição'}}
     else render();
     toast('Ordenado pelo mais perto de você · precisão ±'+Math.round(p.coords.accuracy)+' m');
   },e=>{BUSCANDOGPS=false;
     toast(e.code===1?'Libere a localização para o app nas configurações do celular':'Não consegui achar sua posição agora');
-    if(tela_==='perto')render()},
+    if(tela_==='perto'||tela_==='pesquisa')render()},
   {enableHighAccuracy:true,timeout:20000,maximumAge:0});   /* tocou: sempre a posição de agora */
 }
 function rotaPara(lat,lon){
@@ -3414,6 +3454,459 @@ function exportar(f){
   toast(r.length+' visita(s)');
 }
 
+/* ============================================================================
+   PESQUISA
+   Perguntas de negócio para clientes que JÁ compram da BAND. O coordenador
+   publica a pesquisa no painel (quais clientes, de qual desenvolvedor); o app
+   mostra a lista por distância, faz uma pergunta por tela e guarda tudo no
+   aparelho até subir. Cada resposta ruim vira um acompanhamento, com quem deve
+   tratar e o prazo. O questionário é só dado (PQ_QUEST): para mudar uma
+   pergunta, muda a lista, não o código das telas.
+   ============================================================================ */
+let PESQ=null,PQ=null,PQV=null,pqEnviando=false,pqSemServidor=false;
+try{const g=localStorage.getItem('rtm_pesquisa');if(g)PESQ=JSON.parse(g)}catch(e){}
+if(!S.pesq||!S.pesq.r)S.pesq={r:{},andamento:null};
+const PQF={st:'fazer',rota:'',q:'',n:40};       /* filtros da lista */
+
+/* situações em que o cliente fica na lista "Voltar" */
+const PQ_VOLTAR=['funcionario','ausente','fechado','noturno'];
+const PQ_F={situacao:['falou']},PQ_FV={situacao:['falou'],vend_freq:['semanal','quinzenal','mensal','quase_nunca']};
+/* tipo: uma | varias | nota | texto.  se: só aparece quando a resposta anterior está na lista.
+   opção: [valor, texto, tom]  (tom p = bom, w = atenção, n = ruim).  opc: pode pular. */
+const PQ_QUEST=[
+ {id:'situacao',bloco:'Chegada',c:'Situação',t:'Como foi a chegada ao cliente?',tipo:'uma',
+  ops:[['falou','Falei com o responsável','p'],['funcionario','Só tinha funcionário','w'],
+       ['ausente','Responsável ausente','w'],['fechado','Fechado no momento','w'],
+       ['noturno','Só funciona à noite','w'],['novo_dono','Trocou de dono','w'],
+       ['nao_existe','Não existe mais neste endereço','n'],['recusou','Não quis responder','n']]},
+ {id:'volta_quando',bloco:'Retorno',c:'Melhor período para voltar',t:'Qual o melhor período para voltar?',tipo:'uma',
+  se:{situacao:PQ_VOLTAR},
+  ops:[['manha','De manhã'],['tarde','À tarde'],['noite','À noite'],['nao_sei','Não consegui saber']]},
+ {id:'cadastro_novo',bloco:'Troca de dono',c:'Novo cadastro',t:'O novo dono quer fazer o cadastro na BAND?',tipo:'uma',
+  se:{situacao:['novo_dono']},
+  ops:[['enviado','Sim, documentos já enviados','p'],['falta_doc','Sim, mas falta documento','w'],['nao_quis','Não quis','n']]},
+
+ {id:'vend_freq',bloco:'Consultor de vendas',c:'Frequência do consultor',t:'O consultor de vendas da BAND passa ou liga com que frequência?',tipo:'uma',se:PQ_F,
+  ops:[['semanal','Toda semana','p'],['quinzenal','A cada 15 dias'],['mensal','Uma vez por mês','w'],
+       ['quase_nunca','Quase nunca','n'],['nao_conhece','Não sei quem é o consultor','n']]},
+ {id:'vend_cumpre',c:'Consultor cumpre o retorno',t:'Quando o consultor promete voltar, ele cumpre?',tipo:'uma',se:PQ_FV,
+  ops:[['sempre','Sempre','p'],['as_vezes','Às vezes','w'],['raramente','Raramente','n'],['nunca_prometeu','Nunca prometeu nada']]},
+ {id:'vend_nota',c:'Nota do consultor',t:'De 0 a 10, que nota o cliente dá para o atendimento do consultor de vendas?',tipo:'nota',se:PQ_FV,
+  min:'Péssimo',max:'Excelente'},
+
+ /* pode marcar mais de um jeito; "não compra direto" é exclusiva (4º item da opção) */
+ {id:'pedido_como',bloco:'Pedidos',c:'Como faz o pedido',t:'Como o cliente faz os pedidos hoje?',tipo:'varias',se:PQ_F,
+  ops:[['band_togo','Pelo BAND TOGO (aplicativo B2B)'],['consultor','Com o consultor de vendas (COKE TOGO)'],
+       ['telefone','Por telefone ou WhatsApp'],['outro','Outro jeito'],
+       ['nao_compra','Não compra direto da BAND',null,true]]},
+ /* quem já pede pelo BAND TOGO não precisa responder se tem o aplicativo */
+ {id:'app_tem',bloco:'BAND TOGO',c:'Tem o BAND TOGO',t:'O cliente tem o BAND TOGO no celular?',tipo:'uma',se:PQ_F,
+  nao:{pedido_como:['band_togo']},
+  ops:[['usa','Tem e usa','p'],['nao_usa','Tem, mas não usa','w'],['nao_tem','Não tem','n']]},
+ {id:'app_motivo',c:'Por que não usa o BAND TOGO',t:'Por que não usa o BAND TOGO?',tipo:'varias',
+  se:{situacao:['falou'],app_tem:['nao_usa','nao_tem']},
+  ops:[['celular','O celular não suporta ou está sem espaço'],['dificil','Acha difícil de usar'],
+       ['prefere_vendedor','Prefere pedir com o consultor de vendas'],['nao_conhecia','Não conhecia'],
+       ['erro','Já tentou e deu erro'],['pagamento','Não confia em pagar pelo aplicativo'],['outro','Outro motivo']]},
+
+ {id:'p24',bloco:'Projeto 24 Horas',c:'Projeto 24 Horas',t:'O cliente conhece o Projeto 24 Horas?',tipo:'uma',se:PQ_F,
+  dica:'Dois dias de pedido por semana: um com o consultor de vendas e outro pelo BAND TOGO.',
+  ops:[['participa','Já participa','p'],['conhece','Conhece, mas não participa','w'],['nao_conhece','Não conhece']]},
+ {id:'p24_motivo',c:'Por que não entra no 24 Horas',t:'Por que não participa do 24 Horas?',tipo:'varias',
+  se:{situacao:['falou'],p24:['conhece']},
+  ops:[['uma_semana','Um pedido por semana já basta'],['volume','O volume é pequeno'],
+       ['estoque','Não tem onde guardar estoque'],['recebimento','Dificuldade para receber (estacionamento, horário)'],
+       ['sem_app','Não usa o BAND TOGO'],['vantagem','Não viu vantagem'],['outro','Outro motivo']]},
+ {id:'p24_interesse',c:'Interesse no 24 Horas',t:'Depois de explicar o 24 Horas, o cliente teve interesse?',tipo:'uma',
+  dica:'Explique antes: são dois dias de pedido por semana, um com o consultor de vendas e outro pelo BAND TOGO.',
+  se:{situacao:['falou'],p24:['nao_conhece']},
+  ops:[['sim','Sim, quer participar','p'],['talvez','Talvez, quer pensar','w'],['nao','Não tem interesse','n']]},
+ {id:'compra_freq',bloco:'Compras',c:'Frequência de compra',t:'Com que frequência o cliente compra da BAND?',tipo:'uma',se:PQ_F,
+  ops:[['2x','Duas vezes ou mais por semana','p'],['semanal','Uma vez por semana'],['quinzenal','A cada 15 dias'],
+       ['mensal','Uma vez por mês','w'],['esporadico','De vez em quando','n']]},
+
+ {id:'entrega',bloco:'Entrega e produto',c:'Entrega no dia combinado',t:'As entregas chegam no dia combinado?',tipo:'uma',se:PQ_F,
+  ops:[['sempre','Sempre','p'],['quase','Quase sempre'],['as_vezes','Às vezes','w'],['raramente','Raramente','n']]},
+ {id:'falta',c:'Falta de produto',t:'Nos últimos 30 dias, faltou produto no pedido?',tipo:'uma',se:PQ_F,
+  ops:[['nao','Não faltou','p'],['as_vezes','Faltou às vezes','w'],['frequente','Falta com frequência','n']]},
+ {id:'divergencia',c:'Item não pedido',t:'Já veio produto que o cliente não pediu?',tipo:'uma',se:PQ_F,
+  ops:[['nao','Nunca','p'],['uma','Uma vez','w'],['mais','Mais de uma vez','n']]},
+
+ {id:'nps',bloco:'Relacionamento',c:'Recomendaria a BAND',t:'De 0 a 10, quanto o cliente recomendaria a BAND a outro comerciante?',tipo:'nota',se:PQ_F,
+  min:'Não recomendaria',max:'Com certeza'},
+ {id:'intencao',c:'Intenção de compra',t:'O que o cliente pensa em fazer com as compras na BAND?',tipo:'uma',se:PQ_F,
+  ops:[['mais','Quer comprar mais','p'],['manter','Manter como está'],['reduzir','Pensa em reduzir','w'],
+       ['cancelar','Quer cancelar o cadastro','n']]},
+ {id:'melhorar',c:'O que faria comprar mais',t:'O que faria o cliente comprar mais?',tipo:'varias',opc:true,se:PQ_F,
+  ops:[['visita','Visita mais frequente do consultor de vendas'],['preco','Preço e promoção'],['prazo','Prazo de pagamento'],
+       ['equipamento','Geladeira ou equipamento'],['mix','Mais variedade de produtos'],
+       ['entrega','Entrega melhor'],['app','Ajuda com o BAND TOGO'],['outro','Outra coisa']]},
+
+ {id:'acoes',bloco:'O que fiz na visita',c:'O que fiz na visita',t:'O que você fez nesta visita?',tipo:'varias',se:PQ_F,
+  ops:[['instalei','Instalei o BAND TOGO'],['cadastrei','Cadastrei o cliente no BAND TOGO'],
+       ['pedido','Fiz pedido junto com o cliente'],['cv','Encaminhei o pedido para a CV'],
+       ['so_pesquisa','Só a pesquisa',null,true]]},
+ {id:'obs',bloco:'Observação',c:'Observação',t:'Quer registrar algum comentário?',tipo:'texto',opc:true,
+  ph:'Opcional. O que o cliente disse, com as palavras dele.'}
+];
+/* pergunta sem bloco herda o da anterior */
+PQ_QUEST.forEach((q,i)=>{if(!q.bloco)q.bloco=PQ_QUEST[i-1].bloco});
+
+/* Acompanhamentos: o que cada resposta ruim abre, para quem e com que prazo (dias).
+   n: urgente | alto | normal | oportunidade. */
+const pqTemItem=(v,x)=>Array.isArray(v)&&v.indexOf(x)>=0;
+const PQ_PERIODO={manha:'de manhã',tarde:'à tarde',noite:'à noite'};
+const PQ_ACOMP=[
+ {id:'cancelar',n:'urgente',dias:2,para:'Gerente',t:'Cliente quer cancelar o cadastro',se:r=>r.intencao==='cancelar'},
+ {id:'reduzir',n:'alto',dias:5,para:'Supervisor',t:'Cliente pensa em reduzir as compras',se:r=>r.intencao==='reduzir'},
+ {id:'vendedor',n:'alto',dias:7,para:'Supervisor',
+  t:r=>r.vend_freq==='nao_conhece'?'Cliente não sabe quem é o consultor de vendas':
+       r.vend_cumpre==='raramente'?'Consultor promete voltar e não volta':
+       r.vend_freq==='quase_nunca'?'Consultor de vendas quase nunca aparece':'Nota baixa para o consultor de vendas ('+r.vend_nota+' de 10)',
+  se:r=>r.vend_freq==='nao_conhece'||r.vend_freq==='quase_nunca'||r.vend_cumpre==='raramente'||(r.vend_nota!=null&&r.vend_nota<=5)},
+ {id:'detrator',n:'alto',dias:7,para:'Supervisor',t:r=>'Cliente insatisfeito (nota '+r.nps+' de recomendação)',
+  se:r=>r.nps!=null&&r.nps<=6},
+ {id:'entrega',n:'normal',dias:7,para:'Logística',t:'Entrega fora do dia combinado',se:r=>r.entrega==='as_vezes'||r.entrega==='raramente'},
+ {id:'falta',n:'normal',dias:7,para:'Logística',t:'Falta de produto com frequência',se:r=>r.falta==='frequente'},
+ {id:'divergencia',n:'normal',dias:7,para:'Supervisor',t:'Pedido veio com item que o cliente não pediu',se:r=>r.divergencia==='uma'||r.divergencia==='mais'},
+ {id:'app_erro',n:'normal',dias:7,para:'Suporte do BAND TOGO',t:'BAND TOGO deu erro para o cliente',se:r=>pqTemItem(r.app_motivo,'erro')},
+ {id:'app_celular',n:'normal',dias:7,para:'Supervisor',t:'Celular não suporta o BAND TOGO: atender pelo consultor de vendas',se:r=>pqTemItem(r.app_motivo,'celular')},
+ {id:'cv',n:'alto',dias:2,para:'Supervisor',t:'Conferir o pedido encaminhado para a CV',se:r=>pqTemItem(r.acoes,'cv')},
+ {id:'p24',n:'oportunidade',dias:5,para:'Supervisor',t:'Interessado no Projeto 24 Horas',se:r=>r.p24_interesse==='sim'},
+ {id:'equipamento',n:'oportunidade',dias:10,para:'Supervisor',t:'Pediu geladeira ou equipamento',se:r=>pqTemItem(r.melhorar,'equipamento')},
+ {id:'retorno',n:'normal',dias:7,para:'Desenvolvedor',
+  t:r=>'Voltar ao cliente'+(PQ_PERIODO[r.volta_quando]?' '+PQ_PERIODO[r.volta_quando]:''),se:r=>PQ_VOLTAR.indexOf(r.situacao)>=0},
+ {id:'novo_dono',n:'normal',dias:5,para:'Cadastro',t:'Novo cadastro por troca de dono',se:r=>r.situacao==='novo_dono'&&r.cadastro_novo!=='nao_quis'},
+ {id:'nao_existe',n:'normal',dias:5,para:'Cadastro',t:'Conferir o cadastro: o ponto não existe mais',se:r=>r.situacao==='nao_existe'}
+];
+function pqAcomp(r){
+  return PQ_ACOMP.filter(a=>{try{return a.se(r)}catch(e){return false}})
+    .map(a=>({id:a.id,n:a.n,dias:a.dias,para:a.para,t:typeof a.t==='function'?a.t(r):a.t}));
+}
+
+/* ---- dados ---- */
+const pqCli=()=>(PESQ&&Array.isArray(PESQ.clientes))?PESQ.clientes:[];
+const pqAcha=cod=>pqCli().find(x=>String(x.cod)===String(cod));
+const pqReg=cod=>S.pesq.r[String(cod)];
+const pqVoltar=c=>{const g=pqReg(c.cod);return !!g&&PQ_VOLTAR.indexOf(g.situacao)>=0};
+const pqFeita=c=>{const g=pqReg(c.cod);return !!g&&PQ_VOLTAR.indexOf(g.situacao)<0};
+const pqPend=()=>Object.keys(S.pesq.r).filter(k=>!S.pesq.r[k].enviado&&!S.pesq.r[k].recusada);
+const pqTem=v=>!(v==null||v===''||(Array.isArray(v)&&!v.length));
+/* se: aparece quando a resposta está na lista.  nao: some quando a resposta está na lista. */
+function pqVisivel(q,r){
+  const bate=(k,l)=>{const v=r[k];return Array.isArray(v)?v.some(x=>l.indexOf(x)>=0):l.indexOf(v)>=0};
+  if(q.se&&!Object.keys(q.se).every(k=>bate(k,q.se[k])))return false;
+  if(q.nao&&Object.keys(q.nao).some(k=>bate(k,q.nao[k])))return false;
+  return true;
+}
+const pqPergs=r=>PQ_QUEST.filter(q=>pqVisivel(q,r));
+/* a opção "outro" pede que a pessoa escreva qual; o texto fica em <pergunta>_outro */
+const pqTemOutro=(q,r)=>r[q.id]==='outro'||pqTemItem(r[q.id],'outro');
+/* mudou uma resposta lá atrás: o que deixou de fazer sentido é apagado */
+function pqPoda(r){
+  for(let n=0;n<6;n++){let mudou=false;
+    PQ_QUEST.forEach(q=>{if(r[q.id]!==undefined&&!pqVisivel(q,r)){delete r[q.id];mudou=true}});
+    if(!mudou)break}
+  PQ_QUEST.forEach(q=>{if(r[q.id+'_outro']!==undefined&&!pqTemOutro(q,r))delete r[q.id+'_outro']});
+}
+function pqTexto(q,v,r){
+  const rot=x=>{const o=(q.ops||[]).find(o=>o[0]===x);
+    if(x==='outro'&&r&&pqTem(r[q.id+'_outro']))return 'Outro: '+r[q.id+'_outro'];
+    return o?o[1]:String(x)};
+  if(q.tipo==='varias')return (v||[]).map(rot).join(', ');
+  if(q.tipo==='nota')return v+' de 10';
+  if(q.tipo==='texto')return String(v);
+  return rot(v);
+}
+function aplicaPesquisa(p){
+  if(p&&Array.isArray(p.clientes)){
+    /* chegou outra pesquisa: o que era da antiga e já subiu sai do aparelho (fica no servidor);
+       o que ainda não subiu continua na fila de envio */
+    if(p.id)Object.keys(S.pesq.r).forEach(k=>{const g=S.pesq.r[k];
+      if(g.pesquisa&&g.pesquisa!==p.id&&(g.enviado||g.recusada))delete S.pesq.r[k]});
+    /* o servidor devolve o que já foi respondido nesses clientes: depois de trocar de celular
+       ou de reinstalar o app, eles não voltam como "a fazer". O que está no aparelho vale mais. */
+    (Array.isArray(p.respostas)?p.respostas:[]).forEach(g=>{
+      const k=String(g&&g.cod||'');
+      if(k&&g.r&&!S.pesq.r[k])S.pesq.r[k]=Object.assign({},g,{enviado:true});
+    });
+    delete p.respostas;
+    PESQ=p;try{localStorage.setItem('rtm_pesquisa',JSON.stringify(p))}catch(e){}
+    save();
+  }else{
+    PESQ=null;try{localStorage.removeItem('rtm_pesquisa')}catch(e){}
+  }
+}
+/* O servidor só manda a lista quando ela mudou. Sem pesquisa publicada para este
+   desenvolvedor, responde vazio e o módulo some do menu. */
+function buscaPesquisa(){
+  if(!SESSAO||!navigator.onLine||pqSemServidor)return;
+  rpc('minha_pesquisa',{p_versao:PESQ?PESQ.versao:null})
+   .then(j=>{
+     if(j&&j.igual)return;
+     const antes=PESQ?PESQ.versao:null;
+     aplicaPesquisa(j);
+     if(PESQ&&PESQ.versao!==antes)
+       anota('roteiro','Pesquisa disponível',(PESQ.nome||'Pesquisa')+': '+fmt(pqCli().length)+' clientes para você.');
+     atualizaTela(true);
+   })
+   .catch(e=>{ if(e&&e.semSessao)return;
+     /* banco ainda sem a função da pesquisa: não insiste até abrir o app de novo */
+     if(/minha_pesquisa|PGRST202|404/i.test(String(e&&e.message||'')))pqSemServidor=true; });
+}
+/* Sobe as respostas pendentes, até 100 por vez. Só marca como enviada a que o
+   servidor confirmou e que não foi corrigida enquanto subia. */
+function enviaPesquisas(silencioso){
+  if(!SESSAO||pqEnviando||!navigator.onLine)return;
+  const ids=pqPend().slice(0,100);
+  if(!ids.length)return;
+  pqEnviando=true;
+  const marca={};ids.forEach(k=>{marca[k]=S.pesq.r[k].quando});
+  rpc('gravar_pesquisas',{p_respostas:ids.map(k=>{const o=Object.assign({},S.pesq.r[k]);
+      delete o.enviado;delete o.recusada;return o})})
+   .then(j=>{
+     const rec={};((j&&j.recusadas)||[]).forEach(x=>{rec[String(x.cod)]=x.motivo||'recusada'});
+     let ok=0;
+     ids.forEach(k=>{const g=S.pesq.r[k];if(!g||g.quando!==marca[k])return;
+       if(rec[k])g.recusada=rec[k];else{g.enviado=true;ok++}});
+     save();
+     const nr=Object.keys(rec).length;
+     if(nr)audita('erro','envio',nr+' pesquisa(s) não aceitas pelo servidor: '+Object.keys(rec).slice(0,3).map(k=>rec[k]).join('; '));
+     if(!silencioso)toast(ok+' pesquisa(s) enviada(s)'+(nr?', '+nr+' recusada(s)':''));
+     atualizaTela();
+     if(pqPend().length)setTimeout(()=>enviaPesquisas(true),200);
+   })
+   .catch(e=>{if(e&&e.semSessao)return sessaoPerdida();
+     if(!silencioso)toast('Não consegui enviar as pesquisas: '+(e.message||'sem conexão'))})
+   .finally(()=>{pqEnviando=false});
+}
+
+/* ---- lista de clientes ---- */
+function pqLista(){
+  const l=pqCli().slice();
+  l.forEach(c=>{c.dGps=GPSPERTO?kmAte(GPSPERTO.lat,GPSPERTO.lon,c.lat,c.lon):null;
+    c.rumo=GPSPERTO?rumo(GPSPERTO.lat,GPSPERTO.lon,c.lat,c.lon):null});
+  const txt=(a,b)=>String(a||'').localeCompare(String(b||''),'pt-BR',{numeric:true});
+  l.sort((a,b)=>GPSPERTO?(a.dGps-b.dGps):(txt(a.rota,b.rota)||txt(a.bairro,b.bairro)||txt(a.nome,b.nome)));
+  return l;
+}
+function pqCartao(c){
+  const g=pqReg(c.cod),volta=pqVoltar(c),temGps=GPSPERTO&&c.dGps!=null,cod=esc(String(c.cod));
+  const seta=temGps?'<span class="pdir" style="transform:rotate('+Math.round(c.rumo)+'deg)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V4M5 11l7-7 7 7"/></svg></span>':'';
+  const quando=g&&g.r&&PQ_PERIODO[g.r.volta_quando];
+  const selo=!g?'':volta?'<span class="pqst w">Voltar'+(quando?' '+quando:'')+'</span>':'<span class="pqst p">Respondida</span>';
+  return '<div class="pc" data-cod="'+cod+'">'+
+    '<div class="pd">'+(temGps
+      ?'<b>'+fmtKm(c.dGps)+'</b><span>de você</span><small>'+seta+PONTOS[Math.round(c.rumo/45)%8]+' · '+tempoAte(c.dGps)+'</small>'
+      :'<span>Rota</span><b style="color:var(--ink)">'+esc(c.rota||'—')+'</b>')+'</div>'+
+    '<div class="pm"><div class="pn">'+esc(c.nome)+'</div>'+
+      '<div class="pt">'+selo+(c.seg?'<span class="sg">'+esc(c.seg)+'</span>':'')+
+        '<button class="cd" onclick="copiaCod(\''+cod+'\')" aria-label="Copiar código">'+svg('chave',1.9)+cod+'</button></div>'+
+      '<div class="pi">'+(temGps&&c.rota?'Rota '+esc(c.rota)+' · ':'')+(c.consultor?esc(nomeCurto(c.consultor)):'')+'</div>'+
+      '<div class="pi" style="color:var(--ink3)">'+esc([c.endereco||c.bairro,c.cidade].filter(Boolean).join(' · '))+'</div>'+
+      '<button class="pqbt'+(g&&!volta?' o':'')+'" onclick="pqAbre(\''+cod+'\')">'+
+        (!g?'Responder pesquisa':volta?'Tentar de novo':'Ver respostas')+'</button></div>'+
+    '<div class="pb"><button class="acao" onclick="rotaPara('+c.lat+','+c.lon+')" aria-label="Ir até lá">'+svg('rota')+'</button></div></div>';
+}
+function vPesquisa(){
+  const todos=pqLista();
+  if(!todos.length)
+    return '<div class="vazio"><b>Nenhuma pesquisa para você agora.</b><br><br>Quando o coordenador publicar uma pesquisa, os clientes aparecem aqui.</div>'+
+      '<button class="cta o" onclick="sincroniza(false)">Sincronizar agora</button>';
+  const feitas=todos.filter(pqFeita).length,voltar=todos.filter(pqVoltar).length,env=pqPend().length;
+  const fazer=todos.length-feitas-voltar,pct=Math.round(feitas/todos.length*100);
+  const rotas={};todos.forEach(c=>{const k=String(c.rota||'—');rotas[k]=(rotas[k]||0)+1});
+  const rs=Object.keys(rotas).sort((a,b)=>a.localeCompare(b,'pt-BR',{numeric:true}));
+  const q=PQF.q.trim().toLowerCase();
+  const f=todos.filter(c=>{
+    if(PQF.st==='fazer'&&pqReg(c.cod))return false;
+    if(PQF.st==='voltar'&&!pqVoltar(c))return false;
+    if(PQF.st==='feitas'&&!pqFeita(c))return false;
+    if(PQF.rota&&String(c.rota||'—')!==PQF.rota)return false;
+    if(q&&!((c.nome||'')+' '+c.cod+' '+(c.bairro||'')).toLowerCase().includes(q))return false;
+    return true;
+  });
+  const idade=GPSPERTO?Math.round((Date.now()-GPSPERTO.t)/60000):null;
+  const andam=S.pesq.andamento&&pqAcha(S.pesq.andamento.cod);
+  let h='<div class="phd"><div class="pht"><b>'+esc(PESQ.nome||'Pesquisa')+'</b></div>'+
+     '<div class="pht" style="margin-top:3px;font-size:13px;opacity:.95">'+fmt(feitas)+' de '+fmt(todos.length)+' clientes respondidos · '+pct+'%</div>'+
+     '<div class="prog" style="background:rgba(255,255,255,.28)"><i style="width:'+pct+'%;background:#fff"></i></div>'+
+     '<div class="phk"><div><b>'+fmt(fazer)+'</b><span>a fazer</span></div>'+
+       '<div><b>'+fmt(voltar)+'</b><span>para voltar</span></div>'+
+       '<div><b>'+fmt(env)+'</b><span>'+(env?'a enviar':'tudo enviado')+'</span></div></div></div>'+
+   (andam?'<div class="aviso" style="display:flex;gap:10px;align-items:center"><span style="flex:1">Pesquisa começada em <b>'+esc(andam.nome)+'</b> e ainda não salva.</span>'+
+      '<button class="pqbt" style="margin:0" onclick="pqAbre(\''+esc(String(andam.cod))+'\')">Continuar</button></div>':'')+
+   '<div class="pfil"><div class="busca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">'+IC.busca+'</svg>'+
+     '<input id="pqq" placeholder="Nome, código ou bairro" value="'+esc(PQF.q)+'"></div></div>'+
+   '<div class="chips">'+[['fazer','A fazer · '+fmt(fazer)],['voltar','Voltar · '+fmt(voltar)],['feitas','Feitas · '+fmt(feitas)],['todas','Todas']]
+      .map(([k,t])=>'<button class="'+(PQF.st===k?'on':'')+'" onclick="PQF.st=\''+k+'\';PQF.n=40;render()">'+t+'</button>').join('')+
+     (rs.length>1?'<i></i><button class="'+(!PQF.rota?'on':'')+'" onclick="PQF.rota=\'\';PQF.n=40;render()">Todas as rotas</button>'+
+       rs.map(r=>'<button class="'+(PQF.rota===r?'on':'')+'" onclick="PQF.rota='+JSON.stringify(r).replace(/"/g,'&quot;')+';PQF.n=40;render()">Rota '+esc(r)+' · '+rotas[r]+'</button>').join(''):'')+
+   '</div>';
+  h+=f.length?f.slice(0,PQF.n).map(pqCartao).join(''):'<div class="vazio">'+
+      (PQF.st==='fazer'&&!q&&!PQF.rota?'<b>Tudo respondido.</b><br>Não sobrou cliente a fazer nesta pesquisa.':'Nenhum cliente com esse filtro.')+'</div>';
+  if(f.length>PQF.n)h+='<button class="cta o" onclick="PQF.n+=40;render()">Mostrar mais '+Math.min(40,f.length-PQF.n)+' (faltam '+fmt(f.length-PQF.n)+')</button>';
+  h+='<button class="fab'+(BUSCANDOGPS?' gira':'')+(GPSPERTO&&idade>=3?' velho':'')+'" id="fabgps" onclick="localizaPerto()" aria-label="Atualizar minha posição">'+
+     '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>'+
+     '<span>'+(BUSCANDOGPS?'Localizando…':GPSPERTO?'Atualizar posição':'Perto de mim')+'</span></button>'+
+   '<div style="height:90px"></div>';
+  return h;
+}
+function pqLiga(){
+  const q=$('pqq');
+  if(q){let t;q.oninput=()=>{PQF.q=q.value;PQF.n=40;clearTimeout(t);t=setTimeout(()=>{
+    const pos=q.selectionStart;render();const n=$('pqq');if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(e){}}},300)}}
+}
+
+/* ---- as perguntas, uma por tela ---- */
+function pqAbre(cod){
+  cod=String(cod);const g=pqReg(cod);
+  if(g&&PQ_VOLTAR.indexOf(g.situacao)<0){PQV=cod;return tela('pesqfeita')}
+  pqComeca(cod);
+}
+function pqComeca(cod,base){
+  const a=S.pesq.andamento;
+  /* só existe uma pesquisa em andamento por vez: começar outra descarta a anterior */
+  if(a&&a.cod!==cod&&pqTem(a.r&&a.r.situacao)){
+    const o=pqAcha(a.cod);
+    if(!confirm('Há uma pesquisa começada'+(o?' em '+o.nome:'')+' e ainda não salva.\n\nDescartar aquela e abrir esta?'))return;
+  }
+  PQ=(a&&a.cod===cod&&!base)?a:{cod,i:0,r:base?JSON.parse(JSON.stringify(base)):{},inicio:Date.now(),gps:null,fim:false};
+  S.pesq.andamento=PQ;save();
+  /* a posição entra na resposta para medir a distância até o cliente; não trava nada se faltar */
+  if(navigator.geolocation&&!PQ.gps){
+    const dono=PQ;
+    navigator.geolocation.getCurrentPosition(p=>{
+      dono.gps={lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy};
+      if(S.pesq.andamento===dono)save();
+    },()=>{},{enableHighAccuracy:true,timeout:15000,maximumAge:60000});
+  }
+  tela('pesqform');
+}
+function pqCab(cod){
+  const c=pqAcha(cod)||{nome:'Cliente',cod};
+  return '<div class="pqcab"><b>'+esc(c.nome)+'</b><span>Código '+esc(String(c.cod))+(c.rota?' · rota '+esc(c.rota):'')+
+    (c.seg?' · '+esc(c.seg):'')+'</span></div>';
+}
+function vPesqForm(){
+  if(!PQ)return '<div class="vazio">Nenhuma pesquisa aberta.</div><button class="cta o" onclick="tela(\'pesquisa\')">Voltar para a lista</button>';
+  const ps=pqPergs(PQ.r);
+  if(PQ.i>ps.length-1)PQ.i=ps.length-1;
+  if(PQ.fim)return pqCab(PQ.cod)+pqResumo(PQ.r,true);
+  const q=ps[PQ.i],v=PQ.r[q.id],id=q.id;
+  let h=pqCab(PQ.cod)+
+    /* antes da primeira resposta ainda não se sabe quantas perguntas virão */
+    '<div class="pqprog"><span>'+esc(q.bloco)+'</span><span>'+(pqTem(PQ.r.situacao)?(PQ.i+1)+' de '+ps.length:'Primeiro passo')+'</span></div>'+
+    '<div class="prog r"><i style="width:'+Math.round(PQ.i/ps.length*100)+'%"></i></div>'+
+    '<h3 class="t pqq">'+esc(q.t)+'</h3>'+(q.dica?'<p class="sub">'+esc(q.dica)+'</p>':'');
+  /* escolheu "outro": abre logo abaixo o campo para escrever qual */
+  const qual=o=>o[0]==='outro'?'<textarea id="pqou" class="pqou" maxlength="200" rows="2" placeholder="Escreva qual" '+
+    'oninput="pqTxt(\''+id+'_outro\',this.value)">'+esc(PQ.r[id+'_outro']||'')+'</textarea>':'';
+  if(q.tipo==='uma')
+    h+=q.ops.map(o=>'<button class="opt'+(v===o[0]?' on '+(o[2]||''):'')+'" onclick="pqResp(\''+id+'\',\''+o[0]+'\')"><span class="d"></span>'+esc(o[1])+'</button>'+
+      (v===o[0]?qual(o):'')).join('');
+  else if(q.tipo==='varias'){
+    const s=v||[];
+    h+='<p class="sub">Pode marcar mais de uma'+(q.opc?', ou pular':'')+'.</p>'+
+      q.ops.map(o=>{const on=s.indexOf(o[0])>=0;
+        return '<button class="opt multi'+(on?' on':'')+'" onclick="pqTog(\''+id+'\',\''+o[0]+'\')"><span class="cx">'+(on?'✓':'')+'</span>'+esc(o[1])+'</button>'+
+          (on?qual(o):'')}).join('');
+  }else if(q.tipo==='nota'){
+    h+='<div class="pqnota">'+[0,1,2,3,4,5,6,7,8,9,10].map(n=>'<button class="'+(v===n?'on '+(n<=6?'n':n<=8?'w':'p'):'')+
+        '" onclick="pqResp(\''+id+'\','+n+')" aria-label="Nota '+n+'">'+n+'</button>').join('')+'</div>'+
+      '<div class="pqesc"><span>0 · '+esc(q.min||'Péssimo')+'</span><span>10 · '+esc(q.max||'Ótimo')+'</span></div>';
+  }else
+    h+='<textarea id="pqtx" maxlength="400" rows="5" placeholder="'+esc(q.ph||'')+'" oninput="pqTxt(\''+id+'\',this.value)">'+esc(v||'')+'</textarea>';
+  return h+'<div style="height:90px"></div>';
+}
+function pqGuarda(){S.pesq.andamento=PQ;save()}
+function pqTxt(id,v){if(!PQ)return;v=String(v||'').trim();if(v)PQ.r[id]=v;else delete PQ.r[id]}
+/* resposta de toque único: marca, mostra a escolha e já passa para a próxima */
+function pqResp(id,v){
+  if(!PQ)return;
+  PQ.r[id]=v;pqPoda(PQ.r);pqGuarda();render();
+  /* "outro" espera a pessoa escrever qual: não avança sozinho */
+  if(v==='outro'){const c=$('pqou');if(c)c.focus();return}
+  const dono=PQ,i=PQ.i;
+  setTimeout(()=>{if(PQ===dono&&PQ.i===i&&!PQ.fim&&tela_==='pesqform')pqAvanca()},230);
+}
+function pqTog(id,v){
+  if(!PQ)return;
+  let s=Array.isArray(PQ.r[id])?PQ.r[id].slice():[];
+  /* opção exclusiva (4º item, como "Só a pesquisa") não combina com as outras: marcar uma desmarca a outra */
+  const q=PQ_QUEST.find(x=>x.id===id),ex=((q&&q.ops)||[]).filter(o=>o[3]).map(o=>o[0]);
+  const marcou=s.indexOf(v)<0;
+  if(!marcou)s=s.filter(x=>x!==v);
+  else if(ex.indexOf(v)>=0)s=[v];
+  else s=s.filter(x=>ex.indexOf(x)<0).concat(v);
+  if(s.length)PQ.r[id]=s;else delete PQ.r[id];
+  pqPoda(PQ.r);pqGuarda();
+  const y=$('app').scrollTop;render();$('app').scrollTop=y;
+  if(marcou&&v==='outro'){const c=$('pqou');if(c)c.focus()}
+}
+function pqAvanca(){
+  if(!PQ)return;
+  const ps=pqPergs(PQ.r),q=ps[Math.min(PQ.i,ps.length-1)];
+  if(q&&!q.opc&&!pqTem(PQ.r[q.id]))return toast(q.tipo==='varias'?'Marque pelo menos uma opção':'Escolha uma resposta para continuar');
+  if(q&&pqTemOutro(q,PQ.r)&&!pqTem(PQ.r[q.id+'_outro'])){const c=$('pqou');if(c)c.focus();return toast('Escreva qual é o outro')}
+  if(PQ.i<ps.length-1)PQ.i++;else PQ.fim=true;
+  pqGuarda();$('app').scrollTop=0;render();
+}
+function pqAnterior(peloVoltar){
+  if(!PQ){tela_='pesquisa';render();return}
+  if(PQ.fim){PQ.fim=false;pqGuarda();render();return}
+  if(PQ.i>0){PQ.i--;pqGuarda();render();return}
+  /* primeira pergunta: sai para a lista. O que foi respondido fica guardado. */
+  if(pqTem(PQ.r.situacao))toast('Pesquisa guardada. Continue quando quiser.');
+  else{S.pesq.andamento=null;save()}
+  PQ=null;
+  if(peloVoltar){tela_='pesquisa';render()}else tela('pesquisa');
+}
+function pqResumo(r,novo){
+  const ps=pqPergs(r).filter(q=>pqTem(r[q.id])),ac=pqAcomp(r);
+  return '<h3 class="t">'+(novo?'Confira antes de salvar':'Respostas')+'</h3>'+
+    '<div class="bloco" style="margin-top:8px">'+ps.map(q=>'<div class="pqres"><span>'+esc(q.c||q.t)+'</span><b>'+esc(pqTexto(q,r[q.id],r))+'</b></div>').join('')+'</div>'+
+    '<div class="bloco"><div class="gl">Acompanhamentos '+(novo?'que esta pesquisa abre':'abertos')+' · '+ac.length+'</div>'+
+      (ac.length?ac.map(a=>'<div class="pqac '+a.n+'"><b>'+esc(a.t)+'</b><span>'+esc(a.para)+' · prazo de '+a.dias+(a.dias>1?' dias':' dia')+
+          (a.n==='urgente'?' · urgente':a.n==='oportunidade'?' · oportunidade':'')+'</span></div>').join('')
+        :'<p class="sub" style="margin:0">Nenhum. As respostas não pedem ação.</p>')+'</div>'+
+    '<div style="height:90px"></div>';
+}
+function pqSalva(){
+  if(!PQ)return;
+  const cod=PQ.cod,c=pqAcha(cod)||{},t=agora(),ant=pqReg(cod),r=PQ.r;
+  if(!pqTem(r.situacao))return toast('Falta a primeira pergunta');
+  const g={cod,cnpj:c.cnpj||'',nome:c.nome||'',rota:c.rota||'',pesquisa:(PESQ&&PESQ.id)||'',versao:PESQ?PESQ.versao:'',
+    situacao:r.situacao,r:JSON.parse(JSON.stringify(r)),acomp:pqAcomp(r),
+    data:t.data,hora:t.hora,quando:t.iso,duracao_seg:Math.max(0,Math.round((Date.now()-PQ.inicio)/1000)),
+    tentativas:(ant?(ant.tentativas||1):0)+1,enviado:false};
+  if(PQ.gps){g.gps_lat=PQ.gps.lat;g.gps_lon=PQ.gps.lon;g.gps_acc=PQ.gps.acc;
+    if(isFinite(+c.lat)&&isFinite(+c.lon))g.dist=Math.round(kmAte(PQ.gps.lat,PQ.gps.lon,+c.lat,+c.lon)*1000)}
+  S.pesq.r[cod]=g;S.pesq.andamento=null;PQ=null;save();
+  audPasso('pesquisa salva');
+  toast(PQ_VOLTAR.indexOf(g.situacao)>=0?'Guardado. O cliente ficou na lista Voltar.'
+    :'Pesquisa salva'+(g.acomp.length?' · '+g.acomp.length+(g.acomp.length>1?' acompanhamentos':' acompanhamento'):''));
+  enviaPesquisas(true);
+  tela('pesquisa');
+}
+function vPesqFeita(){
+  const g=PQV&&pqReg(PQV);
+  if(!g)return '<div class="vazio">Pesquisa não encontrada.</div><button class="cta o" onclick="tela(\'pesquisa\')">Voltar para a lista</button>';
+  return pqCab(PQV)+
+    '<div class="info">Respondida em '+esc(g.data)+' às '+esc(g.hora)+
+      (g.duracao_seg?' · '+Math.max(1,Math.round(g.duracao_seg/60))+' min':'')+
+      (g.dist!=null?' · a '+fmtKm(g.dist/1000)+' do cliente':'')+'<br>'+
+      (g.recusada?'O servidor não aceitou: '+esc(g.recusada):g.enviado?'Já enviada para a base.':'Na fila de envio. Sobe sozinha quando houver sinal.')+'</div>'+
+    pqResumo(g.r,false).replace('<div style="height:90px"></div>','')+
+    '<button class="cta o" onclick="pqRefaz()">Corrigir respostas</button>'+
+    '<button class="cta o" onclick="tela(\'pesquisa\')">Voltar para a lista</button><div style="height:30px"></div>';
+}
+function pqRefaz(){
+  const g=PQV&&pqReg(PQV);if(!g)return;
+  if(!confirm('Abrir as respostas deste cliente para corrigir?'))return;
+  pqComeca(PQV,g.r);
+}
+
 /* ---------------- gaveta ---------------- */
 /* O texto da gaveta precisa refletir o roteiro em uso, não o que veio embutido. */
 function escopoAtual(){
@@ -3445,6 +3938,8 @@ function abrirGaveta(){
      item('feitas','conferido','Visitas feitas')+
      item('perto','rota','Na região de hoje'+
        (vizinhosDoDia().length?' · '+vizinhosDoDia().length:''))+
+     (pqCli().length?item('pesquisa','pesquisa','Pesquisa · '+
+       fmt(pqCli().filter(c=>!pqFeita(c)).length)+' a fazer'):'')+
      item('clientes','loja','Clientes')+
      item('resultados','grafico','Indicadores')+'<hr>'+
      item('base','nuvem','Conta e envio')+'<hr>'+

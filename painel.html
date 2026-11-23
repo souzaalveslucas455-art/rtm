@@ -286,6 +286,49 @@ main{overflow-y:auto;min-width:0}
 .cidlista label{display:flex;gap:7px;align-items:center;padding:3px 0;break-inside:avoid;font-weight:500;color:var(--ink)}
 .cidlista small{color:var(--ink3);margin-left:auto}
 @media(max-width:1100px){.dk h2{font-size:34px}.dk .gap{min-width:120px}}
+/* ---------- Pesquisa com clientes BAND ---------- */
+.abas{display:flex;gap:4px;flex-wrap:wrap}
+.abas button{border:none;background:none;padding:8px 14px;border-radius:9px;font-weight:600;color:var(--ink2);cursor:pointer}
+.abas button:hover{background:#F1F2F4}
+.abas button[aria-selected="true"]{background:var(--ink);color:#fff}
+.filtros .marca-cx{flex-direction:row;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--ink);padding-bottom:8px}
+.filtros .marca-cx input{min-width:0}
+.pqds{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.pqd{background:var(--papel);border:1px solid var(--linha);border-left:4px solid var(--azul);border-radius:14px;padding:14px 16px}
+.pqd>b{display:block;font-size:28px;font-weight:800;letter-spacing:-.01em;font-variant-numeric:tabular-nums;color:var(--azul)}
+.pqd p{margin:4px 0 6px;line-height:1.4} .pqd small{color:var(--ink2)}
+.pqd.n{border-left-color:var(--verm)} .pqd.n>b{color:var(--verm)}
+.pqd.w{border-left-color:#D97706} .pqd.w>b{color:var(--amb)}
+.pqd.p{border-left-color:var(--verde)} .pqd.p>b{color:var(--verde)}
+.pqgr{display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:14px;align-items:start}
+.pqgr .lb{grid-template-columns:minmax(120px,1fr) minmax(0,1fr) 98px}
+.pqgr details,.pqac details{margin-top:10px;font-size:13px}
+.pqgr summary,.pqac summary{cursor:pointer;color:var(--azul);font-weight:600}
+.pqgr ul,.pqac ul{margin:8px 0 0;padding-left:18px;color:var(--ink2);line-height:1.5}
+.pqobs p{margin:0 0 10px;line-height:1.45;color:var(--ink2)} .pqobs p b{color:var(--ink);display:block;font-size:12.5px}
+.lb small{display:block;color:var(--ink2);font-size:12px}
+#pqmapa{height:480px;border-radius:0 0 14px 14px;overflow:hidden;background:#E9EAEC}
+.pqleg{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--ink2)}
+.pqleg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
+.kan{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:start}
+.kan .col{background:#E7E8EB;border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:8px;min-height:140px}
+.kan .col>h3{margin:2px 6px 2px;font-size:13px;display:flex;justify-content:space-between;color:var(--ink2)}
+.pqk{text-align:left;border:1px solid var(--linha);border-left:4px solid #9CA3AF;background:var(--papel);border-radius:10px;padding:10px 12px;cursor:pointer;display:flex;flex-direction:column;gap:4px;width:100%}
+.pqk:hover{box-shadow:0 2px 10px rgba(0,0,0,.09)}
+.pqk>b{font-size:14px;line-height:1.3} .pqk>span{font-size:12.5px;color:var(--ink2)}
+.pqk.urgente,.pqac.urgente{border-left-color:var(--verm)} .pqk.alto,.pqac.alto{border-left-color:#D97706} .pqk.oportunidade,.pqac.oportunidade{border-left-color:var(--verde)}
+.pqk .top,.pqac .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.pz{font-size:12px;color:var(--ink2)} .pz.venc{color:var(--verm-esc);font-weight:700}
+.pqac{border:1px solid var(--linha);border-left:4px solid #9CA3AF;border-radius:12px;padding:12px 14px;margin:14px 20px 0}
+.pqac h3{margin:8px 0 10px;font-size:15px}
+.pqac .campo{margin:0 0 10px} .pqac .campo input,.pqac .campo textarea{width:100%}
+.seg3{display:flex;border:1px solid var(--linha);border-radius:9px;overflow:hidden}
+.seg3 button{flex:1;border:none;background:#fff;padding:8px 4px;cursor:pointer;font-size:12.5px;font-weight:600;border-right:1px solid var(--linha)}
+.seg3 button:last-child{border-right:none}
+.seg3 button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.pqsec{margin:20px 20px 0;font-size:13px;color:var(--ink2)}
+.tab select{border:1px solid var(--linha);border-radius:8px;padding:5px 8px;background:#fff}
+@media(max-width:1100px){.kan{grid-template-columns:1fr}.pqgr{grid-template-columns:1fr}}
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;opacity:0;transition:.2s;pointer-events:none;z-index:30;max-width:90vw}
 #toast.on{opacity:1;transform:translateX(-50%)}
 .carregando{display:flex;gap:10px;align-items:center;color:var(--ink2)}
@@ -317,7 +360,7 @@ main{overflow-y:auto;min-width:0}
    o que protege os dados é o login do coordenador e as regras do banco.
    Tudo o que este painel guarda no navegador usa chaves com o prefixo rtm_painel_.
    ============================================================================ */
-const VERSAO='1.0.0';
+const VERSAO='1.1.0';
 const SUPA={url:'https://kqpdledhaghuzuwjkvrf.supabase.co',chave:'sb_publishable_dMdB5b_G5X5TnXemexGIXQ_GWXS6cid'};
 const K_SESSAO='rtm_painel_sessao',K_EMAIL='rtm_painel_email';
 const $=id=>document.getElementById(id);
@@ -469,7 +512,8 @@ async function carregaVisitas(){
 }
 async function atualizaTudo(silencioso){
   try{
-    await Promise.all([carregaDevs(),carregaRoteiros(),carregaVisitas(),carregaMsgs()]);
+    /* a pesquisa trata os próprios erros: sem o r05 no banco, o resto do painel segue normal */
+    await Promise.all([carregaDevs(),carregaRoteiros(),carregaVisitas(),carregaMsgs(),carregaPesquisa()]);
     pintaLado();pintaMain();if(!silencioso)toast('Atualizado');
   }catch(e){if(e.semSessao)return sessaoCaiu();toast('Não consegui atualizar: '+e.message)}
 }
@@ -516,6 +560,7 @@ async function carregaBase(forcar){
     D.baseEstado='erro';D.baseErro=e.message;
   }
   pintaLado();pintaMainSe('base');pintaMainSe('dash');
+  if(MOD==='pesquisa'&&FPQ.aba==='camp')pintaMain();   /* a montagem da pesquisa usa a base */
 }
 async function enviaBase(arq){
   if(!arq)return;
@@ -552,11 +597,12 @@ const IC={
  funil:'<path d="M3 4h18l-7 8v6l-4 2v-8z"/>',
  conc:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
  simul:'<path d="M4 4h16v16H4zM8 8h3M8 12h8M8 16h5"/>',
+ pesquisa:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 11l2 2 4-4M9 17h6"/>',
  sair:'<path d="M15 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4M10 17l5-5-5-5M15 12H3"/>'
 };
 const svg=(k,w=18)=>'<svg width="'+w+'" height="'+w+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(IC[k]||'')+'</svg>';
 const MODULOS=[
-  ['Operação',[['aovivo','Ao vivo',0],['mapa','Mapa de oportunidade',0],['planejar','Planejar campo',0],['visitas','Visitas',0],['msgs','Mensagens',0]]],
+  ['Operação',[['aovivo','Ao vivo',0],['mapa','Mapa de oportunidade',0],['planejar','Planejar campo',0],['visitas','Visitas',0],['pesquisa','Pesquisa',0],['msgs','Mensagens',0]]],
   ['Análise',[['dash','Dashboards',0],['desemp','Desempenho',0],['funil','Funil de conversão',0],['conc','Concorrência e horários',0],['simul','Simulador',0]]],
   ['Estrutura',[['devs','Desenvolvedores',0],['base','Base de dados',0]]]
 ];
@@ -571,10 +617,11 @@ const BREVE={
   simul:['Simulador','Conversão da oportunidade e teto de clientes por rota.']
 };
 function pintaLado(){
-  const n={msgs:D.msgs.length,visitas:hojeVis().length};
+  /* na Pesquisa, o número é o de acompanhamentos que ninguém começou a tratar */
+  const n={msgs:D.msgs.length,visitas:hojeVis().length,pesquisa:Object.values(PQD.ac).filter(a=>a.status==='aberto').length};
   $('nav').innerHTML=MODULOS.map(([g,itens])=>'<div class="grupo">'+g+'</div>'+itens.map(([k,t,breve])=>
     '<button data-m="'+k+'" class="'+(breve?'breve':'')+'"'+(MOD===k?' aria-current="page"':'')+'>'+svg(k)+'<span>'+t+'</span>'+
-    (breve?'<span class="tag">em breve</span>':(k==='visitas'&&n.visitas?'<span class="n">'+n.visitas+'</span>':''))+'</button>').join('')).join('');
+    (breve?'<span class="tag">em breve</span>':((k==='visitas'||k==='pesquisa')&&n[k]?'<span class="n">'+n[k]+'</span>':''))+'</button>').join('')).join('');
   $('nav').querySelectorAll('button').forEach(b=>b.onclick=()=>ir(b.dataset.m));
   const hv=hojeVis(),ativos=D.devs.filter(d=>d.ativo).length,emUso=D.roteiros.find(r=>r.emUso);
   const comInt=hv.filter(v=>/agora/i.test(v.interesse||'')).length;
@@ -605,7 +652,7 @@ function mostraMapa(){
 window.addEventListener('message',e=>{if(e.origin===location.origin&&e.data==='roteiro-publicado'){D.rotCompleto=undefined;carregaRoteiros().then(pintaLado).catch(()=>{})}});
 function pintaMain(){
   if(mostraMapa()){$('main').innerHTML='';return}
-  const f={visitas:mVisitas,msgs:mMsgs,devs:mDevs,base:mBase,dash:mDash,aovivo:mAoVivo,desemp:mDesemp,funil:mFunil,conc:mConc}[MOD];
+  const f={visitas:mVisitas,msgs:mMsgs,devs:mDevs,base:mBase,dash:mDash,aovivo:mAoVivo,desemp:mDesemp,funil:mFunil,conc:mConc,pesquisa:mPesquisa}[MOD];
   if(f){$('main').innerHTML=f();try{liga[MOD]&&liga[MOD]()}catch(e){console.error(e)}return}
   const b=BREVE[MOD]||BREVE.aovivo;
   $('main').innerHTML=cab(b[0],'Em construção')+'<div class="corpo"><div class="cartao"><div class="cc" style="padding:28px">'+
@@ -1310,6 +1357,554 @@ function abreNoMapa(nome){
   tenta();
 }
 
+/* ============================================================================
+   módulo: Pesquisa com clientes BAND
+   O coordenador escolhe gerência, supervisão e rotas (da base), diz qual
+   desenvolvedor visita cada rota e publica. O app mostra a lista ao
+   desenvolvedor e manda as respostas; cada resposta ruim abre um
+   acompanhamento com responsável e prazo, tratado aqui.
+   Precisa do arquivo sql/r05-pesquisa.sql rodado no banco.
+   ============================================================================ */
+const PQD={lista:[],p:null,cli:[],porCod:{},resp:{},ac:{},desde:null,versao:null,sel:null,estado:'',erro:'',lendo:null,mudou:false};
+const FPQ={aba:'res',rota:'',cons:'',seg:'',dev:'',sit:'',q:'',para:'',nivel:'',venc:false};
+const NB={gc:'',sv:'',rotas:null,nome:'',nomeAuto:true};   /* a pesquisa que está sendo montada */
+const PQ_VOLTAR=['funcionario','ausente','fechado','noturno'];
+/* As perguntas são as do app (rtm/index.html, lista PQ_QUEST). Aqui servem para dar nome às
+   respostas: [id, rótulo, tipo, opções [valor, texto, tom]]. Mudou lá, muda aqui também. */
+const PQ_Q=[
+ ['situacao','Chegada ao cliente','uma',[['falou','Falou com o responsável','p'],['funcionario','Só tinha funcionário','w'],['ausente','Responsável ausente','w'],['fechado','Fechado no momento','w'],['noturno','Só funciona à noite','w'],['novo_dono','Trocou de dono','w'],['nao_existe','Não existe mais neste endereço','n'],['recusou','Não quis responder','n']]],
+ ['volta_quando','Melhor período para voltar','uma',[['manha','De manhã'],['tarde','À tarde'],['noite','À noite'],['nao_sei','Não conseguiu saber']]],
+ ['cadastro_novo','Novo dono quer se cadastrar','uma',[['enviado','Sim, documentos já enviados','p'],['falta_doc','Sim, mas falta documento','w'],['nao_quis','Não quis','n']]],
+ ['vend_freq','Frequência do consultor de vendas','uma',[['semanal','Toda semana','p'],['quinzenal','A cada 15 dias'],['mensal','Uma vez por mês','w'],['quase_nunca','Quase nunca','n'],['nao_conhece','Não sabe quem é o consultor','n']]],
+ ['vend_cumpre','Consultor cumpre o retorno que promete','uma',[['sempre','Sempre','p'],['as_vezes','Às vezes','w'],['raramente','Raramente','n'],['nunca_prometeu','Nunca prometeu nada']]],
+ ['vend_nota','Nota para o consultor de vendas','nota'],
+ ['pedido_como','Como o cliente faz os pedidos','varias',[['band_togo','Pelo BAND TOGO (aplicativo B2B)','p'],['consultor','Com o consultor de vendas (COKE TOGO)'],['telefone','Por telefone ou WhatsApp'],['outro','Outro jeito'],['nao_compra','Não compra direto da BAND','n']]],
+ ['app_tem','Tem o BAND TOGO no celular','uma',[['usa','Tem e usa','p'],['nao_usa','Tem, mas não usa','w'],['nao_tem','Não tem','n']]],
+ ['app_motivo','Por que não usa o BAND TOGO','varias',[['celular','O celular não suporta ou está sem espaço'],['dificil','Acha difícil de usar'],['prefere_vendedor','Prefere pedir com o consultor de vendas'],['nao_conhecia','Não conhecia'],['erro','Já tentou e deu erro'],['pagamento','Não confia em pagar pelo aplicativo'],['outro','Outro motivo']]],
+ ['p24','Projeto 24 Horas','uma',[['participa','Já participa','p'],['conhece','Conhece, mas não participa','w'],['nao_conhece','Não conhece']]],
+ ['p24_motivo','Por que não participa do 24 Horas','varias',[['uma_semana','Um pedido por semana já basta'],['volume','O volume é pequeno'],['estoque','Não tem onde guardar estoque'],['recebimento','Dificuldade para receber (estacionamento, horário)'],['sem_app','Não usa o BAND TOGO'],['vantagem','Não viu vantagem'],['outro','Outro motivo']]],
+ ['p24_interesse','Interesse no 24 Horas depois da explicação','uma',[['sim','Sim, quer participar','p'],['talvez','Talvez, quer pensar','w'],['nao','Não tem interesse','n']]],
+ ['compra_freq','Frequência de compra na BAND','uma',[['2x','Duas vezes ou mais por semana','p'],['semanal','Uma vez por semana'],['quinzenal','A cada 15 dias'],['mensal','Uma vez por mês','w'],['esporadico','De vez em quando','n']]],
+ ['entrega','Entrega no dia combinado','uma',[['sempre','Sempre','p'],['quase','Quase sempre'],['as_vezes','Às vezes','w'],['raramente','Raramente','n']]],
+ ['falta','Falta de produto nos últimos 30 dias','uma',[['nao','Não faltou','p'],['as_vezes','Faltou às vezes','w'],['frequente','Falta com frequência','n']]],
+ ['divergencia','Veio produto que o cliente não pediu','uma',[['nao','Nunca','p'],['uma','Uma vez','w'],['mais','Mais de uma vez','n']]],
+ ['nps','Recomendaria a BAND (0 a 10)','nota'],
+ ['intencao','O que pensa fazer com as compras','uma',[['mais','Quer comprar mais','p'],['manter','Manter como está'],['reduzir','Pensa em reduzir','w'],['cancelar','Quer cancelar o cadastro','n']]],
+ ['melhorar','O que faria o cliente comprar mais','varias',[['visita','Visita mais frequente do consultor de vendas'],['preco','Preço e promoção'],['prazo','Prazo de pagamento'],['equipamento','Geladeira ou equipamento'],['mix','Mais variedade de produtos'],['entrega','Entrega melhor'],['app','Ajuda com o BAND TOGO'],['outro','Outra coisa']]],
+ ['acoes','O que o desenvolvedor fez na visita','varias',[['instalei','Instalou o BAND TOGO'],['cadastrei','Cadastrou o cliente no BAND TOGO'],['pedido','Fez pedido junto com o cliente'],['cv','Encaminhou o pedido para a CV'],['so_pesquisa','Só a pesquisa']]],
+ ['obs','Comentários','texto']
+];
+const PQ_NIVEL={urgente:['Urgente','r',0],alto:['Alto','a',1],normal:['Normal','c',2],oportunidade:['Oportunidade','v',3]};
+const PQ_STATUS={aberto:'Aberto',tratando:'Em tratativa',resolvido:'Resolvido',cancelado:'Cancelado'};
+const PQ_COR={p:'#16A34A',w:'#D97706',n:'#E4002B','':'#2563EB'};
+const PQ_PARAS=['Supervisor','Gerente','Logística','Cadastro','Suporte do BAND TOGO','Desenvolvedor'];
+const pqQ=id=>PQ_Q.find(q=>q[0]===id);
+const pqTemV=v=>!(v==null||v===''||(Array.isArray(v)&&!v.length));
+/* o texto de uma resposta, como o desenvolvedor viu no app */
+function pqRot(id,v,r){
+  const q=pqQ(id);if(!q)return Array.isArray(v)?v.join(', '):String(v);
+  const um=x=>{if(x==='outro'&&r&&r[id+'_outro'])return 'Outro: '+r[id+'_outro'];const o=(q[3]||[]).find(o=>o[0]===x);return o?o[1]:String(x)};
+  if(q[2]==='varias')return (Array.isArray(v)?v:[v]).map(um).join(', ');
+  if(q[2]==='nota')return v+' de 10';
+  if(q[2]==='texto')return String(v);
+  return um(v);
+}
+const pqHoje=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const pqAberto=a=>a.status==='aberto'||a.status==='tratando';
+const pqVencido=a=>pqAberto(a)&&!!a.prazo&&a.prazo<pqHoje();
+const pqAcs=()=>Object.values(PQD.ac);
+const pqNomeDev=l=>{const d=D.devs.find(x=>x.login===l);return d?d.nome:(l||'Sem desenvolvedor')};
+const pqMedia=v=>v.length?v.reduce((a,b)=>a+b,0)/v.length:null;
+const pqNps=v=>v.length?Math.round((v.filter(x=>x>=9).length-v.filter(x=>x<=6).length)*100/v.length):null;
+const pqNums=(rs,k)=>rs.map(r=>r.r&&r.r[k]).filter(v=>typeof v==='number');
+/* quantos marcaram cada opção de uma pergunta; base = quantos responderam a pergunta */
+function pqConta(rs,id){const n={};let base=0;rs.forEach(r=>{const v=r.r&&r.r[id];if(!pqTemV(v))return;base++;(Array.isArray(v)?v:[v]).forEach(x=>n[x]=(n[x]||0)+1)});return {n,base}}
+function pqCliF(){return PQD.cli.filter(c=>(!FPQ.rota||c.rota===FPQ.rota)&&(!FPQ.cons||c.consultor===FPQ.cons)&&(!FPQ.seg||c.seg===FPQ.seg)&&(!FPQ.dev||c.dev===FPQ.dev))}
+
+/* Lê a pesquisa do servidor. Na primeira vez vem tudo; depois, só o que chegou ou mudou.
+   Nunca derruba o resto do painel: o erro fica guardado e aparece só na tela da Pesquisa. */
+function carregaPesquisa(tudo){
+  if(PQD.lendo)return PQD.lendo;
+  PQD.lendo=(async()=>{
+    PQD.mudou=false;
+    try{
+      PQD.lista=(await rpc('pesquisas')).pesquisas||[];
+      if(tudo){PQD.desde=null;PQD.versao=null;PQD.resp={};PQD.ac={};PQD.mudou=true}
+      let j=await rpc('pesquisa_dados',{p_id:PQD.sel,p_versao:PQD.versao,p_desde:PQD.desde});
+      if(j.pesquisa&&PQD.p&&PQD.p.id!==j.pesquisa.id&&PQD.desde){
+        /* a pesquisa ativa mudou: o que estava na tela era de outra, lê do começo */
+        PQD.resp={};PQD.ac={};j=await rpc('pesquisa_dados',{p_id:PQD.sel,p_versao:null,p_desde:null});
+      }
+      if((PQD.p&&PQD.p.id)!==(j.pesquisa&&j.pesquisa.id)||(PQD.p&&j.pesquisa&&PQD.p.status!==j.pesquisa.status))PQD.mudou=true;
+      PQD.p=j.pesquisa||null;
+      if(!PQD.p){PQD.cli=[];PQD.porCod={};PQD.resp={};PQD.ac={};PQD.versao=null;PQD.desde=null}
+      else{
+        if(j.clientes){PQD.cli=j.clientes;PQD.porCod={};j.clientes.forEach(c=>PQD.porCod[c.cod]=c);PQD.versao=PQD.p.versao;PQD.mudou=true}
+        (j.respostas||[]).forEach(r=>{const a=PQD.resp[r.cod];if(!a||a.recebidoEm!==r.recebidoEm)PQD.mudou=true;PQD.resp[r.cod]=r});
+        (j.acompanhamentos||[]).forEach(x=>{const a=PQD.ac[x.id];if(!a||a.atualizadoEm!==x.atualizadoEm)PQD.mudou=true;PQD.ac[x.id]=x});
+        PQD.desde=j.agora||null;
+      }
+      PQD.estado='ok';PQD.erro='';
+    }catch(e){
+      if(e.semSessao)throw e;
+      /* o banco ainda não tem as funções da pesquisa (falta rodar o r05) */
+      PQD.estado=/Could not find the function|PGRST202/i.test(e.message)?'sembanco':'erro';PQD.erro=e.message;PQD.mudou=true;
+    }finally{PQD.lendo=null}
+  })();
+  return PQD.lendo;
+}
+function pqRecarrega(tudo){return carregaPesquisa(tudo).then(()=>{pintaLado();pintaMainSe('pesquisa')}).catch(e=>{if(e.semSessao)sessaoCaiu()})}
+
+const pqKpi=(v,t,c)=>'<div class="kpi '+(c||'')+'"><b>'+v+'</b><span>'+t+'</span></div>';
+function pqOps(lista,sel,todos){return '<option value="">'+todos+'</option>'+lista.map(x=>'<option value="'+esc(x[0])+'"'+(sel===x[0]?' selected':'')+'>'+esc(x[1])+'</option>').join('')}
+function pqUnicos(k){const s={};PQD.cli.forEach(c=>{if(c[k])s[c[k]]=1});return Object.keys(s).sort((a,b)=>a.localeCompare(b,'pt-BR',{numeric:true}))}
+function mPesquisa(){
+  if(!PQD.estado){pqRecarrega();return cab('Pesquisa','Carregando…')+'<div class="corpo"><div class="carregando">Buscando a pesquisa</div></div>'}
+  if(PQD.estado==='sembanco')return cab('Pesquisa','Perguntas de negócio para quem já é cliente BAND')+'<div class="corpo"><div class="aviso"><b>Falta um passo no banco.</b> '+
+    'A Pesquisa precisa do arquivo <b>sql/r05-pesquisa.sql</b> rodado no SQL Editor do Supabase. Depois de rodar, clique em Atualizar.</div></div>';
+  if(PQD.estado==='erro')return cab('Pesquisa','Perguntas de negócio para quem já é cliente BAND')+'<div class="corpo"><div class="aviso">Não consegui ler a pesquisa: '+esc(PQD.erro)+'</div></div>';
+  const p=PQD.p;if(!p)FPQ.aba='camp';
+  const abertos=pqAcs().filter(pqAberto).length;
+  const abas=[['res','Resultados'],['ac','Acompanhamentos'+(abertos?' · '+abertos:'')],['resp','Respostas'],['camp','Campanha']];
+  let filtros='';
+  if(p&&FPQ.aba!=='camp'){
+    filtros='<label>Rota<select data-f="rota">'+pqOps(pqUnicos('rota').map(r=>[r,r]),FPQ.rota,'Todas')+'</select></label>'+
+      '<label>Consultor de vendas<select data-f="cons">'+pqOps(pqUnicos('consultor').map(r=>[r,r]),FPQ.cons,'Todos')+'</select></label>'+
+      '<label>Segmento<select data-f="seg">'+pqOps(pqUnicos('seg').map(r=>[r,r]),FPQ.seg,'Todos')+'</select></label>'+
+      '<label>Desenvolvedor<select data-f="dev">'+pqOps(pqUnicos('dev').map(r=>[r,pqNomeDev(r)]),FPQ.dev,'Todos')+'</select></label>';
+    if(FPQ.aba==='ac'){
+      const paras=[...new Set(pqAcs().map(a=>a.para).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+      filtros+='<label>Quem trata<select data-f="para">'+pqOps(paras.map(x=>[x,x]),FPQ.para,'Todos')+'</select></label>'+
+        '<label>Nível<select data-f="nivel">'+pqOps(Object.keys(PQ_NIVEL).map(k=>[k,PQ_NIVEL[k][0]]),FPQ.nivel,'Todos')+'</select></label>'+
+        '<label class="marca-cx"><input type="checkbox" id="pqvenc"'+(FPQ.venc?' checked':'')+'> Só vencidos</label>';
+    }
+    if(FPQ.aba==='resp')filtros+='<label>Situação<select data-f="sit">'+pqOps(pqQ('situacao')[3].map(o=>[o[0],o[1]]),FPQ.sit,'Todas')+'</select></label>';
+    if(FPQ.aba!=='res')filtros+='<label>Busca<input id="pqq" type="search" placeholder="Cliente, código ou bairro" value="'+esc(FPQ.q)+'"></label>';
+  }
+  const ativa=PQD.lista.find(x=>x.status==='ativa');
+  return cab('Pesquisa',p?esc(p.nome)+' · '+fmt(PQD.cli.length)+' clientes'+(p.status==='encerrada'?' · encerrada':''):'Perguntas de negócio para quem já é cliente BAND')+
+    '<div class="filtros"><div class="abas" role="tablist">'+abas.map(a=>'<button role="tab" data-aba="'+a[0]+'" aria-selected="'+(FPQ.aba===a[0])+'"'+(!p&&a[0]!=='camp'?' disabled':'')+'>'+a[1]+'</button>').join('')+'</div></div>'+
+    (filtros?'<div class="filtros">'+filtros+'</div>':'')+
+    '<div class="corpo">'+
+    (p&&p.status==='encerrada'?'<div class="aviso" style="display:flex;gap:12px;align-items:center"><span style="flex:1">Você está vendo uma pesquisa <b>encerrada</b>. Ela não aparece mais no app dos desenvolvedores.</span>'+
+       (ativa&&ativa.id!==p.id?'<button class="bt peq" id="pqvolta">Ver a pesquisa ativa</button>':'')+'</div>':'')+
+    ({res:pqResTab,ac:pqAcTab,resp:pqRespTab,camp:pqCampTab}[FPQ.aba]||pqResTab)()+'</div>';
+}
+
+/* ---------- Resultados ---------- */
+function pqBarra2(nm,sub,a,b,tot){
+  return '<div class="lb"><div>'+nm+(sub?'<small>'+sub+'</small>':'')+'</div><div class="tr"><i title="respondidas" style="width:'+(tot?a/tot*100:0)+'%;background:#16A34A"></i>'+
+    '<i title="para voltar" style="width:'+(tot?b/tot*100:0)+'%;background:#F5A524"></i></div><div class="vl">'+fpct(pct(a,tot))+'</div></div>';
+}
+/* as frases que resumem o que os clientes disseram */
+function pqDestaques(fal){
+  const d=[],r=k=>pqConta(fal,k);
+  const add=(tom,num,txt,base)=>d.push('<div class="pqd '+tom+'"><b>'+num+'</b><p>'+txt+'</p><small>'+base+'</small></div>');
+  const topo=(c,q)=>{const k=Object.keys(c.n).filter(x=>x!=='outro').sort((a,b)=>c.n[b]-c.n[a])[0];return k?esc(pqRot(q,k).toLowerCase()):''};
+  let c=r('vend_freq');
+  if(c.base){const x=(c.n.quase_nunca||0)+(c.n.nao_conhece||0);
+    add(x/c.base>=.25?'n':x?'w':'p',fpct(pct(x,c.base)),'dizem que o consultor de vendas quase nunca aparece, ou não sabem quem ele é',x+' de '+c.base+' respostas')}
+  c=r('vend_cumpre');
+  if(c.base){const base=c.base-(c.n.nunca_prometeu||0),x=(c.n.raramente||0)+(c.n.as_vezes||0);
+    if(base)add(x/base>=.3?'n':x?'w':'p',fpct(pct(x,base)),'contam que o consultor promete voltar e nem sempre volta',x+' de '+base+' que ouviram a promessa')}
+  const comPedido=fal.filter(x=>x.r&&pqTemV(x.r.pedido_como));
+  if(comPedido.length){const usam=comPedido.filter(x=>x.r.pedido_como.includes('band_togo')||x.r.app_tem==='usa').length,m=r('app_motivo'),t=m.base?topo(m,'app_motivo'):'';
+    add(usam/comPedido.length>=.6?'p':usam/comPedido.length>=.3?'w':'n',fpct(pct(usam,comPedido.length)),'usam o BAND TOGO'+(t?'. Entre os que não usam, o motivo mais citado: <strong>'+t+'</strong>':''),usam+' de '+comPedido.length+' respostas')}
+  c=r('p24');
+  if(c.base){const m=r('p24_motivo'),x=c.n.participa||0,t=m.base?topo(m,'p24_motivo'):'';
+    add('',fpct(pct(x,c.base)),'já participam do Projeto 24 Horas'+(t?'. Quem conhece e não participa diz: <strong>'+t+'</strong>':''),x+' de '+c.base+' respostas')}
+  c=r('p24_interesse');
+  if(c.n.sim)add('p',fmt(c.n.sim),(c.n.sim===1?'cliente quis':'clientes quiseram')+' entrar no 24 Horas depois da explicação do desenvolvedor','de '+c.base+' que não conheciam o projeto');
+  c=r('intencao');
+  if(c.base){const x=(c.n.reduzir||0)+(c.n.cancelar||0);
+    add(x?'n':'p',fmt(x),(x===1?'cliente pensa':'clientes pensam')+' em reduzir as compras ou cancelar o cadastro',(c.n.cancelar||0)+' querem cancelar · '+(c.n.mais||0)+' querem comprar mais')}
+  c=r('entrega');
+  if(c.base){const x=(c.n.as_vezes||0)+(c.n.raramente||0);
+    add(x/c.base>=.2?'n':x?'w':'p',fpct(pct(x,c.base)),'dizem que a entrega nem sempre chega no dia combinado',x+' de '+c.base+' respostas')}
+  c=r('falta');
+  if(c.base){const x=(c.n.frequente||0)+(c.n.as_vezes||0);
+    add(x/c.base>=.3?'n':x?'w':'p',fpct(pct(x,c.base)),'tiveram falta de produto no pedido nos últimos 30 dias',(c.n.frequente||0)+' dizem que falta com frequência')}
+  return d.length?'<div class="pqds">'+d.join('')+'</div>':'';
+}
+function pqCartaoPerg(q,rs){
+  const id=q[0],tipo=q[2];
+  if(tipo==='texto'){
+    const l=rs.filter(r=>r.r&&pqTemV(r.r[id]));if(!l.length)return '';
+    return '<div class="cartao"><div class="tt"><h2>'+esc(q[1])+'</h2><span>'+l.length+(l.length>12?' · os 12 mais recentes':'')+'</span></div><div class="cc"><div class="pqobs">'+
+      l.slice(-12).reverse().map(r=>'<p><b>'+esc((PQD.porCod[r.cod]||{}).nome||r.cod)+'</b>'+esc(r.r[id])+'</p>').join('')+'</div></div></div>';
+  }
+  if(tipo==='nota'){
+    const v=pqNums(rs,id);if(!v.length)return '';
+    const h=new Array(11).fill(0);v.forEach(x=>{if(x>=0&&x<=10)h[Math.round(x)]++});const mx=Math.max(1,...h);
+    return '<div class="cartao"><div class="tt"><h2>'+esc(q[1])+'</h2><span>'+v.length+' notas · média '+fmt1(pqMedia(v))+'</span></div><div class="cc" style="padding:26px 18px 34px"><div class="hist" style="height:110px">'+
+      h.map((n,i)=>'<div style="height:'+(n/mx*100)+'%;background:'+(i<=6?'#E4002B':i<=8?'#F5A524':'#16A34A')+'" title="Nota '+i+': '+n+'">'+(n?'<b>'+n+'</b>':'')+'<span>'+i+'</span></div>').join('')+'</div></div></div>';
+  }
+  const c=pqConta(rs,id);if(!c.base)return '';
+  const ops=(q[3]||[]).slice();Object.keys(c.n).forEach(k=>{if(!ops.find(o=>o[0]===k))ops.push([k,k])});
+  const mx=Math.max(1,...ops.map(o=>c.n[o[0]]||0));
+  const outros=rs.map(r=>r.r&&r.r[id+'_outro']).filter(Boolean);
+  return '<div class="cartao"><div class="tt"><h2>'+esc(q[1])+'</h2><span>'+c.base+(c.base===1?' resposta':' respostas')+(tipo==='varias'?' · podia marcar mais de uma':'')+'</span></div><div class="cc">'+
+    ops.map(o=>{const n=c.n[o[0]]||0;return lbar(esc(o[1]),n,mx,PQ_COR[o[2]||''],n+' · '+fpct(pct(n,c.base)))}).join('')+
+    (outros.length?'<details><summary>Ver o que escreveram em "outro" ('+outros.length+')</summary><ul>'+outros.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul></details>':'')+'</div></div>';
+}
+function pqPorConsultor(cl){
+  const g={},abertos={};pqAcs().filter(pqAberto).forEach(a=>abertos[a.cod]=(abertos[a.cod]||0)+1);
+  cl.forEach(c=>{const k=c.consultor||'(sem consultor)';(g[k]=g[k]||{k,rotas:{},cl:[]}).cl.push(c);g[k].rotas[c.rota]=1});
+  const L=Object.values(g).map(x=>{
+    const rs=x.cl.map(c=>PQD.resp[c.cod]).filter(r=>r&&r.situacao==='falou');
+    const f=pqConta(rs,'vend_freq'),cu=pqConta(rs,'vend_cumpre'),bc=cu.base-(cu.n.nunca_prometeu||0);
+    return {k:x.k,rotas:Object.keys(x.rotas).sort().join(', '),n:x.cl.length,resp:rs.length,
+      some:f.base?pct((f.n.quase_nunca||0)+(f.n.nao_conhece||0),f.base):null,
+      falha:bc?pct((cu.n.raramente||0)+(cu.n.as_vezes||0),bc):null,
+      nota:pqMedia(pqNums(rs,'vend_nota')),nps:pqNps(pqNums(rs,'nps')),ab:x.cl.reduce((s,c)=>s+(abertos[c.cod]||0),0)};
+  }).sort((a,b)=>(a.nota==null)-(b.nota==null)||a.nota-b.nota||b.n-a.n);
+  const ruim=(v,lim)=>v!=null&&v>=lim?' style="color:var(--verm-esc);font-weight:700"':'';
+  return '<div class="cartao"><div class="tt"><h2>Por consultor de vendas</h2><span>da pior nota para a melhor · só de quem falou com o desenvolvedor</span></div>'+
+    '<div class="rolagem" style="max-height:420px"><table class="tab"><thead><tr><th>Consultor de vendas</th><th class="num">Clientes</th><th class="num">Responderam</th><th class="num">Quase nunca aparece</th><th class="num">Promete e nem sempre volta</th><th class="num">Nota média</th><th class="num">NPS</th><th class="num">Acomp. abertos</th></tr></thead><tbody>'+
+    L.map(x=>'<tr class="clic" data-cons="'+esc(x.k)+'"><td><b>'+esc(x.k)+'</b><small>rota '+esc(x.rotas)+'</small></td><td class="num">'+fmt(x.n)+'</td><td class="num">'+fmt(x.resp)+'</td>'+
+      '<td class="num"'+ruim(x.some,25)+'>'+(x.some==null?'—':fpct(x.some))+'</td><td class="num"'+ruim(x.falha,30)+'>'+(x.falha==null?'—':fpct(x.falha))+'</td>'+
+      '<td class="num"'+(x.nota!=null&&x.nota<6?' style="color:var(--verm-esc);font-weight:700"':'')+'>'+(x.nota==null?'—':fmt1(x.nota))+'</td>'+
+      '<td class="num">'+(x.nps==null?'—':(x.nps>0?'+':'')+x.nps)+'</td><td class="num"'+ruim(x.ab,1)+'>'+fmt(x.ab)+'</td></tr>').join('')+
+    '</tbody></table></div></div>';
+}
+function pqResTab(){
+  const cl=pqCliF(),N=cl.length;
+  if(!N)return '<div class="vazio">Nenhum cliente neste filtro.</div>';
+  const cods=new Set(cl.map(c=>c.cod)),rs=cl.map(c=>PQD.resp[c.cod]).filter(Boolean);
+  const voltar=rs.filter(r=>PQ_VOLTAR.includes(r.situacao)),feitas=rs.filter(r=>!PQ_VOLTAR.includes(r.situacao)),fal=rs.filter(r=>r.situacao==='falou');
+  const ab=pqAcs().filter(a=>cods.has(a.cod)&&pqAberto(a)),venc=ab.filter(pqVencido);
+  const nps=pqNums(fal,'nps'),npsV=pqNps(nps),nota=pqMedia(pqNums(fal,'vend_nota'));
+  let h='<div class="kpis">'+pqKpi(fmt(N),'clientes na pesquisa')+
+    pqKpi(fmt(feitas.length)+' <small style="font-size:14px;color:var(--ink2)">'+fpct(pct(feitas.length,N))+'</small>','respondidas','g')+
+    pqKpi(fmt(voltar.length),'para voltar (fechado, ausente, só à noite)')+
+    pqKpi(npsV==null?'—':(npsV>0?'+':'')+npsV,'NPS · '+nps.length+(nps.length===1?' nota':' notas'),npsV==null?'':npsV>=50?'g':npsV<0?'v':'a')+
+    pqKpi(nota==null?'—':fmt1(nota),'nota média do consultor de vendas',nota!=null&&nota<6?'v':'')+
+    pqKpi(fmt(ab.length),'acompanhamentos abertos'+(venc.length?' · '+venc.length+(venc.length===1?' vencido':' vencidos'):''),venc.length?'v':'')+'</div>';
+  if(!rs.length)h+='<div class="info">Ainda não chegou nenhuma resposta'+(N<PQD.cli.length?' neste filtro':'')+'. Os números aparecem sozinhos conforme os desenvolvedores enviam pelo app.</div>';
+  h+=pqDestaques(fal);
+  /* andamento */
+  const grupo=(chave,nome,sub)=>{const g={};cl.forEach(c=>{const k=c[chave]||'';const x=g[k]=g[k]||{k,n:0,f:0,v:0,c};x.n++;const r=PQD.resp[c.cod];if(r){if(PQ_VOLTAR.includes(r.situacao))x.v++;else x.f++}});
+    return Object.values(g).sort((a,b)=>String(a.k).localeCompare(String(b.k),'pt-BR',{numeric:true})).map(x=>pqBarra2(esc(nome(x)),esc(sub(x)),x.f,x.v,x.n)).join('')};
+  h+='<div class="grade2c"><div class="cartao"><div class="tt"><h2>Andamento por desenvolvedor</h2><span><span style="color:#16A34A">●</span> respondidas &nbsp; <span style="color:#F5A524">●</span> para voltar</span></div><div class="cc">'+
+      grupo('dev',x=>pqNomeDev(x.k),x=>x.f+' de '+x.n+(x.v?' · '+x.v+' para voltar':''))+'</div></div>'+
+    '<div class="cartao"><div class="tt"><h2>Andamento por rota</h2></div><div class="cc">'+
+      grupo('rota',x=>'Rota '+(x.k||'—'),x=>(x.c.consultor?x.c.consultor+' · ':'')+x.f+' de '+x.n)+'</div></div></div>';
+  if(fal.length)h+=pqPorConsultor(cl);
+  const cards=PQ_Q.map(q=>pqCartaoPerg(q,q[0]==='situacao'?rs:(q[0]==='volta_quando'||q[0]==='cadastro_novo'||q[0]==='obs')?rs:fal)).filter(Boolean);
+  if(cards.length)h+='<div class="pqgr">'+cards.join('')+'</div>';
+  h+='<div class="cartao"><div class="tt"><h2>Mapa da pesquisa</h2><div class="pqleg"><span><i style="background:#9CA3AF"></i>a fazer</span><span><i style="background:#16A34A"></i>respondida</span>'+
+     '<span><i style="background:#F5A524"></i>para voltar</span><span><i style="background:#E4002B"></i>com acompanhamento aberto</span><span><i style="background:#52525B"></i>sem contato</span></div></div><div id="pqmapa"></div></div>';
+  return h;
+}
+let pqMapa=null;
+function desenhaPqMapa(){
+  const el=$('pqmapa');if(!el)return;
+  if(typeof L==='undefined'){el.innerHTML='<div class="vazio">O mapa não carregou (sem internet?).</div>';return}
+  if(pqMapa){try{pqMapa.remove()}catch(e){}pqMapa=null}
+  pqMapa=L.map(el,{preferCanvas:true,zoomControl:true,attributionControl:true});
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',{maxZoom:18,attribution:'Esri, HERE, Garmin'}).addTo(pqMapa);
+  const ab={},pts=[];pqAcs().filter(pqAberto).forEach(a=>ab[a.cod]=(ab[a.cod]||0)+1);
+  pqCliF().forEach(c=>{
+    if(c.lat==null||c.lon==null||!isFinite(c.lat)||!isFinite(c.lon))return;
+    const r=PQD.resp[c.cod];
+    const est=!r?['#9CA3AF','a fazer']:ab[c.cod]?['#E4002B',ab[c.cod]+(ab[c.cod]===1?' acompanhamento aberto':' acompanhamentos abertos')]:
+      PQ_VOLTAR.includes(r.situacao)?['#F5A524','para voltar']:r.situacao==='falou'?['#16A34A','respondida']:['#52525B',pqRot('situacao',r.situacao)];
+    pts.push([c.lat,c.lon]);
+    L.circleMarker([c.lat,c.lon],{radius:r?6:4,color:'#fff',weight:r?1.5:1,fillColor:est[0],fillOpacity:r?1:.8})
+      .bindTooltip('<b>'+esc(c.nome)+'</b><br>'+esc(c.cod)+' · rota '+esc(c.rota)+'<br>'+esc(est[1]))
+      .on('click',()=>abrePq(c.cod)).addTo(pqMapa);
+  });
+  if(pts.length)pqMapa.fitBounds(pts,{padding:[30,30],maxZoom:15});else pqMapa.setView([-16.68,-49.26],10);
+}
+
+/* ---------- Acompanhamentos ---------- */
+function pqAcF(){
+  const cods=new Set(pqCliF().map(c=>c.cod)),q=FPQ.q.trim().toLowerCase();
+  return pqAcs().filter(a=>{
+    if(!cods.has(a.cod))return false;
+    if(FPQ.para&&a.para!==FPQ.para)return false;
+    if(FPQ.nivel&&a.nivel!==FPQ.nivel)return false;
+    if(FPQ.venc&&!pqVencido(a))return false;
+    if(q){const c=PQD.porCod[a.cod]||{};if(!((c.nome||'')+' '+a.cod+' '+(c.bairro||'')+' '+a.titulo).toLowerCase().includes(q))return false}
+    return true;
+  });
+}
+function pqPrazoTxt(a){
+  if(!a.prazo)return ['sem prazo',''];
+  const br=a.prazo.split('-').reverse().slice(0,2).join('/');
+  if(!pqAberto(a))return ['prazo '+br,''];
+  const d=Math.round((new Date(a.prazo+'T12:00:00')-new Date(pqHoje()+'T12:00:00'))/86400000);
+  return d<0?['venceu há '+(-d)+(d===-1?' dia':' dias'),'venc']:d===0?['vence hoje','venc']:['vence em '+d+(d===1?' dia':' dias')+' · '+br,''];
+}
+function pqCartaoAc(a){
+  const c=PQD.porCod[a.cod]||{},nv=PQ_NIVEL[a.nivel]||PQ_NIVEL.normal,pz=pqPrazoTxt(a);
+  return '<button class="pqk '+esc(a.nivel)+'" data-cod="'+esc(a.cod)+'" data-ac="'+esc(a.id)+'">'+
+    '<span class="top"><span class="selo '+nv[1]+'">'+nv[0]+'</span><span class="pz '+pz[1]+'">'+pz[0]+'</span></span>'+
+    '<b>'+esc(a.titulo)+'</b><span>'+esc(c.nome||'Cliente')+' · '+esc(a.cod)+'</span>'+
+    '<span>Rota '+esc(c.rota||'—')+(c.consultor?' · '+esc(c.consultor):'')+'</span>'+
+    '<span>Quem trata: <b>'+esc(a.para||'—')+'</b></span>'+(a.nota?'<span>'+esc(a.nota.length>90?a.nota.slice(0,90)+'…':a.nota)+'</span>':'')+'</button>';
+}
+function pqAcTab(){
+  const l=pqAcF(),ab=l.filter(pqAberto),venc=ab.filter(pqVencido);
+  if(!pqAcs().length)return '<div class="info">Nenhum acompanhamento ainda. Eles nascem sozinhos quando uma resposta pede ação: cliente que quer cancelar, consultor que não aparece, entrega atrasada, pedido para conferir.</div>';
+  const peso=a=>(pqVencido(a)?0:10)+(PQ_NIVEL[a.nivel]||PQ_NIVEL.normal)[2];
+  const col=(st,tit)=>{const x=l.filter(a=>a.status===st);
+    x.sort(st==='resolvido'?(a,b)=>String(b.resolvidoEm||b.atualizadoEm).localeCompare(String(a.resolvidoEm||a.atualizadoEm)):(a,b)=>peso(a)-peso(b)||String(a.prazo).localeCompare(String(b.prazo)));
+    return '<div class="col"><h3>'+tit+'<span>'+x.length+'</span></h3>'+(x.slice(0,60).map(pqCartaoAc).join('')||'<div class="vazio" style="padding:18px 8px">Nada aqui.</div>')+
+      (x.length>60?'<div class="vazio" style="padding:8px">e mais '+(x.length-60)+'. Use os filtros para achar.</div>':'')+'</div>'};
+  const porPara={};ab.forEach(a=>{const k=a.para||'—';porPara[k]=(porPara[k]||0)+1});
+  const canc=l.filter(a=>a.status==='cancelado').length;
+  return '<div class="kpis">'+pqKpi(fmt(ab.length),'abertos ou em tratativa')+pqKpi(fmt(venc.length),'vencidos',venc.length?'v':'g')+
+      pqKpi(fmt(ab.filter(a=>a.nivel==='urgente').length),'urgentes',ab.some(a=>a.nivel==='urgente')?'v':'')+
+      pqKpi(fmt(ab.filter(a=>a.nivel==='oportunidade').length),'oportunidades','g')+
+      pqKpi(fmt(l.filter(a=>a.status==='resolvido').length),'resolvidos','a')+'</div>'+
+    (Object.keys(porPara).length?'<div class="info" style="display:flex;gap:14px;flex-wrap:wrap;align-items:center"><b>Em aberto, por quem trata:</b>'+
+      Object.keys(porPara).sort((a,b)=>porPara[b]-porPara[a]).map(k=>'<span>'+esc(k)+' <b>'+porPara[k]+'</b></span>').join('')+
+      '<button class="bt peq" id="pqcsvac" style="margin-left:auto">Baixar planilha</button></div>':'')+
+    '<div class="kan">'+col('aberto','Aberto')+col('tratando','Em tratativa')+col('resolvido','Resolvido')+'</div>'+
+    (canc?'<div class="info">'+canc+(canc===1?' acompanhamento foi cancelado':' acompanhamentos foram cancelados')+' (a resposta foi corrigida no app, ou você cancelou). Eles continuam na planilha.</div>':'');
+}
+/* a ficha do cliente: os acompanhamentos dele, para tratar, e todas as respostas */
+function abrePq(cod,foco){
+  const c=PQD.porCod[cod]||{cod,nome:'Cliente '+cod},r=PQD.resp[cod];
+  const acs=pqAcs().filter(a=>a.cod===cod).sort((a,b)=>(pqAberto(b)-pqAberto(a))||a.id-b.id);
+  const paras=[...new Set(PQ_PARAS.concat(pqAcs().map(a=>a.para).filter(Boolean)))];
+  const qd=t=>t?new Date(t).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
+  const linha=(k,x)=>x==null||x===''?'':'<dt>'+k+'</dt><dd>'+x+'</dd>';
+  let h='<div class="tt"><div><h2>'+esc(c.nome)+'</h2><p>Código '+esc(c.cod)+' · rota '+esc(c.rota||'—')+(c.consultor?' · '+esc(c.consultor):'')+
+    '<br>'+esc([c.seg,c.bairro,c.cidade].filter(Boolean).join(' · '))+'</p></div><button class="bt peq" id="fecha">Fechar</button></div>'+
+    '<datalist id="pqparas">'+paras.map(p=>'<option value="'+esc(p)+'">').join('')+'</datalist>';
+  h+=acs.map(a=>{const nv=PQ_NIVEL[a.nivel]||PQ_NIVEL.normal,pz=pqPrazoTxt(a),hi=a.historico||[];
+    return '<div class="pqac '+esc(a.nivel)+'" data-acid="'+esc(a.id)+'"><div class="top"><span class="selo '+nv[1]+'">'+nv[0]+'</span><span class="pz '+pz[1]+'">'+pz[0]+'</span></div>'+
+      '<h3>'+esc(a.titulo)+'</h3>'+
+      '<div class="seg3" role="group" aria-label="Situação">'+Object.keys(PQ_STATUS).map(s=>'<button data-st="'+s+'" aria-pressed="'+(a.status===s)+'">'+PQ_STATUS[s]+'</button>').join('')+'</div>'+
+      '<div class="duas" style="margin-top:10px"><div class="campo"><label>Quem trata</label><input data-k="para" list="pqparas" maxlength="60" value="'+esc(a.para)+'"></div>'+
+      '<div class="campo"><label>Prazo</label><input data-k="prazo" type="date" value="'+esc(a.prazo)+'"></div></div>'+
+      '<div class="campo"><label>O que foi feito</label><textarea data-k="nota" maxlength="1000" style="min-height:70px">'+esc(a.nota)+'</textarea></div>'+
+      '<button class="bt escuro" data-salva="1">Salvar acompanhamento</button>'+
+      '<details><summary>Histórico ('+hi.length+')</summary><ul>'+hi.slice().reverse().map(x=>'<li>'+esc(qd(x.em))+' · '+esc(x.por==='app'?'pelo app':x.por||'')+' · '+esc(PQ_STATUS[x.status]||x.status||'')+
+        (x.para?' · para '+esc(x.para):'')+(x.prazo?' · prazo '+esc(String(x.prazo).split('-').reverse().join('/')):'')+(x.nota?'<br>'+esc(x.nota):'')+'</li>').join('')+'</ul></details></div>'}).join('');
+  if(!acs.length)h+='<div class="pqac" style="color:var(--ink2)">Nenhum acompanhamento para este cliente.</div>';
+  if(r){
+    const rr=r.r||{};
+    h+='<h3 class="pqsec">Respostas</h3><dl>'+
+      linha('Quando',esc(r.data)+' às '+esc(r.hora)+' · '+esc(pqNomeDev(r.devLogin)))+
+      linha('Visita',[r.duracao_seg?Math.max(1,Math.round(r.duracao_seg/60))+' min de pesquisa':'',r.dist!=null?'a '+fmtKm(r.dist/1000)+' do cliente':'sem GPS',r.tentativas>1?r.tentativas+'ª tentativa':''].filter(Boolean).join(' · '))+
+      PQ_Q.filter(q=>pqTemV(rr[q[0]])).map(q=>'<dt>'+esc(q[1])+'</dt><dd>'+esc(pqRot(q[0],rr[q[0]],rr))+'</dd>').join('')+
+      (r.gps_lat!=null?linha('Onde respondeu','<a href="https://www.google.com/maps?q='+(+r.gps_lat)+','+(+r.gps_lon)+'" target="_blank" rel="noopener">abrir no mapa</a>'):'')+'</dl>';
+  }else h+='<div class="vazio">Este cliente ainda não foi respondido.</div>';
+  $('folha').innerHTML=h;$('dlg').classList.add('on');$('fecha').onclick=fechaFicha;
+  $('folha').querySelectorAll('.pqac[data-acid]').forEach(box=>{
+    box.querySelectorAll('[data-st]').forEach(b=>b.onclick=()=>box.querySelectorAll('[data-st]').forEach(x=>x.setAttribute('aria-pressed',x===b)));
+    box.querySelector('[data-salva]').onclick=()=>pqSalvaAc(box.dataset.acid,box);
+  });
+  if(foco!=null){const el=$('folha').querySelector('[data-acid="'+foco+'"]');if(el)el.scrollIntoView({block:'center'})}else $('folha').scrollTop=0;
+}
+async function pqSalvaAc(id,box){
+  const a=PQD.ac[id];if(!a)return;
+  const apertado=box.querySelector('[data-st][aria-pressed="true"]'),st=apertado?apertado.dataset.st:a.status;
+  const v=k=>box.querySelector('[data-k="'+k+'"]').value.trim();
+  const m={};
+  if(st!==a.status)m.status=st;
+  if(v('para')&&v('para')!==a.para)m.para=v('para');
+  if(v('prazo')&&v('prazo')!==a.prazo)m.prazo=v('prazo');
+  if(v('nota')&&v('nota')!==(a.nota||''))m.nota=v('nota');
+  if(st==='resolvido'&&!v('nota')){box.querySelector('[data-k="nota"]').focus();return toast('Escreva o que foi feito antes de marcar como resolvido')}
+  if(!Object.keys(m).length)return toast('Nada mudou neste acompanhamento');
+  const b=box.querySelector('[data-salva]');b.disabled=true;b.textContent='Salvando…';
+  try{
+    const j=await rpc('acompanhamento_salvar',{p_id:+id,p_mudanca:m});
+    PQD.ac[id]=j.acompanhamento;toast('Acompanhamento salvo');pintaLado();pintaMainSe('pesquisa');abrePq(a.cod,id);
+  }catch(e){if(e.semSessao)return sessaoCaiu();toast('Não consegui salvar: '+e.message);b.disabled=false;b.textContent='Salvar acompanhamento'}
+}
+
+/* ---------- Respostas ---------- */
+function pqRespF(){
+  const q=FPQ.q.trim().toLowerCase();
+  return pqCliF().map(c=>[c,PQD.resp[c.cod]]).filter(x=>x[1]&&(!FPQ.sit||x[1].situacao===FPQ.sit)&&
+      (!q||((x[0].nome||'')+' '+x[0].cod+' '+(x[0].bairro||'')).toLowerCase().includes(q)))
+    .sort((a,b)=>String(b[1].quando||b[1].recebidoEm).localeCompare(String(a[1].quando||a[1].recebidoEm)));
+}
+function pqRespTab(){
+  const l=pqRespF(),abertos={};pqAcs().filter(pqAberto).forEach(a=>abertos[a.cod]=(abertos[a.cod]||0)+1);
+  const tom={p:'v',w:'a',n:'r'};
+  return '<div class="cartao"><div class="tt"><h2>Respostas</h2><span>'+fmt(l.length)+' no filtro · clique para ver tudo o que o cliente respondeu</span>'+
+    '<div class="acoes"><button class="bt peq" id="pqcsvresp"'+(l.length?'':' disabled')+'>Baixar planilha</button></div></div>'+
+    '<div class="rolagem">'+(l.length?'<table class="tab"><thead><tr><th>Quando</th><th>Desenvolvedor</th><th>Cliente</th><th>Situação</th><th class="num">Nota do consultor</th><th class="num">Recomendaria</th><th>Intenção</th><th class="num">Acomp. abertos</th><th class="num">Distância</th></tr></thead><tbody>'+
+     l.slice(0,400).map(([c,r])=>{const o=pqQ('situacao')[3].find(o=>o[0]===r.situacao)||[r.situacao,r.situacao,''],rr=r.r||{},n=abertos[c.cod]||0;
+       return '<tr class="clic" data-cod="'+esc(c.cod)+'"><td>'+esc(r.data)+'<small>'+esc(r.hora)+'</small></td><td>'+esc(pqNomeDev(r.devLogin))+'</td>'+
+        '<td><b>'+esc(c.nome)+'</b><small>'+esc(c.cod)+' · rota '+esc(c.rota)+(c.consultor?' · '+esc(c.consultor):'')+'</small></td>'+
+        '<td><span class="selo '+(tom[o[2]]||'c')+'">'+esc(o[1])+'</span></td>'+
+        '<td class="num">'+(typeof rr.vend_nota==='number'?rr.vend_nota:'—')+'</td><td class="num">'+(typeof rr.nps==='number'?rr.nps:'—')+'</td>'+
+        '<td>'+(rr.intencao?esc(pqRot('intencao',rr.intencao)):'—')+'</td><td class="num"'+(n?' style="color:var(--verm-esc);font-weight:700"':'')+'>'+n+'</td>'+
+        '<td class="num">'+(r.dist!=null?fmtKm(r.dist/1000):'—')+'</td></tr>'}).join('')+'</tbody></table>'+
+     (l.length>400?'<div class="vazio">Mostrando as 400 mais recentes de '+fmt(l.length)+'. A planilha traz todas.</div>':'')
+     :'<div class="vazio">Nenhuma resposta neste filtro.</div>')+'</div></div>';
+}
+/* planilha que o Excel abre direto: ponto e vírgula, com acento */
+function pqCsv(nome,cabecalho,linhas){
+  const cel=v=>{let t=v==null?'':String(v);if(/^[=+\-@]/.test(t)&&isNaN(+t.replace(',','.')))t="'"+t;return '"'+t.replace(/"/g,'""')+'"'};
+  const txt='﻿'+[cabecalho].concat(linhas).map(l=>l.map(cel).join(';')).join('\r\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/csv;charset=utf-8'}));
+  a.download=nome;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},800);
+}
+function pqBaixaRespostas(){
+  const abertos={};pqAcs().filter(pqAberto).forEach(a=>abertos[a.cod]=(abertos[a.cod]||0)+1);
+  const qs=PQ_Q.filter(q=>q[0]!=='situacao');
+  pqCsv('pesquisa-respostas-'+pqHoje()+'.csv',
+    ['Código','Cliente','Rota','Consultor de vendas','Supervisão','Segmento','Bairro','Cidade','Desenvolvedor','Data','Hora','Situação'].concat(qs.map(q=>q[1]),['Acompanhamentos abertos','Duração (min)','Distância (m)','Tentativas']),
+    pqRespF().map(([c,r])=>{const rr=r.r||{};return [c.cod,c.nome,c.rota,c.consultor,c.sv,c.seg,c.bairro,c.cidade,pqNomeDev(r.devLogin),r.data,r.hora,pqRot('situacao',r.situacao)]
+      .concat(qs.map(q=>pqTemV(rr[q[0]])?(q[2]==='nota'?rr[q[0]]:pqRot(q[0],rr[q[0]],rr)):''),[abertos[c.cod]||0,r.duracao_seg?Math.round(r.duracao_seg/60):'',r.dist==null?'':r.dist,r.tentativas||1])}));
+}
+function pqBaixaAcomp(){
+  const br=t=>t?String(t).slice(0,10).split('-').reverse().join('/'):'';
+  pqCsv('pesquisa-acompanhamentos-'+pqHoje()+'.csv',
+    ['Código','Cliente','Rota','Consultor de vendas','Supervisão','Nível','Acompanhamento','Quem trata','Prazo','Situação','Vencido','O que foi feito','Aberto em','Atualizado em','Desenvolvedor'],
+    pqAcF().sort((a,b)=>String(a.prazo).localeCompare(String(b.prazo))).map(a=>{const c=PQD.porCod[a.cod]||{};
+      return [a.cod,c.nome,c.rota,c.consultor,c.sv,(PQ_NIVEL[a.nivel]||[a.nivel])[0],a.titulo,a.para,br(a.prazo),PQ_STATUS[a.status]||a.status,pqVencido(a)?'Sim':'',a.nota,br(a.abertoEm),br(a.atualizadoEm),pqNomeDev(a.devLogin)]}));
+}
+
+/* ---------- Campanha: a pesquisa atual, montar outra e as anteriores ---------- */
+/* os clientes BAND da base, agrupados por rota (lidos uma vez por versão da base) */
+function cliBand(){
+  const b=D.base;if(!b||!b.C||!b.D)return null;
+  if(D._cli&&D._cli.v===b.versao)return D._cli;
+  const porRota={};
+  for(const l of b.C.split('\n')){if(!l)continue;const p=l.split('|'),rt=b.D.rotas[+p[3]];if(rt==null)continue;(porRota[rt]=porRota[rt]||[]).push(p)}
+  return D._cli={v:b.versao,porRota};
+}
+function nbRotas(){
+  const dd=D.base.D,cb=cliBand();
+  return dd.rotas.filter(r=>{const m=dd.meta[r]||{};return m.gc===NB.gc&&(!NB.sv||m.sv===NB.sv)&&(cb.porRota[r]||[]).length})
+    .map(r=>({rota:r,m:dd.meta[r]||{},n:cb.porRota[r].length}));
+}
+/* divide as rotas entre os desenvolvedores ativos, deixando a quantidade de clientes parecida */
+function nbDistribui(){
+  const devs=D.devs.filter(d=>d.ativo).map(d=>d.login),carga={};devs.forEach(l=>carga[l]=0);
+  NB.rotas={};
+  nbRotas().sort((a,b)=>b.n-a.n).forEach(x=>{
+    if(!devs.length){NB.rotas[x.rota]='';return}
+    const l=devs.slice().sort((a,b)=>carga[a]-carga[b])[0];NB.rotas[x.rota]=l;carga[l]+=x.n});
+}
+function nbClientes(){
+  const dd=D.base.D,cb=cliBand(),out=[];
+  Object.keys(NB.rotas||{}).forEach(r=>{const m=dd.meta[r]||{};
+    (cb.porRota[r]||[]).forEach(p=>out.push({cod:p[0],nome:p[9],lat:+((+p[1])/100000-20).toFixed(5),lon:+((+p[2])/100000-55).toFixed(5),rota:r,
+      bairro:dd.bair[+p[4]]||'',cidade:dd.cidr[+p[5]]||'',seg:dd.segs[+p[6]]||'',consultor:m.cons||'',sv:m.sv||'',gc:m.gc||'',dev:NB.rotas[r]||''}))});
+  return out;
+}
+const pqSelDev=(attr,sel)=>'<select '+attr+'><option value="">Sem desenvolvedor</option>'+D.devs.filter(d=>d.ativo||d.login===sel).map(d=>'<option value="'+esc(d.login)+'"'+(sel===d.login?' selected':'')+'>'+esc(d.nome)+'</option>').join('')+'</select>';
+function pqCampTab(){
+  const p=PQD.p;let h='';
+  if(p){
+    const g={};PQD.cli.forEach(c=>{const x=g[c.rota]=g[c.rota]||{rota:c.rota,cons:c.consultor,n:0,f:0,v:0,devs:{}};x.n++;x.devs[c.dev||'']=(x.devs[c.dev||'']||0)+1;
+      const r=PQD.resp[c.cod];if(r){if(PQ_VOLTAR.includes(r.situacao))x.v++;else x.f++}});
+    const rotas=Object.values(g).sort((a,b)=>String(a.rota).localeCompare(String(b.rota),'pt-BR',{numeric:true}));
+    const semDev=PQD.cli.filter(c=>!c.dev).length,ativa=p.status==='ativa';
+    h+='<div class="cartao"><div class="tt"><h2>'+esc(p.nome)+'</h2><span class="selo '+(ativa?'v':'c')+'">'+(ativa?'Ativa':'Encerrada')+'</span>'+
+      '<div class="acoes">'+(ativa?'<button class="bt peq" id="pqenc">Encerrar pesquisa</button>':'<button class="bt peq" id="pqreat">Reativar esta pesquisa</button>')+'</div></div>'+
+      '<div class="cc"><p style="margin:0 0 12px;color:var(--ink2)">Publicada em '+new Date(p.criadaEm).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})+
+        (p.escopo?' · '+esc(p.escopo):'')+(p.baseVersao?' · base '+esc(p.baseVersao):'')+' · '+fmt(PQD.cli.length)+' clientes em '+rotas.length+' rotas</p>'+
+      (semDev?'<div class="aviso" style="margin-bottom:12px">'+fmt(semDev)+' clientes estão sem desenvolvedor: não aparecem em nenhum app.</div>':'')+
+      '<table class="tab"><thead><tr><th>Rota</th><th>Consultor de vendas</th><th class="num">Clientes</th><th class="num">Respondidas</th><th class="num">Para voltar</th><th>Quem visita</th></tr></thead><tbody>'+
+      rotas.map(x=>{const dev=Object.keys(x.devs).sort((a,b)=>x.devs[b]-x.devs[a])[0]||'';
+        return '<tr><td><b>'+esc(x.rota||'—')+'</b></td><td>'+esc(x.cons||'—')+'</td><td class="num">'+fmt(x.n)+'</td><td class="num">'+fmt(x.f)+'</td><td class="num">'+fmt(x.v)+'</td><td>'+
+          (ativa?pqSelDev('data-rdev="'+esc(x.rota)+'" data-era="'+esc(dev)+'"',dev):esc(pqNomeDev(dev)))+'</td></tr>'}).join('')+'</tbody></table>'+
+      (ativa?'<div style="display:flex;gap:12px;align-items:center;margin-top:14px"><button class="bt escuro" id="pqdist">Salvar quem visita</button>'+
+        '<span style="color:var(--ink2);font-size:13px">Trocar o desenvolvedor de uma rota muda a lista no app dele na próxima sincronização. As respostas já dadas ficam.</span></div>':'')+'</div></div>';
+  }
+  /* montar */
+  h+='<div class="cartao"><div class="tt"><h2>'+(p?'Montar outra pesquisa ou acrescentar rotas':'Montar a pesquisa')+'</h2><span>gerência, supervisão e quem visita cada rota</span></div><div class="cc">';
+  if(D.baseEstado!=='ok')h+=(D.baseEstado==='carregando'||!D.baseEstado?'<div class="carregando">Abrindo a base de clientes…</div>':'<div class="aviso">Para montar a pesquisa o painel precisa da base. Envie a base em <b>Base de dados</b>.</div>');
+  else if(!cliBand())h+='<div class="aviso">A base em uso não tem a lista de clientes BAND.</div>';
+  else{
+    const dd=D.base.D,doRec=r=>dd.meta[r]||{};
+    const gcs=[...new Set(dd.rotas.map(r=>doRec(r).gc).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+    if(!NB.gc||!gcs.includes(NB.gc)){NB.gc=gcs.includes('GC. G3')?'GC. G3':(gcs[0]||'');NB.sv='';NB.rotas=null}
+    const svs=[...new Set(dd.rotas.filter(r=>doRec(r).gc===NB.gc).map(r=>doRec(r).sv).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR',{numeric:true}));
+    if(NB.rotas===null){if(!NB.sv&&svs.includes('SV.G3.1'))NB.sv='SV.G3.1';nbDistribui()}
+    if(NB.nomeAuto)NB.nome='Pesquisa '+NB.gc.replace(/^GC\.\s*/,'')+(NB.sv?' · '+NB.sv:'');
+    const rs=nbRotas(),marc=rs.filter(x=>NB.rotas[x.rota]!==undefined),tot=marc.reduce((s,x)=>s+x.n,0),porDev={};
+    marc.forEach(x=>{const k=NB.rotas[x.rota]||'';porDev[k]=(porDev[k]||0)+x.n});
+    h+='<div class="ajustes"><label>Gerência<select id="nbgc">'+gcs.map(x=>'<option'+(x===NB.gc?' selected':'')+'>'+esc(x)+'</option>').join('')+'</select></label>'+
+      '<label>Supervisão<select id="nbsv"><option value="">Todas da gerência</option>'+svs.map(x=>'<option'+(x===NB.sv?' selected':'')+'>'+esc(x)+'</option>').join('')+'</select></label>'+
+      '<label style="flex:1;min-width:260px">Nome da pesquisa<input id="nbnome" maxlength="120" style="width:100%" value="'+esc(NB.nome)+'"></label>'+
+      '<button class="bt" id="nbauto">Dividir por igual</button></div>'+
+      '<table class="tab" style="margin-top:14px"><thead><tr><th style="width:36px"><input type="checkbox" id="nbtodas" aria-label="Marcar todas"'+(marc.length===rs.length&&rs.length?' checked':'')+'></th><th>Rota</th><th>Consultor de vendas</th><th>Supervisão</th><th>Tipo</th><th class="num">Clientes</th><th>Quem visita</th></tr></thead><tbody>'+
+      rs.map(x=>{const on=NB.rotas[x.rota]!==undefined;
+        return '<tr><td><input type="checkbox" data-nbr="'+esc(x.rota)+'"'+(on?' checked':'')+' aria-label="Rota '+esc(x.rota)+'"></td><td><b>'+esc(x.rota)+'</b></td><td>'+esc(x.m.cons||'—')+'</td><td>'+esc(x.m.sv||'—')+'</td><td>'+esc(x.m.tipo||'—')+
+          '</td><td class="num">'+fmt(x.n)+'</td><td>'+(on?pqSelDev('data-nbd="'+esc(x.rota)+'"',NB.rotas[x.rota]):'<span style="color:var(--ink3)">fora da pesquisa</span>')+'</td></tr>'}).join('')+'</tbody></table>'+
+      '<div class="info" style="margin-top:14px"><b>'+marc.length+(marc.length===1?' rota':' rotas')+', '+fmt(tot)+' clientes.</b> '+
+        Object.keys(porDev).sort().map(k=>esc(pqNomeDev(k))+': <b>'+fmt(porDev[k])+'</b>').join(' · ')+
+        '<br>A lista sai da base '+esc(D.base.versao)+'. Cada desenvolvedor vê só os clientes dele, por distância.</div>'+
+      '<div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap"><button class="bt verm" id="nbpub"'+(tot?'':' disabled')+'>Publicar pesquisa nova</button>'+
+      (p&&p.status==='ativa'&&!PQD.sel?'<button class="bt" id="nbadd"'+(tot?'':' disabled')+'>Acrescentar estas rotas à pesquisa ativa</button>':'')+'</div>';
+  }
+  h+='</div></div>';
+  if(PQD.lista.length>1||(PQD.lista.length&&!p))h+='<div class="cartao"><div class="tt"><h2>Todas as pesquisas</h2></div><table class="tab"><thead><tr><th>Pesquisa</th><th>Publicada</th><th>Situação</th><th class="num">Clientes</th><th class="num">Respostas</th><th class="num">Acomp. abertos</th><th></th></tr></thead><tbody>'+
+    PQD.lista.map(x=>'<tr><td><b>'+esc(x.nome)+'</b><small>'+esc(x.escopo)+'</small></td><td>'+new Date(x.criadaEm).toLocaleDateString('pt-BR')+'</td><td><span class="selo '+(x.status==='ativa'?'v':'c')+'">'+(x.status==='ativa'?'Ativa':'Encerrada')+'</span></td>'+
+      '<td class="num">'+fmt(x.clientes)+'</td><td class="num">'+fmt(x.respostas)+'</td><td class="num">'+fmt(x.acompanhamentos)+'</td><td>'+(p&&p.id===x.id?'<span style="color:var(--ink2)">na tela</span>':'<button class="bt peq" data-ver="'+esc(x.id)+'">Ver</button>')+'</td></tr>').join('')+'</tbody></table></div>';
+  return h;
+}
+async function nbPublica(acrescenta){
+  const cl=nbClientes(),ativa=PQD.lista.find(x=>x.status==='ativa'),nome=($('nbnome').value||'').trim();
+  if(!cl.length)return toast('Marque pelo menos uma rota');
+  if(cl.length>8000)return toast('São '+fmt(cl.length)+' clientes. O limite é 8.000 por vez: escolha uma supervisão.');
+  if(!acrescenta&&!nome)return toast('Dê um nome para a pesquisa');
+  const semDev=cl.filter(c=>!c.dev).length;
+  const msg=(acrescenta?'Acrescentar '+fmt(cl.length)+' clientes à pesquisa "'+ativa.nome+'"?\n\nQuem já está nela continua, com as respostas guardadas.'
+      :'Publicar a pesquisa "'+nome+'" com '+fmt(cl.length)+' clientes?'+(ativa?'\n\nA pesquisa "'+ativa.nome+'" será encerrada. As respostas dela ficam guardadas.':''))+
+    '\n\nOs desenvolvedores recebem a lista na próxima sincronização do app.'+
+    (semDev?'\n\nAtenção: '+fmt(semDev)+' clientes estão sem desenvolvedor e não aparecem em nenhum app.':'');
+  if(!confirm(msg))return;
+  const b=$(acrescenta?'nbadd':'nbpub');b.disabled=true;b.textContent='Enviando…';
+  try{
+    if(acrescenta)await rpc('pesquisa_ajustar',{p_id:ativa.id,p_mudanca:{clientes:cl}});
+    else await rpc('pesquisa_publicar',{p_pesquisa:{nome,escopo:NB.gc+(NB.sv?' / '+NB.sv:''),baseVersao:D.base.versao,clientes:cl}});
+    PQD.sel=null;FPQ.aba='camp';await pqRecarrega(true);$('main').scrollTop=0;
+    toast(acrescenta?'Clientes acrescentados à pesquisa':'Pesquisa publicada');
+  }catch(e){if(e.semSessao)return sessaoCaiu();toast('Não consegui publicar: '+e.message);pintaMainSe('pesquisa')}
+}
+async function pqAjusta(mudanca,feito){
+  try{await rpc('pesquisa_ajustar',{p_id:PQD.p.id,p_mudanca:mudanca});await pqRecarrega(true);toast(feito)}
+  catch(e){if(e.semSessao)return sessaoCaiu();toast('Não consegui salvar: '+e.message)}
+}
+liga.pesquisa=()=>{
+  const m=$('main');
+  m.querySelectorAll('[data-aba]').forEach(b=>b.onclick=()=>{FPQ.aba=b.dataset.aba;pintaMain();m.scrollTop=0});
+  m.querySelectorAll('select[data-f]').forEach(s=>s.onchange=()=>{FPQ[s.dataset.f]=s.value;pintaMain()});
+  if($('pqvenc'))$('pqvenc').onchange=e=>{FPQ.venc=e.target.checked;pintaMain()};
+  if($('pqq')){let t;$('pqq').oninput=e=>{FPQ.q=e.target.value;clearTimeout(t);t=setTimeout(()=>{pintaMain();const i=$('pqq');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length)}},250)}}
+  m.querySelectorAll('[data-cod]').forEach(e=>e.onclick=()=>abrePq(e.dataset.cod,e.dataset.ac||null));
+  m.querySelectorAll('tr[data-cons]').forEach(tr=>tr.onclick=()=>{FPQ.cons=FPQ.cons===tr.dataset.cons?'':tr.dataset.cons;pintaMain();m.scrollTop=0});
+  if($('pqcsvresp'))$('pqcsvresp').onclick=pqBaixaRespostas;
+  if($('pqcsvac'))$('pqcsvac').onclick=pqBaixaAcomp;
+  if($('pqvolta'))$('pqvolta').onclick=()=>{PQD.sel=null;FPQ.aba='res';pqRecarrega(true)};
+  m.querySelectorAll('[data-ver]').forEach(b=>b.onclick=()=>{const at=PQD.lista.find(x=>x.status==='ativa');
+    PQD.sel=at&&at.id===b.dataset.ver?null:b.dataset.ver;FPQ.aba='res';FPQ.rota=FPQ.cons=FPQ.seg=FPQ.dev='';pqRecarrega(true);m.scrollTop=0});
+  /* a pesquisa atual */
+  if($('pqenc'))$('pqenc').onclick=()=>{if(confirm('Encerrar a pesquisa "'+PQD.p.nome+'"?\n\nEla some do app dos desenvolvedores. As respostas e os acompanhamentos ficam guardados aqui.')){PQD.sel=PQD.p.id;   /* continua na tela a que acabou de ser encerrada */
+    pqAjusta({status:'encerrada'},'Pesquisa encerrada')}};
+  if($('pqreat'))$('pqreat').onclick=()=>{const at=PQD.lista.find(x=>x.status==='ativa');
+    if(confirm('Reativar a pesquisa "'+PQD.p.nome+'"?'+(at?'\n\nA pesquisa "'+at.nome+'" será encerrada.':''))){PQD.sel=null;pqAjusta({status:'ativa'},'Pesquisa reativada')}};
+  if($('pqdist'))$('pqdist').onclick=()=>{const rotas={};m.querySelectorAll('select[data-rdev]').forEach(s=>{if(s.value!==s.dataset.era)rotas[s.dataset.rdev]=s.value});
+    const n=Object.keys(rotas).length;if(!n)return toast('Nenhuma rota mudou de desenvolvedor');
+    if(confirm('Trocar o desenvolvedor de '+n+(n===1?' rota':' rotas')+'?'))pqAjusta({rotas},'Distribuição salva')};
+  /* montar */
+  if($('nbgc')){
+    $('nbgc').onchange=e=>{NB.gc=e.target.value;NB.sv='';nbDistribui();pintaMain()};
+    $('nbsv').onchange=e=>{NB.sv=e.target.value;nbDistribui();pintaMain()};
+    $('nbnome').oninput=e=>{NB.nome=e.target.value;NB.nomeAuto=!e.target.value.trim()};
+    $('nbauto').onclick=()=>{nbDistribui();pintaMain()};
+    $('nbtodas').onchange=e=>{if(e.target.checked)nbDistribui();else NB.rotas={};pintaMain()};
+    m.querySelectorAll('[data-nbr]').forEach(c=>c.onchange=()=>{if(c.checked)NB.rotas[c.dataset.nbr]='';else delete NB.rotas[c.dataset.nbr];pintaMain()});
+    m.querySelectorAll('[data-nbd]').forEach(s=>s.onchange=()=>{NB.rotas[s.dataset.nbd]=s.value;pintaMain()});
+    $('nbpub').onclick=()=>nbPublica(false);
+    if($('nbadd'))$('nbadd').onclick=()=>nbPublica(true);
+  }
+  if(FPQ.aba==='res')desenhaPqMapa();
+};
+
 /* ---------------- módulo: Base de dados ---------------- */
 function mBase(){
   const i=D.baseInfo,r=D.baseResumo;
@@ -1352,6 +1947,9 @@ async function abreApp(){
 }
 window.addEventListener('hashchange',()=>{const k=location.hash.slice(1);if(k&&k!==MOD)ir(k)});
 setInterval(()=>{if(SESSAO&&!document.hidden&&EU)carregaVisitas().then(()=>{pintaLado();if(['visitas','aovivo','desemp','funil','conc'].includes(MOD)&&!$('dlg').classList.contains('on')&&!['INPUT','SELECT'].includes(document.activeElement.tagName))pintaMain()}).catch(()=>{})},60000);
+/* a pesquisa também se atualiza sozinha; a tela só é refeita se chegou coisa nova e ninguém está mexendo nela */
+setInterval(()=>{if(SESSAO&&!document.hidden&&EU&&PQD.estado==='ok')carregaPesquisa().then(()=>{if(!PQD.mudou)return;pintaLado();
+  if(MOD==='pesquisa'&&FPQ.aba!=='camp'&&!$('dlg').classList.contains('on')&&!['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName))pintaMain()}).catch(()=>{})},60000);
 (async function(){
   if(!SESSAO)return telaEntrada();
   try{const q=await rpc('quem_sou');if(q.papel!=='coordenador')throw new Error('Esta conta não é de coordenador.');EU=q;abreApp()}
