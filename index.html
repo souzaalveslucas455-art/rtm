@@ -69,11 +69,7 @@ button{cursor:pointer;background:none;border:0}
 header{background:#fff;border-bottom:1px solid var(--line);flex:0 0 auto;z-index:13;
  padding:calc(env(safe-area-inset-top) + 8px) 6px 8px;display:flex;align-items:center;gap:2px}
 header .ic{padding:10px;color:var(--ink);display:flex}
-header h2{flex:1;min-width:0;margin:0 0 0 4px;font-size:20px;font-weight:700;letter-spacing:-.01em;line-height:1.2}
-header h2 small{display:block;font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
- line-height:1.25;margin-bottom:1px}
-header h2 small.pros{color:var(--red-dk)}
-header h2 small.pesq{color:var(--blue)}
+header h2{flex:1;margin:0 0 0 4px;font-size:20px;font-weight:700;letter-spacing:-.01em}
 header .ic.r{color:var(--ink2)}
 header .ic svg{width:23px;height:23px}
 header .ic.girando svg{animation:gira 1s linear infinite}
@@ -342,13 +338,6 @@ main.nopad{padding:0}
 #gav nav button svg{width:22px;height:22px;flex:0 0 auto;color:var(--ink2)}
 #gav nav button.on svg{color:var(--red)}
 #gav nav hr{border:0;border-top:1px solid var(--line);margin:10px 4px}
-/* o menu é separado por frente de trabalho: cada grupo diz de que público se trata */
-#gav nav .grp{margin:16px 11px 3px;font-size:11.5px;font-weight:800;letter-spacing:.07em;
- text-transform:uppercase;color:var(--ink3)}
-#gav nav .grp span{display:block;font-size:12px;font-weight:600;letter-spacing:0;text-transform:none;
- color:var(--ink3);margin-top:1px}
-#gav nav .grp.pros{color:var(--red-dk)}
-#gav nav .grp.pesq{color:var(--blue)}
 #gav .sair{width:100%;display:flex;align-items:center;gap:13px;padding:12px 11px;
  border-radius:11px;color:var(--red);font-weight:700;font-size:15.5px;min-height:46px}
 #gav .sair svg{width:21px;height:21px;color:var(--red);flex:0 0 auto}
@@ -556,55 +545,6 @@ textarea.pqou{min-height:58px;margin:-1px 0 9px;border-color:var(--blue)}
 .pqac.urgente{border-left-color:var(--no);background:var(--no-bg)}
 .pqac.alto{border-left-color:var(--wa);background:var(--wa-bg)}
 .pqac.oportunidade{border-left-color:var(--ok);background:var(--ok-bg)}
-/* ---- tela inicial: Meu dia ---- */
-.inola{padding:8px 4px 0}
-.inola b{display:block;font-size:23px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
-.inola span{display:block;font-size:13.5px;color:var(--ink2);margin-top:2px}
-.inhero{border-radius:18px;padding:16px 16px 15px;margin-top:13px;color:#fff;box-shadow:var(--sh)}
-.inhero.pros{background:linear-gradient(135deg,#D0102C,#8E0B21)}
-.inhero.pesq{background:linear-gradient(135deg,#1669CE,#0B3F80)}
-.inhero.nada{background:#fff;color:var(--ink)}
-.inhero .rot{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;opacity:.88}
-.inhero h3{margin:3px 0 0;font-size:25px;font-weight:800;letter-spacing:-.02em;line-height:1.15}
-.inhero .sub{font-size:13px;opacity:.95;margin-top:2px;line-height:1.35}
-.inhero .pub{display:inline-block;margin-top:8px;background:rgba(255,255,255,.2);border-radius:99px;
- padding:3px 10px;font-size:11.5px;font-weight:700}
-.inhero .num{margin-top:13px;font-size:13.5px;display:flex;align-items:baseline;gap:7px}
-.inhero .num b{font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1}
-.inhero .prog{background:rgba(255,255,255,.28)}.inhero .prog i{background:#fff}
-.inprox{width:100%;margin-top:12px;background:rgba(0,0,0,.2);border-radius:12px;padding:10px 12px;
- display:flex;gap:10px;align-items:center;text-align:left;color:#fff;cursor:pointer}
-.inprox div{flex:1;min-width:0}
-.inprox small{display:block;font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;opacity:.85}
-.inprox b{display:block;font-size:14px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.inprox span{display:block;font-size:12px;opacity:.9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.inprox svg{width:20px;height:20px;flex:0 0 auto}
-.inir{width:100%;margin-top:12px;background:#fff;color:var(--ink);border-radius:12px;padding:14px;
- font-size:15.5px;font-weight:800;min-height:52px;display:flex;align-items:center;justify-content:center;gap:8px}
-.inir svg{width:19px;height:19px}
-.inhero.nada .inir{background:var(--red);color:#fff}
-.insec{font-size:12px;font-weight:800;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;
- margin:20px 4px 0}
-.infr{width:100%;display:flex;gap:12px;align-items:center;background:#fff;border-radius:14px;
- box-shadow:var(--sh);padding:13px;margin-top:10px;text-align:left;cursor:pointer}
-.infr .bol{width:42px;height:42px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center}
-.infr .bol svg{width:21px;height:21px}
-.infr.pros .bol{background:var(--red-lt);color:var(--red)}
-.infr.pesq .bol{background:var(--blue-bg);color:var(--blue)}
-.infr .tx{flex:1;min-width:0}
-.infr .tx b{font-size:15px;line-height:1.25}
-.infr .tx em{font-style:normal;display:inline-block;margin-left:7px;border-radius:99px;padding:1px 8px;
- font-size:11px;font-weight:700;vertical-align:1px}
-.infr.pros .tx em{background:var(--red-lt);color:var(--red-dk)}
-.infr.pesq .tx em{background:var(--blue-bg);color:var(--blue)}
-.infr .tx span{display:block;font-size:12.5px;color:var(--ink2);margin-top:2px;line-height:1.35}
-.infr .prog{margin-top:7px;height:5px}
-.infr.pros .prog i{background:var(--red)}.infr.pesq .prog i{background:var(--blue)}
-.infr>svg{width:18px;height:18px;color:var(--ink3);flex:0 0 auto}
-.inenv{display:flex;gap:10px;align-items:center;background:var(--wa-bg);color:var(--wa);border-radius:13px;
- padding:11px 13px;margin-top:12px;font-size:13px;line-height:1.4}
-.inenv span{flex:1}
-.inenv button{flex:0 0 auto;background:#fff;color:var(--wa);border-radius:9px;padding:8px 12px;font-size:13px;font-weight:700}
 </style>
 </head>
 <body>
@@ -638,7 +578,7 @@ textarea.pqou{min-height:58px;margin:-1px 0 9px;border-color:var(--blue)}
    A base vem embutida e funciona sem internet. As respostas ficam no aparelho
    e sobem para a planilha assim que houver sinal.
    =========================================================================== */
-const VERSAO='2.7.0';
+const VERSAO='2.7.1';
 
 /* ---------------- auditoria: erros do app e "estou vivo" ----------------
    Guarda no aparelho os erros que acontecem e manda para o painel de auditoria,
@@ -960,7 +900,7 @@ function save(){
     toast('Não foi possível salvar no aparelho'); }
 }
 
-let tela_='inicio',cur=null,tmp=null,fDia=null,fQ='',fQc='',modoLista=true,ultimo=null;
+let tela_='visitas',cur=null,tmp=null,fDia=null,fQ='',fQc='',modoLista=true,ultimo=null;
 /* histórico de avisos do próprio app, guardado no aparelho */
 function anota(tipo,titulo,texto){
   if(!S.avisos)S.avisos=[];
@@ -1041,7 +981,6 @@ const IC={
  sino:'<path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/>',
  aviso:'<path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L2.4 17a2 2 0 001.7 3h15.8a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/>',
  ok:'<path d="M20 6L9 17l-5-5"/>',
- casa:'<path d="M3 11.2L12 3.5l9 7.7"/><path d="M5.5 9.8V20.5h13V9.8"/>',
  pesquisa:'<path d="M9 3.5h6v3H9z"/><path d="M9 5H6v16h12V5h-3"/><path d="M9 12h6M9 16h4"/>',
  foto:'<path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/>',
  sinc:'<path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0115-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 01-15 6.7L3 16"/>'};
@@ -1380,7 +1319,7 @@ function abreEntrada(){
 function entraNoApp(){
   DESBLOQ=true;pintaAmbiente();
   $('login').classList.remove('on');
-  fDia=diaSugerido();tela('inicio');
+  fDia=diaSugerido();tela('visitas');
   sincroniza(true);
   enviar(true);
   setTimeout(()=>reenviaFotos(true),1500);
@@ -1649,17 +1588,12 @@ setInterval(()=>{if(!DESBLOQ)return;if(pendentes().length)enviar(true);reenviaFo
 setInterval(()=>{if(DESBLOQ&&!document.hidden)sincroniza(true)},25000);
 
 /* ---------------- estrutura da tela ---------------- */
-const TITULOS={inicio:'Meu dia',visitas:'Visitas',clientes:'Pontos do roteiro',resultados:'Indicadores',
+const TITULOS={visitas:'Visitas',clientes:'Clientes',resultados:'Indicadores',
   base:'Conta e envio',plano:'Plano de visita',cancelar:'Cancelar visita',
-  perto:'Clientes BAND por perto',feitas:'Visitas feitas',feita:'Visita feita',
+  perto:'Na região de hoje',feitas:'Visitas feitas',feita:'Visita',
   form:'Visita',ok:'Visita registrada',
-  avisos:'Avisos',aviso:'Mensagem',
-  pesquisa:'Clientes da pesquisa',pesqform:'Responder pesquisa',pesqfeita:'Pesquisa respondida'};
-/* a que frente de trabalho cada tela pertence: prospecção (quem ainda não é
-   cliente BAND) ou pesquisa (clientes BAND). O nome da frente aparece acima do título. */
-const FRENTE_DA_TELA={visitas:'pros',plano:'pros',cancelar:'pros',form:'pros',ok:'pros',feitas:'pros',
-  feita:'pros',clientes:'pros',perto:'pros',resultados:'pros',
-  pesquisa:'pesq',pesqform:'pesq',pesqfeita:'pesq'};
+  avisos:'Notificações',aviso:'Mensagem',
+  pesquisa:'Pesquisa',pesqform:'Pesquisa',pesqfeita:'Pesquisa'};
 /* O botão físico de voltar precisa navegar dentro do app, não sair dele.
    Cada tela empilha um estado no histórico do navegador. */
 let pilha=[];
@@ -1683,10 +1617,7 @@ window.addEventListener('popstate',()=>{
   /* na pesquisa, voltar leva à pergunta anterior; da primeira pergunta, à lista */
   if(tela_==='pesqform'){pqAnterior(true);empilha();return}
   if(tela_==='pesqfeita'){tela_='pesquisa';render();empilha();return}
-  if(tela_==='feita'){tela_='feitas';render();empilha();return}
-  /* dentro do roteiro (plano, cancelamento, visita registrada), voltar leva ao roteiro */
-  if(['plano','cancelar','ok'].indexOf(tela_)>=0){tela_='visitas';render();empilha();return}
-  if(tela_!=='inicio'){tela_='inicio';render();empilha();return}
+  if(tela_!=='visitas'){tela_='visitas';render();empilha();return}
   /* já está na tela inicial: mantém o app aberto */
   empilha();
 });
@@ -1727,10 +1658,7 @@ function renderInterno(){
      de nome, que não existe quando o ponto foi marcado como inexistente, e a
      observação digitada era perdida */
   if(tela_==='form'&&tmp&&($('fobs')||$('fnome')))colhe();
-  /* acima do título, a frente de trabalho a que a tela pertence */
-  const fr=FRENTE_DA_TELA[tela_];
-  $('titulo').innerHTML=(fr?'<small class="'+fr+'">'+(fr==='pros'?'Prospecção':'Pesquisa')+'</small>':'')+
-    esc(TITULOS[tela_]||'Meu dia');
+  $('titulo').textContent=TITULOS[tela_]||'Visitas';
   const p=pendentes().length;
   /* o selo do sininho conta o que precisa de atenção: mensagens não lidas
      e visitas ainda na fila de envio */
@@ -1743,7 +1671,6 @@ function renderInterno(){
   if(mostraTira){pintaTira();pintaBarra()}
   $('app').className=(tela_==='visitas'&&!modoLista)?'nopad':'';
   $('app').innerHTML=
-    tela_==='inicio'?vInicio():
     tela_==='visitas'?(modoLista?vLista():'<div id="mapa"></div>'):
     tela_==='form'?vForm(): tela_==='ok'?vOk():
     tela_==='clientes'?vClientes(): tela_==='resultados'?vResultados():
@@ -1775,97 +1702,6 @@ function renderInterno(){
 $('bmenu').onclick=abrirGaveta;
 $('bsinc').onclick=()=>{enviar(true);sincroniza(false)};
 $('bsino').onclick=()=>tela('avisos');
-
-/* ---------------- tela inicial: Meu dia ----------------
-   Mostra a frente de trabalho do dia em destaque e as outras embaixo.
-   Nesta etapa a frente do dia sai do que já está no aparelho: havendo roteiro de
-   prospecção para hoje, é a prospecção; não havendo, e existindo pesquisa
-   publicada, é a pesquisa. */
-function irRoteiro(d){if(d)fDia=d;else if(!fDia)fDia=diaSugerido();tela('visitas')}
-function inSauda(){const h=new Date().getHours();return h<12?'Bom dia':h<18?'Boa tarde':'Boa noite'}
-function inPrimeiroNome(){
-  let n=String(meuNome()||'').trim();
-  if(n.indexOf('@')>0)n=n.split('@')[0];
-  n=n.split(/\s+/)[0]||'';
-  return n?n.charAt(0).toUpperCase()+n.slice(1).toLowerCase():'';
-}
-function inFrentes(){
-  const m=minha(),hj=diaDeHoje(),rh=hj?m.filter(c=>c.dia===hj):[],pq=pqCli();
-  return {m,hj,rh,pq,foco:rh.length?'pros':(pq.length?'pesq':'')};
-}
-function inHeroPros(f){
-  const tot=f.rh.length,ok=f.rh.filter(feito).length,falta=tot-ok,pct=tot?Math.round(ok/tot*100):0;
-  const env=pendentes().length;
-  const prox=f.rh.filter(c=>!feito(c)).sort((a,b)=>a.seq-b.seq)[0];
-  const and=prox&&S.andamento&&S.andamento.cnpj===prox.cnpj;
-  return '<div class="inhero pros"><div class="rot">Frente de hoje</div><h3>Prospecção</h3>'+
-    '<span class="pub">Pontos que ainda não são clientes BAND</span>'+
-    '<div class="num"><b>'+ok+'</b> de '+tot+' visitas do dia</div>'+
-    '<div class="prog"><i style="width:'+pct+'%"></i></div>'+
-    '<div class="phk"><div><b>'+falta+'</b><span>a fazer</span></div>'+
-      '<div><b>'+ok+'</b><span>feitas</span></div>'+
-      '<div><b>'+env+'</b><span>'+(env?'a enviar':'tudo enviado')+'</span></div></div>'+
-    (prox?'<div class="inprox" role="button" onclick="abrir(\''+prox.cnpj+'\')">'+svg(and?'relogio':'pino',2)+
-      '<div><small>'+(and?'Visita em andamento':'Próxima visita')+'</small><b>'+prox.seq+'. '+esc(prox.nome)+'</b>'+
-      '<span>'+esc((BAIRROS[prox.ba]||'').trim())+'</span></div>'+svg('seta',2.2)+'</div>':'')+
-    '<button class="inir" onclick="irRoteiro('+f.hj+')">'+
-      (falta?(ok?'Continuar o roteiro':'Começar o roteiro'):'Dia concluído · ver o roteiro')+svg('seta2',2.2)+'</button></div>';
-}
-function inHeroPesq(f){
-  const tot=f.pq.length,ok=f.pq.filter(pqFeita).length,vol=f.pq.filter(pqVoltar).length;
-  const fazer=tot-ok-vol,pct=tot?Math.round(ok/tot*100):0;
-  const and=S.pesq.andamento&&pqAcha(S.pesq.andamento.cod);
-  return '<div class="inhero pesq"><div class="rot">Frente de hoje</div><h3>Pesquisa</h3>'+
-    '<div class="sub">'+esc(PESQ.nome||'')+'</div>'+
-    '<span class="pub">Clientes BAND</span>'+
-    '<div class="num"><b>'+fmt(ok)+'</b> de '+fmt(tot)+' clientes respondidos</div>'+
-    '<div class="prog"><i style="width:'+pct+'%"></i></div>'+
-    '<div class="phk"><div><b>'+fmt(fazer)+'</b><span>a fazer</span></div>'+
-      '<div><b>'+fmt(vol)+'</b><span>para voltar</span></div>'+
-      '<div><b>'+pct+'%</b><span>concluído</span></div></div>'+
-    (and?'<div class="inprox" role="button" onclick="pqAbre(\''+esc(String(and.cod))+'\')">'+svg('relogio',2)+
-      '<div><small>Pesquisa começada</small><b>'+esc(and.nome)+'</b><span>ainda não salva</span></div>'+
-      svg('seta',2.2)+'</div>':'')+
-    '<button class="inir" onclick="tela(\'pesquisa\')">'+
-      (fazer+vol?'Abrir a lista da pesquisa':'Pesquisa concluída · ver a lista')+svg('seta2',2.2)+'</button></div>';
-}
-function inCartaoPros(f){
-  const m=f.m; if(!m.length)return '';
-  const ok=m.filter(feito).length,pct=Math.round(ok/m.length*100);
-  const t=new Date(),hoje=t.getFullYear()+'-'+p2(t.getMonth()+1)+'-'+p2(t.getDate());
-  const max=Math.max.apply(null,m.map(c=>c.dia));
-  let d=null;
-  for(let i=1;i<=max&&!d;i++){const iso=isoDoDia(i);
-    if(iso&&iso>hoje&&m.some(c=>c.dia===i&&!feito(c)))d=i}
-  const sub=d?'Próximo dia de roteiro: '+dowDo(d)+' '+dataDo(d)+' · '+m.filter(c=>c.dia===d).length+' visitas'
-             :fmt(ok)+' de '+fmt(m.length)+' pontos visitados';
-  return '<div class="infr pros" role="button" onclick="irRoteiro('+(d||diaSugerido())+')"><span class="bol">'+svg('alvo',2)+'</span>'+
-    '<div class="tx"><b>Prospecção</b><em>Não é cliente BAND</em><span>'+esc(sub)+'</span>'+
-    '<div class="prog"><i style="width:'+pct+'%"></i></div></div>'+svg('seta',2.2)+'</div>';
-}
-function inCartaoPesq(f){
-  const tot=f.pq.length; if(!tot)return '';
-  const ok=f.pq.filter(pqFeita).length,pct=Math.round(ok/tot*100);
-  return '<div class="infr pesq" role="button" onclick="tela(\'pesquisa\')"><span class="bol">'+svg('pesquisa',2)+'</span>'+
-    '<div class="tx"><b>Pesquisa</b><em>Cliente BAND</em><span>'+esc(PESQ.nome||'Pesquisa')+' · '+
-    fmt(ok)+' de '+fmt(tot)+' respondidos</span>'+
-    '<div class="prog"><i style="width:'+pct+'%"></i></div></div>'+svg('seta',2.2)+'</div>';
-}
-function vInicio(){
-  const f=inFrentes(),nome=inPrimeiroNome();
-  const quando=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
-  const env=pendentes().length+pqPend().length;
-  let h='<div class="inola"><b>'+inSauda()+(nome?', '+esc(nome):'')+'</b><span>'+esc(quando)+'</span></div>';
-  if(env)h+='<div class="inenv"><span><b>'+env+'</b> registro'+(env>1?'s':'')+' aguardando envio.</span>'+
-    '<button onclick="enviar(false)">Enviar agora</button></div>';
-  h+=f.foco==='pros'?inHeroPros(f):f.foco==='pesq'?inHeroPesq(f):
-    '<div class="inhero nada"><div class="rot" style="color:var(--ink3)">Hoje</div><h3>Nada programado para hoje</h3>'+
-    '<div class="sub" style="color:var(--ink2)">Quando a coordenação publicar um roteiro ou uma pesquisa, aparece aqui.</div>'+
-    '<button class="inir" onclick="sincroniza(false)">Sincronizar agora</button></div>';
-  const outras=(f.foco!=='pros'?inCartaoPros(f):'')+(f.foco!=='pesq'?inCartaoPesq(f):'');
-  if(outras)h+='<div class="insec">'+(f.foco?'Outras frentes':'Frentes de trabalho')+'</div>'+outras;
-  return h+'<div style="height:10px"></div>';
-}
 
 /* ---------------- tira de dias ---------------- */
 /* Faixas de aviso logo abaixo do cabeçalho: mensagem nova da coordenação e
@@ -2969,8 +2805,8 @@ function vClientes(){
   let h='<div class="barra" style="padding:10px 0 12px">'+
     '<div class="busca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" '+
     'stroke-width="2" stroke-linecap="round">'+IC.busca+'</svg>'+
-    '<input id="qcli" placeholder="Buscar ponto do roteiro" value="'+esc(buscaCli)+'"></div></div>';
-  if(!l.length)return h+'<div class="vazio">Nenhum ponto encontrado.</div>';
+    '<input id="qcli" placeholder="Buscar clientes" value="'+esc(buscaCli)+'"></div></div>';
+  if(!l.length)return h+'<div class="vazio">Nenhum cliente encontrado.</div>';
   h+=l.slice(0,300).map(c=>{
     const v=reg(c), hoje=hj===c.dia;
     const quando=hoje
@@ -4128,31 +3964,25 @@ function abrirGaveta(){
   const m=minha(),feitas=m.filter(feito).length;
   const item=(k,ic,t)=>'<button class="'+(tela_===k?'on':'')+'" onclick="irPara(\''+k+'\')">'+
     svg(ic)+t+'</button>';
-  const grupo=(c,t,s)=>'<div class="grp '+c+'">'+t+(s?'<span>'+s+'</span>':'')+'</div>';
-  const nviz=vizinhosDoDia().length,nlid=naoLidos();
   $('gavp').innerHTML=
    '<div class="cabeca">'+
      '<div class="quem"><div class="av">'+esc(String(S.login||'DC').toUpperCase())+'</div><div>'+
        '<b>'+esc(meuNome())+'</b><span>'+esc(escopoAtual())+' · '+
-         fmt(m.length)+' pontos no roteiro</span>'+
+         fmt(m.length)+' clientes</span>'+
      '</div></div>'+
      '<button class="sinc" onclick="enviar(false)">'+svg('sinc',2)+'Sincronizar</button>'+
      '<div class="quando"><span>'+(S.sync.ultimo?'Enviado '+esc(S.sync.ultimo):'Nunca enviado')+
        '</span><b onclick="irPara(\'base\')" style="color:var(--red);flex:0 0 auto">Conta ›</b></div>'+
    '</div>'+
    '<div class="meio"><nav>'+
-     item('inicio','casa','Meu dia')+
-     grupo('pros','Prospecção','quem ainda não é cliente BAND')+
-     item('visitas','alvo','Visitas de prospecção')+
+     item('visitas','alvo','Visitas')+
      item('feitas','conferido','Visitas feitas')+
-     item('clientes','pino','Pontos do roteiro')+
-     item('perto','loja','Clientes BAND por perto'+(nviz?' · '+nviz:''))+
-     item('resultados','grafico','Indicadores')+
-     grupo('pesq','Pesquisa','quem já é cliente BAND')+
-     item('pesquisa','pesquisa',pqCli().length?'Clientes da pesquisa · '+
-       fmt(pqCli().filter(c=>!pqFeita(c)).length)+' a fazer':'Clientes da pesquisa')+
-     grupo('','Aplicativo','')+
-     item('avisos','sino','Avisos'+(nlid?' · '+nlid:''))+
+     item('perto','rota','Na região de hoje'+
+       (vizinhosDoDia().length?' · '+vizinhosDoDia().length:''))+
+     (pqCli().length?item('pesquisa','pesquisa','Pesquisa · '+
+       fmt(pqCli().filter(c=>!pqFeita(c)).length)+' a fazer'):'')+
+     item('clientes','loja','Clientes')+
+     item('resultados','grafico','Indicadores')+'<hr>'+
      item('base','nuvem','Conta e envio')+'<hr>'+
      '<button class="sair" onclick="sair()">'+svg('sair')+'Sair</button>'+
    '</nav></div>'+
