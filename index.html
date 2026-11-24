@@ -574,7 +574,7 @@ textarea.pqou{min-height:58px;margin:-1px 0 9px;border-color:var(--blue)}
    A base vem embutida e funciona sem internet. As respostas ficam no aparelho
    e sobem para a planilha assim que houver sinal.
    =========================================================================== */
-const VERSAO='2.5.1';
+const VERSAO='2.5.2';
 
 /* ---------------- auditoria: erros do app e "estou vivo" ----------------
    Guarda no aparelho os erros que acontecem e manda para o painel de auditoria,
@@ -1217,8 +1217,8 @@ function campoPin(id,rotulo){
 }
 function pintaCriaPin(erro){
   telaEntrada(erro,
-    '<p class="dica">Crie um PIN de 4 números. No dia a dia você entra só com ele, '+
-      'mesmo sem internet.</p>'+
+    '<p class="dica">Crie um PIN de 4 números. O app pede o PIN uma vez por dia, '+
+      'no primeiro acesso, mesmo sem internet.</p>'+
     campoPin('lpin','PIN')+campoPin('lpin2','Repita o PIN')+
     '<button class="entrar" id="lentrar">Criar PIN</button>');
   $('lentrar').onclick=salvaPin;
@@ -1233,13 +1233,17 @@ async function hashPin(pin,sal){
   let h=0;for(const c of dados)h=(h*31+c)|0;return 'x'+h;
 }
 function lePin(){try{return JSON.parse(localStorage.getItem(K_PIN)||'null')}catch(e){return null}}
+/* O PIN é pedido uma vez por dia, no primeiro acesso. O dia em que ele foi digitado fica
+   guardado junto do PIN ("dia"); enquanto for o mesmo dia, abrir o app de novo entra direto. */
+const pinDia=()=>{const d=new Date();return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate())};
+const pinValeHoje=p=>!!p&&p.dia===pinDia();
 async function salvaPin(){
   const a=$('lpin').value,b=$('lpin2').value;
   if(!/^\d{4}$/.test(a))return pintaCriaPin('O PIN tem 4 números.');
   if(a!==b)return pintaCriaPin('Os dois PINs não são iguais.');
   if(/^(\d)\1{3}$/.test(a)||a==='1234')return pintaCriaPin('Escolha um PIN menos óbvio.');
   const sal=Math.random().toString(36).slice(2)+Date.now().toString(36);
-  try{localStorage.setItem(K_PIN,JSON.stringify({login:S.login,sal,hash:await hashPin(a,sal),erros:0}))}
+  try{localStorage.setItem(K_PIN,JSON.stringify({login:S.login,sal,hash:await hashPin(a,sal),erros:0,dia:pinDia()}))}
   catch(e){return pintaCriaPin('O navegador não deixou guardar o PIN.')}
   entraNoApp();
 }
@@ -1267,7 +1271,7 @@ async function confere(){
 }
 async function confere2(p,v){
   if(await hashPin(v,p.sal)===p.hash){
-    p.erros=0;try{localStorage.setItem(K_PIN,JSON.stringify(p))}catch(e){}
+    p.erros=0;p.dia=pinDia();try{localStorage.setItem(K_PIN,JSON.stringify(p))}catch(e){}
     return entraNoApp();
   }
   p.erros=(p.erros||0)+1;
@@ -1282,7 +1286,8 @@ async function confere2(p,v){
 /* qual tela de entrada mostrar ao abrir o app */
 function abreEntrada(){
   const p=lePin();
-  if(SESSAO&&S.login&&p&&p.login===S.login)return pintaPin();
+  /* já digitou o PIN hoje neste aparelho: entra direto */
+  if(SESSAO&&S.login&&p&&p.login===S.login)return pinValeHoje(p)?entraNoApp():pintaPin();
   if(!SESSAO&&S.login&&p)return pintaLogin('Sua sessão expirou. Entre de novo com a senha.');
   pintaLogin();
 }
@@ -1544,6 +1549,10 @@ function buscaPlano(silencioso){sincroniza(silencioso)}
 window.addEventListener('online',()=>{if(DESBLOQ){enviar(true);setTimeout(()=>reenviaFotos(true),800)}});
 document.addEventListener('visibilitychange',()=>{
   if(document.hidden||!DESBLOQ)return;
+  /* o app ficou aberto de um dia para o outro: o primeiro acesso do dia pede o PIN.
+     No meio de uma visita ou de uma pesquisa não interrompe; pede na próxima vez. */
+  const pp=lePin();
+  if(pp&&!pinValeHoje(pp)&&['form','plano','pesqform'].indexOf(tela_)<0){DESBLOQ=false;return pintaPin()}
   enviar(true);
   /* voltando ao app, busca na hora em vez de esperar o próximo ciclo */
   if(DESBLOQ)sincroniza(true);
