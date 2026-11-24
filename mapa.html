@@ -580,6 +580,8 @@ body:not([data-adm=sim]) .adm{display:none!important}
    =========================================================================== */
 window.RTM=(function(){
   const SUPA={url:'https://kqpdledhaghuzuwjkvrf.supabase.co',chave:'sb_publishable_dMdB5b_G5X5TnXemexGIXQ_GWXS6cid'};
+  /* aberto pelo portal de teste (mapa.html?...&teste=1), o mapa lê e publica na pasta de teste do banco */
+  const PERFIL=/[?&]teste(=|&|$)/.test(location.search)?'rtm_teste':'rtm';
   const K='rtm_painel_sessao';
   const le=()=>{try{return JSON.parse(localStorage.getItem(K)||'null')}catch(e){return null}};
   let S=le();
@@ -611,7 +613,7 @@ window.RTM=(function(){
   async function rpc(nome,args,tentou){
     const tk=await token();
     const r=await pede('/rest/v1/rpc/'+nome,{method:'POST',headers:{apikey:SUPA.chave,Authorization:'Bearer '+tk,
-      'Content-Type':'application/json','Content-Profile':'rtm','Accept-Profile':'rtm'},body:JSON.stringify(args||{})});
+      'Content-Type':'application/json','Content-Profile':PERFIL,'Accept-Profile':PERFIL},body:JSON.stringify(args||{})});
     if(r.status===401&&!tentou){S.expira=0;return rpc(nome,args,true)}
     if(r.status===401){grava(null);throw fora()}
     if(!r.ok)throw new Error(msg(r.j,r.status));

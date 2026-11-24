@@ -286,6 +286,19 @@ main{overflow-y:auto;min-width:0}
 .cidlista label{display:flex;gap:7px;align-items:center;padding:3px 0;break-inside:avoid;font-weight:500;color:var(--ink)}
 .cidlista small{color:var(--ink3);margin-left:auto}
 @media(max-width:1100px){.dk h2{font-size:34px}.dk .gap{min-width:120px}}
+/* ---------- portal de teste: uma faixa fixa que não deixa confundir com a produção ---------- */
+#faixateste{display:none}
+body.teste #faixateste{display:flex;position:fixed;left:0;right:0;top:0;height:36px;z-index:25;align-items:center;gap:14px;padding:0 16px;
+  background:#F5A524;color:#1A1D21;font-size:13px;font-weight:600}
+body.teste #faixateste b{letter-spacing:.06em}
+body.teste #faixateste .dir{margin-left:auto;display:flex;gap:10px;align-items:center}
+body.teste #faixateste a{color:#1A1D21}
+body.teste #faixateste button{border:1px solid #1A1D21;background:transparent;color:#1A1D21;border-radius:8px;padding:4px 10px;font-weight:700;cursor:pointer}
+body.teste .app{height:calc(100% - 36px);margin-top:36px}
+body.teste #moldura{top:36px}
+body.teste #entrada{top:36px}
+body.teste .cab{top:0}
+.quem a{color:#cfd1d6}
 /* ---------- Pesquisa com clientes BAND ---------- */
 .abas{display:flex;gap:4px;flex-wrap:wrap}
 .abas button{border:none;background:none;padding:8px 14px;border-radius:9px;font-weight:600;color:var(--ink2);cursor:pointer}
@@ -338,6 +351,8 @@ main{overflow-y:auto;min-width:0}
 </style>
 </head>
 <body>
+<div id="faixateste" role="note"><b>AMBIENTE DE TESTE</b><span>Nada do que você fizer aqui chega à produção.</span>
+  <span class="dir"><button id="blimpa" type="button">Limpar dados de teste</button><a href="painel.html">Ir para o portal de produção</a></span></div>
 <div id="entrada" class="esc"></div>
 <div class="app esc" id="app">
   <aside>
@@ -360,9 +375,14 @@ main{overflow-y:auto;min-width:0}
    o que protege os dados é o login do coordenador e as regras do banco.
    Tudo o que este painel guarda no navegador usa chaves com o prefixo rtm_painel_.
    ============================================================================ */
-const VERSAO='1.2.0';
+const VERSAO='1.3.0';
 const SUPA={url:'https://kqpdledhaghuzuwjkvrf.supabase.co',chave:'sb_publishable_dMdB5b_G5X5TnXemexGIXQ_GWXS6cid'};
 const K_SESSAO='rtm_painel_sessao',K_EMAIL='rtm_painel_email';
+/* Portal de teste: o mesmo painel aberto com "?teste" no endereço. Lê e grava na pasta "rtm_teste"
+   do banco e na pasta de fotos de teste; nada do que se faz nele chega à produção. A base de
+   estabelecimentos é a mesma, só para leitura. */
+const TESTE=/[?&]teste(=|&|$)/.test(location.search);
+const PERFIL=TESTE?'rtm_teste':'rtm',PASTA_FOTOS=TESTE?'rtm-teste-fotos':'rtm-fotos';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>Math.round(+n||0).toLocaleString('pt-BR');
@@ -378,6 +398,8 @@ function guardaSessao(j){
 function erroDe(j,status){
   const m=String((j&&(j.message||j.msg||j.error_description||j.error))||('erro '+status));
   if(/Invalid login credentials|invalid_credentials|invalid_grant/i.test(m))return 'E-mail ou senha incorretos.';
+  if(TESTE&&/schema must be one of|PGRST106/i.test(m+' '+((j&&j.code)||'')))
+    return 'O ambiente de teste ainda não está ligado no Supabase: falta rodar o arquivo t01 ou marcar "rtm_teste" em Data API > Exposed schemas.';
   return m;
 }
 async function pede(caminho,opc){
@@ -415,7 +437,7 @@ async function token(){
 async function rpc(nome,args,tentou){
   const tk=await token();
   const r=await pede('/rest/v1/rpc/'+nome,{method:'POST',headers:{apikey:SUPA.chave,Authorization:'Bearer '+tk,
-    'Content-Type':'application/json','Content-Profile':'rtm','Accept-Profile':'rtm'},body:JSON.stringify(args||{})});
+    'Content-Type':'application/json','Content-Profile':PERFIL,'Accept-Profile':PERFIL},body:JSON.stringify(args||{})});
   if(r.status===401&&!tentou){await renova();return rpc(nome,args,true)}
   if(r.status===401){guardaSessao(null);throw semSessao()}
   if(!r.ok)throw new Error(erroDe(r.j,r.status));
@@ -442,7 +464,7 @@ const ASSIN={};
 async function linkFoto(cam){
   const a=ASSIN[cam];if(a&&a.ate>Date.now())return a.url;
   const tk=await token();
-  const r=await pede('/storage/v1/object/sign/rtm-fotos/'+caminhoUrl(cam),{method:'POST',
+  const r=await pede('/storage/v1/object/sign/'+PASTA_FOTOS+'/'+caminhoUrl(cam),{method:'POST',
     headers:{apikey:SUPA.chave,Authorization:'Bearer '+tk,'Content-Type':'application/json'},body:JSON.stringify({expiresIn:3600})});
   const u=r.ok&&r.j&&(r.j.signedURL||r.j.signedUrl);
   if(!u)return '';
@@ -465,7 +487,8 @@ function telaEntrada(erro){
      '<p>Roteiros, visitas, fotos e mensagens dos desenvolvedores comerciais num lugar só, '+
      'ligados à base da Receita e aos clientes BAND de Goiás e Tocantins.</p></div>'+
      '<small>Painel Band Desenvolvedores · versão '+VERSAO+'</small></div>'+
-   '<div class="form"><h2>Entrar no painel</h2><p class="sub">Use a conta de coordenador.</p>'+
+   '<div class="form"><h2>'+(TESTE?'Entrar no portal de teste':'Entrar no painel')+'</h2><p class="sub">Use a conta de coordenador.'+
+     (TESTE?' É a mesma do portal de produção.':'')+'</p>'+
      (erro?'<div class="erro">'+esc(erro)+'</div>':'')+
      '<label for="em">E-mail</label><input id="em" type="email" autocomplete="username" value="'+esc(EMAIL_DIGITADO||localStorage.getItem(K_EMAIL)||'')+'">'+
      '<label for="se">Senha</label><input id="se" type="password" autocomplete="current-password">'+
@@ -564,6 +587,8 @@ async function carregaBase(forcar){
 }
 async function enviaBase(arq){
   if(!arq)return;
+  /* a base é uma só, a de produção: o portal de teste só lê */
+  if(TESTE)return toast('No portal de teste a base é só para leitura. Troque a base pelo portal de produção.');
   const buf=await arq.arrayBuffer();
   let b;try{b=await abreGz(buf)}catch(e){return toast('Este arquivo não é uma base válida.')}
   if(!b||!b.versao||!b.R||!b.C||!b.D)return toast('Arquivo sem versão, estabelecimentos, clientes ou rotas.');
@@ -630,7 +655,7 @@ function pintaLado(){
     '<div class="mini"><div><b>'+fmt(comInt)+'</b><span>querem cadastro</span></div>'+
     '<div><b>'+fmt(D.visitas.length)+'</b><span>no total</span></div>'+
     '<div><b>'+(emUso?fmt(emUso.clientes):'—')+'</b><span>no roteiro</span></div></div>';
-  $('quem').innerHTML='<span>'+esc(EU?EU.email:'')+'</span><button id="bsair">Sair</button>';
+  $('quem').innerHTML='<span>'+esc(EU?EU.email:'')+(TESTE?'':'<br><a href="painel.html?teste" title="O mesmo portal, com dados de teste separados da produção">Abrir o portal de teste</a>')+'</span><button id="bsair">Sair</button>';
   $('bsair').onclick=async()=>{await sai();telaEntrada()};
 }
 function ir(k){MOD=k;try{history.replaceState(null,'','#'+k)}catch(e){}pintaLado();pintaMain();$('main').scrollTop=0}
@@ -644,7 +669,7 @@ function mostraMapa(){
   const ifr=$('mapaif');
   const h=MOD==='planejar'?'planejar':MOD==='simul'?'simulador':'mapa';
   /* o ?t= faz o navegador sempre buscar o mapa novo do GitHub, e nunca uma cópia velha guardada */
-  if(!ifr.src)ifr.src='mapa.html?t='+Date.now()+'#'+h;
+  if(!ifr.src)ifr.src='mapa.html?t='+Date.now()+(TESTE?'&teste=1':'')+'#'+h;
   else{try{ifr.contentWindow.location.hash=h}catch(e){}}
   return true;
 }
@@ -1006,7 +1031,7 @@ async function enviaMsg(){
     let cam=null;const arq=$('mimg').files[0];
     if(arq){const blob=await reduzImagem(arq);
       cam='mensagens/'+new Date().toISOString().replace(/[^0-9]/g,'').slice(0,14)+'_'+Math.random().toString(36).slice(2,7)+'.jpg';
-      await sobe('rtm-fotos',cam,blob,'image/jpeg',false)}
+      await sobe(PASTA_FOTOS,cam,blob,'image/jpeg',false)}
     await rpc('mensagem_gravar',{p_msg:{titulo,texto,dev:$('md').value,imagemCaminho:cam,ativarEm:iso('mi'),expiraEm:iso('mf')}});
     await carregaMsgs();pintaLado();pintaMain();toast('Mensagem enviada');
   }catch(e){if(e.semSessao)return sessaoCaiu();toast('Não consegui enviar: '+e.message);b.disabled=false;b.textContent='Enviar mensagem'}
@@ -1029,11 +1054,14 @@ function mDevs(){
       '<button class="bt peq" data-senha="'+esc(d.login)+'">Voltar senha para a padrão</button></div></div>';
   }).join('');
   /* o próximo login da sequência dc1, dc2, dc3... */
-  let prox=1;D.devs.forEach(d=>{const m=/^dc(\d+)$/.exec(d.login);if(m)prox=Math.max(prox,+m[1]+1)});prox='dc'+prox;
+  /* no portal de teste a sequência é teste1, teste2..., para o login nunca se confundir com o de produção */
+  const pre=TESTE?'teste':'dc';
+  let prox=1;D.devs.forEach(d=>{const m=new RegExp('^'+pre+'(\\d+)$').exec(d.login);if(m)prox=Math.max(prox,+m[1]+1)});prox=pre+prox;
   return cab('Desenvolvedores','Quem usa o app, o nome que aparece no roteiro e o acesso de cada um')+
     '<div class="corpo"><div class="info">Para mudar o nome, clique nele, digite e saia do campo. '+
     '"Voltar senha para a padrão" é para quem esqueceu a senha: no próximo acesso ele cria uma nova.</div>'+
-    '<div class="cartao"><div class="tt"><h2>Novo desenvolvedor</h2><span>cria o cadastro e a conta de acesso ao app</span></div><div class="cc">'+
+    '<div class="cartao"><div class="tt"><h2>'+(TESTE?'Novo usuário de teste':'Novo desenvolvedor')+'</h2><span>cria o cadastro e a conta de acesso ao app'+
+      (TESTE?'. Quem entra no app com este usuário vê e grava só no ambiente de teste':'')+'</span></div><div class="cc">'+
       '<div class="ajustes"><label style="flex:1;min-width:240px">Nome completo<input id="ndnome" maxlength="80" autocomplete="off" style="width:100%"></label>'+
       '<label>Login<input id="ndlogin" maxlength="30" autocomplete="off" style="width:130px" value="'+prox+'"></label>'+
       '<label>Senha provisória<input id="ndsenha" type="text" maxlength="40" autocomplete="off" style="width:210px" placeholder="pelo menos 6 caracteres"></label>'+
@@ -1965,8 +1993,8 @@ function mBase(){
   else if(D.baseEstado==='ok')estado='<div class="ok">Base <b>'+esc(r.versao)+'</b> pronta ('+esc(D.baseOrigem)+').</div>';
   const pop=D.base&&D.base.populacao;
   return cab('Base de dados','Receita Federal × clientes BAND, guardada na pasta privada do Supabase',
-     '<button class="bt escuro" id="benvia">Enviar base</button>')+
-   '<div class="corpo">'+estado+
+     TESTE?'':'<button class="bt escuro" id="benvia">Enviar base</button>')+
+   '<div class="corpo">'+(TESTE?'<div class="info">O portal de teste usa a mesma base da produção, só para leitura. Para trocar a base, use o portal de produção.</div>':'')+estado+
    (r?'<div class="kpis"><div class="kpi"><b>'+fmt(r.estabelecimentos)+'</b><span>estabelecimentos da Receita</span></div>'+
      '<div class="kpi v"><b>'+fmt(r.clientes)+'</b><span>clientes BAND</span></div>'+
      '<div class="kpi"><b>'+fmt(r.rotas)+'</b><span>rotas com território</span></div>'+
@@ -1984,7 +2012,25 @@ function mBase(){
    '<div class="info">A base não fica dentro do painel: o painel é público no GitHub e a base tem nome, telefone e endereço dos PDVs. '+
    'Ela fica na pasta privada <b>rtm-base</b>, que só a conta de coordenador lê.</div></div>';
 }
-liga.base=()=>{$('benvia').onclick=()=>$('arqBase').click()};
+liga.base=()=>{if($('benvia'))$('benvia').onclick=()=>$('arqBase').click()};
+/* ---------------- portal de teste ---------------- */
+if(TESTE){
+  document.body.classList.add('teste');
+  try{document.title='TESTE · '+document.title}catch(e){}
+  /* zera roteiros, visitas, pesquisas e mensagens do ambiente de teste; os usuários de teste ficam */
+  $('blimpa').onclick=async()=>{
+    if(!EU)return toast('Entre no portal de teste primeiro');
+    if(!confirm('Limpar os dados de teste?\n\nApaga roteiros, visitas, pesquisas e mensagens do ambiente de teste. Os usuários de teste continuam.\n\nA produção não é tocada.'))return;
+    try{
+      const j=await rpc('limpar_teste');
+      /* o que estava na tela era do que foi apagado: zera e lê tudo de novo */
+      D.visitas=[];D.visDesde=null;D.visCnpj=null;D.rotCompleto=undefined;
+      PQD.p=null;PQD.cli=[];PQD.porCod={};PQD.resp={};PQD.ac={};PQD.desde=null;PQD.versao=null;PQD.sel=null;
+      await atualizaTudo(true);
+      toast('Dados de teste limpos: '+fmt(j.visitas)+' visitas, '+fmt(j.respostas)+' pesquisas, '+fmt(j.roteiros)+' roteiros');
+    }catch(e){if(e.semSessao)return sessaoCaiu();toast('Não consegui limpar: '+e.message)}
+  };
+}
 $('arqBase').onchange=e=>{const f=e.target.files[0];e.target.value='';enviaBase(f)};
 
 /* ---------------- início ---------------- */

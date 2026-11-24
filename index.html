@@ -516,6 +516,10 @@ body.comacao #toast{bottom:calc(env(safe-area-inset-bottom) + 108px)}
 #login .dica{margin:0 0 14px;font-size:14px;line-height:1.45;color:rgba(255,255,255,.9)}
 #login .dica b{color:#fff}
 #login input.pin{letter-spacing:.6em;font-size:22px;text-align:center}
+/* ---- ambiente de teste: uma faixa que não deixa confundir com a produção ---- */
+body.teste #topo{box-shadow:inset 0 -4px 0 #F5A524}
+body.teste #titulo::after{content:"TESTE";display:inline-block;margin-left:8px;padding:2px 8px;border-radius:7px;
+  background:#F5A524;color:#1A1D21;font-size:11px;font-weight:800;letter-spacing:.06em;vertical-align:middle}
 /* ---- pesquisa com clientes BAND ---- */
 .pqst{border-radius:7px;padding:2px 7px;font-size:11.5px;font-weight:700}
 .pqst.p{background:var(--ok-bg);color:var(--ok)}.pqst.w{background:var(--wa-bg);color:var(--wa)}
@@ -574,7 +578,7 @@ textarea.pqou{min-height:58px;margin:-1px 0 9px;border-color:var(--blue)}
    A base vem embutida e funciona sem internet. As respostas ficam no aparelho
    e sobem para a planilha assim que houver sinal.
    =========================================================================== */
-const VERSAO='2.5.2';
+const VERSAO='2.6.0';
 
 /* ---------------- auditoria: erros do app e "estou vivo" ----------------
    Guarda no aparelho os erros que acontecem e manda para o painel de auditoria,
@@ -651,6 +655,8 @@ document.addEventListener('visibilitychange',()=>audPasso(document.hidden?'saiu 
 function audEnvia(intervalo){
   try{
     if(AUD.enviando||!SESSAO||!DESBLOQ||!navigator.onLine)return;
+    /* o usuário de teste não entra no Band Auditoria: lá só aparece o que é de produção */
+    if(ehTeste()){AUD.fila=[];return}
     const t=Date.now();
     if(t<AUD.parada)return;
     const desde=t-AUD.ultimo;
@@ -995,6 +1001,13 @@ const olhoSvg=aberto=>
    cada um e as regras do banco (cada desenvolvedor só alcança o que é dele). */
 const SUPA={url:'https://kqpdledhaghuzuwjkvrf.supabase.co',chave:'sb_publishable_dMdB5b_G5X5TnXemexGIXQ_GWXS6cid'};
 const K_SESSAO='rtm_sessao',K_PIN='rtm_pin';
+/* Ambiente: produção (pasta "rtm" do banco) ou teste (pasta "rtm_teste"). O usuário de teste é
+   reconhecido na entrada, porque a conta dele só existe no cadastro de teste. Tudo o que ele
+   faz (visitas, pesquisas, fotos) vai para a área de teste e aparece só no portal de teste. */
+const ehTeste=()=>S.amb==='teste';
+const perfilBanco=()=>ehTeste()?'rtm_teste':'rtm';
+const pastaFotos=()=>ehTeste()?'rtm-teste-fotos':'rtm-fotos';
+function pintaAmbiente(){try{document.body.classList.toggle('teste',ehTeste())}catch(e){}}
 let SESSAO=null;try{SESSAO=JSON.parse(localStorage.getItem(K_SESSAO)||'null')}catch(e){}
 let DESBLOQ=false;
 function guardaSessao(j){
@@ -1048,17 +1061,18 @@ async function token(){
   return SESSAO.access_token;
 }
 /* chama uma função do banco do RTM */
-async function rpc(nome,args,tentou){
-  const tk=await token();
+async function rpc(nome,args,tentou,calado){
+  const tk=await token(),pf=perfilBanco();
   const r=await pede('/rest/v1/rpc/'+nome,{method:'POST',headers:{apikey:SUPA.chave,
     Authorization:'Bearer '+tk,'Content-Type':'application/json',
-    'Content-Profile':'rtm','Accept-Profile':'rtm'},body:JSON.stringify(args||{})});
-  if(r.status===401&&!tentou){await renova();return rpc(nome,args,true)}
+    'Content-Profile':pf,'Accept-Profile':pf},body:JSON.stringify(args||{})});
+  if(r.status===401&&!tentou){await renova();return rpc(nome,args,true,calado)}
   if(r.status===401){guardaSessao(null);throw semSessao()}
   if(!r.ok){
     const m=erroDe(r.j,r.status);
-    /* o servidor respondeu com erro: vai para a auditoria (5xx é erro; o resto, aviso) */
-    audita(r.status>=500?'erro':'aviso','servidor',nome+': '+m,{funcao:nome,status:r.status,codigo:(r.j&&r.j.code)||''});
+    /* o servidor respondeu com erro: vai para a auditoria (5xx é erro; o resto, aviso).
+       "calado" é para a pergunta da entrada, em que a recusa é esperada. */
+    if(!calado)audita(r.status>=500?'erro':'aviso','servidor',nome+': '+m,{funcao:nome,status:r.status,codigo:(r.j&&r.j.code)||''});
     throw new Error(m);
   }
   return r.j;
@@ -1068,7 +1082,7 @@ const caminhoUrl=c=>String(c).split('/').map(encodeURIComponent).join('/');
    anterior (o servidor responde "já existe"), conta como enviado. */
 async function sobeArquivo(caminho,blob,tipo,tentou){
   const tk=await token();
-  const r=await pede('/storage/v1/object/rtm-fotos/'+caminhoUrl(caminho),{method:'POST',
+  const r=await pede('/storage/v1/object/'+pastaFotos()+'/'+caminhoUrl(caminho),{method:'POST',
     headers:{apikey:SUPA.chave,Authorization:'Bearer '+tk,'Content-Type':tipo||'image/jpeg',
       'x-upsert':'false'},body:blob});
   if(r.ok)return true;
@@ -1083,7 +1097,7 @@ const PIXEL='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABA
 function assina(cam){
   const a=ASSIN[cam]; if(a&&(a.pedindo||a.ate>Date.now()))return;
   ASSIN[cam]={pedindo:true,ate:0};
-  token().then(tk=>pede('/storage/v1/object/sign/rtm-fotos/'+caminhoUrl(cam),{method:'POST',
+  token().then(tk=>pede('/storage/v1/object/sign/'+pastaFotos()+'/'+caminhoUrl(cam),{method:'POST',
       headers:{apikey:SUPA.chave,Authorization:'Bearer '+tk,'Content-Type':'application/json'},
       body:JSON.stringify({expiresIn:3600})}))
    .then(r=>{
@@ -1151,29 +1165,40 @@ async function entrar(){
   if(!em||!se)return pintaLogin('Preencha e-mail e senha.');
   if(!navigator.onLine)return pintaLogin('Sem internet. Para entrar com a senha é preciso conexão.');
   const b=$('lentrar');b.disabled=true;b.textContent='Entrando…';
+  const ambAntes=S.amb||'';
   try{
     await autentica(em,se);
-    const q=await rpc('quem_sou');
+    /* primeiro pergunta na produção; se a conta não é de lá, pergunta no ambiente de teste */
+    let q;
+    try{S.amb='';q=await rpc('quem_sou',null,false,true)}
+    catch(e){
+      if(e.semSessao||!/Sem acesso ao RTM/i.test(e.message||''))throw e;
+      S.amb='teste';
+      try{q=await rpc('quem_sou',null,false,true)}catch(e2){if(e2.semSessao)throw e2;throw e}
+    }
     if(q.papel!=='desenvolvedor'){
+      S.amb=ambAntes;
       await saiDoServidor();
       return pintaLogin('Esta conta não é de desenvolvedor. Use o painel do RTM.');
     }
     if(S.login&&S.login!==q.login){
       const fila=pendentes().length;
       if(fila){
+        S.amb=ambAntes;
         await saiDoServidor();
         return pintaLogin('Este aparelho tem '+fila+' visita(s) de '+S.login+
           ' ainda não enviadas. Entre como '+S.login+' e envie antes de trocar.');
       }
-      trocaDeUsuario();
+      const amb=S.amb;trocaDeUsuario();S.amb=amb;
     }
-    S.login=q.login;S.nome=q.nome;S.email=em;save();
+    S.login=q.login;S.nome=q.nome;S.email=em;save();pintaAmbiente();
     if(q.precisaCriarSenha)return pintaNovaSenha();
     const p=lePin();
     if(!p||p.login!==S.login)return pintaCriaPin();
     entraNoApp();
   }catch(e){
     /* entrou no servidor mas não passou na conferência: a sessão não fica */
+    S.amb=ambAntes;
     if(SESSAO)await saiDoServidor();
     pintaLogin(e.message||'Não consegui entrar.');
   }
@@ -1249,7 +1274,7 @@ async function salvaPin(){
 }
 function pintaPin(erro){
   telaEntrada(erro,
-    '<p class="dica">Olá, <b>'+esc(meuNome())+'</b>. Digite o seu PIN.</p>'+
+    '<p class="dica">Olá, <b>'+esc(meuNome())+'</b>. Digite o seu PIN.'+(ehTeste()?' <b>Você está no ambiente de teste.</b>':'')+'</p>'+
     campoPin('lpin','PIN')+
     '<button class="entrar" id="lentrar">Entrar</button>'+
     '<div class="aj">Esqueceu o PIN? <b id="lajuda">Entrar com a senha</b></div>');
@@ -1292,7 +1317,7 @@ function abreEntrada(){
   pintaLogin();
 }
 function entraNoApp(){
-  DESBLOQ=true;
+  DESBLOQ=true;pintaAmbiente();
   $('login').classList.remove('on');
   fDia=diaSugerido();tela('visitas');
   sincroniza(true);
