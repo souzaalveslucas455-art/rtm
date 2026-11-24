@@ -360,7 +360,7 @@ main{overflow-y:auto;min-width:0}
    o que protege os dados é o login do coordenador e as regras do banco.
    Tudo o que este painel guarda no navegador usa chaves com o prefixo rtm_painel_.
    ============================================================================ */
-const VERSAO='1.1.0';
+const VERSAO='1.2.0';
 const SUPA={url:'https://kqpdledhaghuzuwjkvrf.supabase.co',chave:'sb_publishable_dMdB5b_G5X5TnXemexGIXQ_GWXS6cid'};
 const K_SESSAO='rtm_painel_sessao',K_EMAIL='rtm_painel_email';
 const $=id=>document.getElementById(id);
@@ -1028,12 +1028,61 @@ function mDevs(){
       '<div class="bts"><button class="bt peq" data-ativo="'+esc(d.login)+'">'+(d.ativo?'Desativar':'Reativar')+'</button>'+
       '<button class="bt peq" data-senha="'+esc(d.login)+'">Voltar senha para a padrão</button></div></div>';
   }).join('');
+  /* o próximo login da sequência dc1, dc2, dc3... */
+  let prox=1;D.devs.forEach(d=>{const m=/^dc(\d+)$/.exec(d.login);if(m)prox=Math.max(prox,+m[1]+1)});prox='dc'+prox;
   return cab('Desenvolvedores','Quem usa o app, o nome que aparece no roteiro e o acesso de cada um')+
     '<div class="corpo"><div class="info">Para mudar o nome, clique nele, digite e saia do campo. '+
     '"Voltar senha para a padrão" é para quem esqueceu a senha: no próximo acesso ele cria uma nova.</div>'+
+    '<div class="cartao"><div class="tt"><h2>Novo desenvolvedor</h2><span>cria o cadastro e a conta de acesso ao app</span></div><div class="cc">'+
+      '<div class="ajustes"><label style="flex:1;min-width:240px">Nome completo<input id="ndnome" maxlength="80" autocomplete="off" style="width:100%"></label>'+
+      '<label>Login<input id="ndlogin" maxlength="30" autocomplete="off" style="width:130px" value="'+prox+'"></label>'+
+      '<label>Senha provisória<input id="ndsenha" type="text" maxlength="40" autocomplete="off" style="width:210px" placeholder="pelo menos 6 caracteres"></label>'+
+      '<button class="bt verm" id="ndcria">Criar desenvolvedor</button></div>'+
+      '<div id="ndmsg" class="aviso esc" style="margin-top:12px" role="alert"></div>'+
+      '<p style="margin:12px 0 0;color:var(--ink2);font-size:13px;line-height:1.5">Ele entra no app com o e-mail <b id="ndemail" style="color:var(--ink)">'+prox+'@band.com.br</b> e a senha provisória. '+
+      'No primeiro acesso o app pede para ele criar a própria senha e o PIN. A senha provisória não fica guardada no painel: anote para passar a ele.</p></div></div>'+
     '<div class="devs">'+(cards||'<div class="vazio">Nenhum desenvolvedor cadastrado.</div>')+'</div></div>';
 }
+/* Cria um desenvolvedor: primeiro o cadastro (função do banco), depois a conta de acesso, pelo
+   cadastro oficial do Supabase. Se a conta falhar, repetir com os mesmos dados só refaz esse passo. */
+async function criaDev(){
+  const nome=$('ndnome').value.trim().replace(/\s+/g,' '),login=$('ndlogin').value.trim().toLowerCase(),senha=$('ndsenha').value;
+  if(nome.length<3){$('ndnome').focus();return toast('Escreva o nome do desenvolvedor')}
+  if(!/^[a-z0-9][a-z0-9._-]{1,29}$/.test(login)){$('ndlogin').focus();return toast('Login: de 2 a 30 letras minúsculas, números, ponto ou traço, sem espaço')}
+  if(senha.length<6){$('ndsenha').focus();return toast('A senha provisória precisa de pelo menos 6 caracteres')}
+  if(!confirm('Criar o desenvolvedor '+nome+'?\n\nEle entra no app com o e-mail '+login+'@band.com.br e a senha provisória.\n\nPassa a aparecer no planejamento do roteiro e na Pesquisa.'))return;
+  const b=$('ndcria');b.disabled=true;b.textContent='Criando…';
+  try{
+    const j=await rpc('desenvolvedor_criar',{p_login:login,p_nome:nome});
+    let aviso='';
+    if(!j.contaCriada){
+      /* a resposta traz uma sessão do usuário novo; o painel não guarda nem usa */
+      const r=await pede('/auth/v1/signup',{method:'POST',headers:{apikey:SUPA.chave,'Content-Type':'application/json'},
+        body:JSON.stringify({email:j.email,password:senha})});
+      if(!r.ok){
+        if(/already|registered|exists/i.test(JSON.stringify(r.j||'')))
+          throw new Error('o cadastro foi feito, mas já havia uma conta com o e-mail '+j.email+'. Use "Voltar senha para a padrão" no cartão dele antes de passar a senha.');
+        throw new Error('o cadastro foi feito, mas a conta não foi criada ('+erroDe(r.j,r.status)+'). Corrija e clique em Criar de novo, com o mesmo nome e login.');
+      }
+      if(!(r.j&&(r.j.access_token||(r.j.user&&r.j.user.confirmed_at)||r.j.confirmed_at||r.j.email_confirmed_at)))
+        aviso=' Atenção: o Supabase pediu confirmação por e-mail para esta conta.';
+    }
+    await carregaDevs();pintaLado();pintaMain();
+    toast(nome+' criado. E-mail de acesso: '+j.email+'.'+aviso);
+  }catch(e){
+    if(e.semSessao)return sessaoCaiu();
+    /* o aviso fica na tela (o texto é longo para sumir em 3 segundos) e os campos continuam preenchidos */
+    toast('Não consegui criar o desenvolvedor');
+    if($('ndmsg')){$('ndmsg').textContent='Não consegui criar: '+e.message;$('ndmsg').classList.remove('esc')}
+    carregaDevs().then(()=>{if($('ndcria')){$('ndcria').disabled=false;$('ndcria').textContent='Criar desenvolvedor'}}).catch(()=>{});
+  }
+}
 liga.devs=()=>{
+  if($('ndcria')){
+    $('ndlogin').oninput=()=>{$('ndemail').textContent=($('ndlogin').value.trim().toLowerCase()||'login')+'@band.com.br'};
+    $('ndsenha').onkeydown=e=>{if(e.key==='Enter')criaDev()};
+    $('ndcria').onclick=criaDev;
+  }
   document.querySelectorAll('[data-nome]').forEach(i=>{
     i.onkeydown=e=>{if(e.key==='Enter')i.blur()};
     i.onchange=async()=>{const nome=i.value.trim();if(!nome)return pintaMain();
