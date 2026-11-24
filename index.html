@@ -574,7 +574,7 @@ textarea.pqou{min-height:58px;margin:-1px 0 9px;border-color:var(--blue)}
    A base vem embutida e funciona sem internet. As respostas ficam no aparelho
    e sobem para a planilha assim que houver sinal.
    =========================================================================== */
-const VERSAO='2.5.0';
+const VERSAO='2.5.1';
 
 /* ---------------- auditoria: erros do app e "estou vivo" ----------------
    Guarda no aparelho os erros que acontecem e manda para o painel de auditoria,
@@ -2968,7 +2968,13 @@ function vPerto(){
   const ss=Object.keys(segs).sort((a,b)=>segs[b]-segs[a]).slice(0,6);
   const perto300=GPSPERTO?l.filter(c=>c.dGps<=0.3).length:0,maisPerto=l[0];
   const idade=GPSPERTO?Math.round((Date.now()-GPSPERTO.t)/60000):null;
-  let h=(outro?'<div class="aviso" style="margin-top:10px">Nenhum cliente mapeado no dia '+fDia+
+  /* com pesquisa publicada, esta lista era confundida com a da pesquisa: aqui entram clientes de
+     qualquer rota que estejam perto do roteiro; os da pesquisa ficam na tela Pesquisa */
+  const nPesq=pqCli().length;
+  let h=(nPesq?'<div class="aviso" style="margin-top:10px;display:flex;gap:10px;align-items:center"><span style="flex:1">'+
+      '<b>Esta não é a lista da pesquisa.</b> Aqui aparecem clientes BAND de qualquer rota que estão perto do roteiro de hoje.</span>'+
+      '<button class="pqbt" style="margin:0;flex:none" onclick="tela(\'pesquisa\')">Abrir a Pesquisa</button></div>':'')+
+    (outro?'<div class="aviso" style="margin-top:10px">Nenhum cliente mapeado no dia '+fDia+
       '. Mostrando o dia '+dia+', o mais próximo com clientes na região.</div>':'')+
    '<div class="phd"><div class="pht"><b>'+fmt(l.length)+'</b> clientes BAND perto do seu trabalho · '+
      esc(dowDo(dia)+' '+dataDo(dia))+'</div>'+
@@ -3702,8 +3708,8 @@ function pqCartao(c){
     '<div class="pm"><div class="pn">'+esc(c.nome)+'</div>'+
       '<div class="pt">'+selo+(c.seg?'<span class="sg">'+esc(c.seg)+'</span>':'')+
         '<button class="cd" onclick="copiaCod(\''+cod+'\')" aria-label="Copiar código">'+svg('chave',1.9)+cod+'</button></div>'+
-      '<div class="pi">'+(temGps&&c.rota?'Rota '+esc(c.rota)+' · ':'')+(c.consultor?esc(nomeCurto(c.consultor)):'')+'</div>'+
-      '<div class="pi" style="color:var(--ink3)">'+esc([c.endereco||c.bairro,c.cidade].filter(Boolean).join(' · '))+'</div>'+
+      (c.consultor?'<div class="pi">Consultor de vendas: <strong style="color:var(--ink)">'+esc(c.consultor)+'</strong></div>':'')+
+      '<div class="pi" style="color:var(--ink3)">'+esc([temGps&&c.rota?'Rota '+c.rota:'',c.endereco||c.bairro,c.cidade].filter(Boolean).join(' · '))+'</div>'+
       '<button class="pqbt'+(g&&!volta?' o':'')+'" onclick="pqAbre(\''+cod+'\')">'+
         (!g?'Responder pesquisa':volta?'Tentar de novo':'Ver respostas')+'</button></div>'+
     '<div class="pb"><button class="acao" onclick="rotaPara('+c.lat+','+c.lon+')" aria-label="Ir até lá">'+svg('rota')+'</button></div></div>';
@@ -3786,7 +3792,8 @@ function pqComeca(cod,base){
 function pqCab(cod){
   const c=pqAcha(cod)||{nome:'Cliente',cod};
   return '<div class="pqcab"><b>'+esc(c.nome)+'</b><span>Código '+esc(String(c.cod))+(c.rota?' · rota '+esc(c.rota):'')+
-    (c.seg?' · '+esc(c.seg):'')+'</span></div>';
+    (c.seg?' · '+esc(c.seg):'')+'</span>'+
+    (c.consultor?'<span style="display:block;margin-top:2px">Consultor de vendas: <strong style="color:var(--ink)">'+esc(c.consultor)+'</strong></span>':'')+'</div>';
 }
 function vPesqForm(){
   if(!PQ)return '<div class="vazio">Nenhuma pesquisa aberta.</div><button class="cta o" onclick="tela(\'pesquisa\')">Voltar para a lista</button>';
