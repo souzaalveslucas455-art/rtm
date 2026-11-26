@@ -1,0 +1,656 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Central de Acessos · Band</title>
+<script>/* o tema escolhido vale antes de a pagina aparecer, para nao piscar */try{document.documentElement.dataset.tema=localStorage.getItem('central_tema')==='claro'?'claro':'escuro'}catch(e){document.documentElement.dataset.tema='escuro'}</script>
+<style>
+/* O mesmo desenho do painel de auditoria: menu ao lado, dois temas para a pagina inteira. */
+:root{--verm:#E4002B;--verm-esc:#B80022;--sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+html[data-tema="escuro"]{color-scheme:dark;
+  --fundo:#14151C;--papel:#1C1D27;--papel2:#232532;--papel3:#2B2D3B;--linha:#2C2E3B;--linha2:#3D4051;
+  --ink:#F1F1F4;--ink2:#B8BAC6;--ink3:#8E92A2;--lado:#101117;--lado-ativo:#1A2740;--acento:#6AA5F2;
+  --verm-bg:#3A1418;--verm-tx:#FFB3BD;--verde:#5FD6A1;--verde-bg:#12301F;--amb:#F5C56B;--amb-bg:#3A2C0E;--azul:#8FBDF3;--azul-bg:#12263F;
+  --sombra:0 12px 32px rgba(0,0,0,.45);--heroi:radial-gradient(120% 140% at 0% 100%,#5A0A19 0%,rgba(90,10,25,0) 62%),linear-gradient(160deg,#232532 0%,#181922 100%)}
+html[data-tema="claro"]{color-scheme:light;
+  --fundo:#F1F2F4;--papel:#FFFFFF;--papel2:#F6F7F9;--papel3:#ECEEF2;--linha:#E3E5EA;--linha2:#CFD3DB;
+  --ink:#1A1D21;--ink2:#535A68;--ink3:#6B7280;--lado:#FFFFFF;--lado-ativo:#E9F1FC;--acento:#1A5FBF;
+  --verm-bg:#FDE7EC;--verm-tx:#B80022;--verde:#0F7A52;--verde-bg:#E6F4EE;--amb:#8A5A0B;--amb-bg:#FDF2DC;--azul:#1A5FBF;--azul-bg:#E9F1FC;
+  --sombra:0 12px 32px rgba(20,24,40,.14);--heroi:radial-gradient(120% 140% at 0% 100%,#FBD0D8 0%,rgba(251,208,216,0) 62%),linear-gradient(160deg,#FFFFFF 0%,#EEF0F4 100%)}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{font-family:var(--sans);font-size:14px;line-height:1.5;color:var(--ink);background:var(--fundo);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:var(--acento)}
+:focus-visible{outline:2px solid var(--acento);outline-offset:2px}
+[hidden]{display:none!important}
+
+/* ---------- estrutura ---------- */
+#app{display:grid;grid-template-columns:286px minmax(0,1fr);min-height:100vh}
+#lado{background:var(--lado);border-right:1px solid var(--linha);position:sticky;top:0;height:100vh;display:flex;flex-direction:column;overflow:hidden;z-index:15}
+#lado .marca{display:flex;align-items:center;gap:11px;padding:16px 16px 10px;min-height:68px}
+.lg{width:36px;height:36px;border-radius:10px;background:var(--verm);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px;flex:none}
+#lado .marca b{display:block;font-size:15px;white-space:nowrap}
+#lado .marca small{display:block;color:var(--ink3);font-size:12px;white-space:nowrap}
+#abas{flex:1;overflow-y:auto;padding:2px 10px 12px;scrollbar-width:thin}
+#abas .grupo{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);padding:14px 10px 6px;white-space:nowrap}
+#abas button{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:11px;width:100%;min-height:40px;padding:8px 10px;
+  border-radius:9px;color:var(--ink2);font-weight:600;font-size:13.5px;border-left:3px solid transparent}
+#abas button:hover{background:var(--papel2);color:var(--ink)}
+#abas button:focus-visible{outline:2px solid var(--acento);outline-offset:-2px}
+#abas button[aria-current="page"]{background:var(--lado-ativo);color:var(--acento);border-left-color:var(--acento)}
+#abas svg{width:18px;height:18px;flex:none}
+#abas .rot{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#abas .conta{font-size:11px;font-weight:700;border-radius:999px;padding:1px 7px;background:var(--papel3);color:var(--ink2);flex:none}
+#abas .conta.ok{background:var(--verde-bg);color:var(--verde)}
+#abas .vazio{color:var(--ink3);padding:10px;font-size:12.5px}
+.pt{width:8px;height:8px;border-radius:50%;flex:none;background:var(--ink3)}
+.pt.v{background:var(--verde)}.pt.a{background:var(--amb)}.pt.b{background:var(--azul)}.pt.r{background:var(--verm)}
+#lado .pe{padding:12px 14px;border-top:1px solid var(--linha);display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--ink2)}
+#lado .pe b{display:block;color:var(--ink)}
+#lado .pe .cad{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex:none;background:var(--amb-bg);color:var(--amb)}
+#lado .pe.ab .cad{background:var(--verde-bg);color:var(--verde)}
+#lado .pe svg{width:18px;height:18px}
+#veu{display:none}
+#coluna{min-width:0;display:flex;flex-direction:column}
+.topo{position:sticky;top:0;z-index:10;background:var(--fundo);border-bottom:1px solid var(--linha);display:flex;align-items:center;gap:10px;padding:14px 22px;flex-wrap:wrap}
+.topo h1{font-size:22px;margin:0 auto 0 4px;letter-spacing:-.01em;line-height:1.2}
+.topo input[type=search]{width:min(300px,100%);border-radius:9px;padding:8px 12px;border:1px solid var(--linha2);background:var(--papel);color:var(--ink);height:38px}
+#bmenu{display:none}
+#main{padding:22px;max-width:1240px;width:100%}
+
+/* ---------- pecas ---------- */
+.bt{border:1px solid var(--linha2);background:var(--papel);color:var(--ink);border-radius:9px;padding:8px 13px;font-weight:600;white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center;gap:7px}
+.bt:hover{background:var(--papel3)}
+.bt.verm{background:var(--verm);border-color:var(--verm);color:#fff}.bt.verm:hover{background:var(--verm-esc)}
+.bt.fino{padding:5px 10px;font-size:12.5px}
+.bt:disabled{opacity:.5;cursor:default}
+.bt.icone{width:38px;height:38px;padding:0;justify-content:center;flex:none}
+.bt svg{width:16px;height:16px;flex:none}.bt.icone svg{width:18px;height:18px}
+.selo{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:999px;background:var(--papel3);color:var(--ink2);white-space:nowrap}
+.selo.v{background:var(--verde-bg);color:var(--verde)}.selo.a{background:var(--amb-bg);color:var(--amb)}.selo.b{background:var(--azul-bg);color:var(--azul)}.selo.r{background:var(--verm-bg);color:var(--verm-tx)}
+.cartao{background:var(--papel);border:1px solid var(--linha);border-radius:14px;padding:18px}
+.cartao>h3{margin:0 0 12px;font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3)}
+.nota{border-radius:12px;padding:12px 16px;margin:0 0 16px;border:1px solid var(--linha);background:var(--papel);display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.nota.amb{background:var(--amb-bg);border-color:transparent;color:var(--amb)}
+.nota.verde{background:var(--verde-bg);border-color:transparent;color:var(--verde)}
+.nota.azul{background:var(--azul-bg);border-color:transparent;color:var(--azul)}
+.nota b{color:inherit}.nota .acao{margin-left:auto}
+.nota svg{width:20px;height:20px;flex:none}
+
+/* visao geral */
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:0 0 6px}
+.kpi{background:var(--papel);border:1px solid var(--linha);border-radius:14px;padding:14px 16px}
+.kpi b{display:block;font-size:26px;line-height:1.1;letter-spacing:-.02em}
+.kpi span{color:var(--ink2);font-size:12.5px}
+.secao{display:flex;align-items:baseline;gap:10px;margin:24px 2px 10px;flex-wrap:wrap}
+.secao h2{margin:0;font-size:16px}.secao span{color:var(--ink3);font-size:12.5px}
+.azulejos{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.azulejo{all:unset;box-sizing:border-box;cursor:pointer;background:var(--papel);border:1px solid var(--linha);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;min-height:138px;transition:transform .12s,border-color .12s}
+.azulejo:hover{border-color:var(--acento);transform:translateY(-2px)}
+.azulejo:focus-visible{outline:2px solid var(--acento);outline-offset:2px}
+.azulejo .cima{display:flex;align-items:center;gap:10px}
+.ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;flex:none;background:var(--papel3);color:var(--ink)}
+.ic svg{width:20px;height:20px}
+.ic.v{background:var(--verde-bg);color:var(--verde)}.ic.a{background:var(--amb-bg);color:var(--amb)}.ic.b{background:var(--azul-bg);color:var(--azul)}.ic.r{background:var(--verm-bg);color:var(--verm-tx)}
+.azulejo b{font-size:14.5px;line-height:1.25}
+.azulejo p{margin:0;color:var(--ink2);font-size:12.5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.azulejo .pe2{margin-top:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--ink3)}
+
+/* tela de um modulo */
+.heroi{background:var(--heroi);border:1px solid var(--linha);border-radius:18px;padding:24px;display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap;margin:0 0 16px}
+.heroi .ic{width:58px;height:58px;border-radius:16px}.heroi .ic svg{width:28px;height:28px}
+.heroi .txt{flex:1;min-width:240px}
+.heroi h2{margin:0 0 6px;font-size:24px;letter-spacing:-.01em;line-height:1.2;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.heroi p{margin:0;color:var(--ink2);max-width:70ch}
+.heroi .abre{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.duas{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;margin:0 0 16px}
+.end{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--linha)}
+.end:first-of-type{border-top:0;padding-top:0}
+.end small{display:block;color:var(--ink3);font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.end code{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;word-break:break-all;color:var(--ink)}
+.end .acoes{display:flex;gap:6px}
+.como{color:var(--ink2);margin:0}
+.contas{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px}
+.acc{background:var(--papel2);border:1px solid var(--linha);border-radius:12px;padding:14px;display:grid;gap:10px}
+.acc .rot{display:flex;align-items:center;gap:8px;font-weight:700}
+.acc .rot .selo{margin-left:auto}
+.acc .mesma{font-size:12px;color:var(--ink3);border-top:1px dashed var(--linha2);padding-top:9px}
+.campo{display:grid;gap:5px}
+.campo label{font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3)}
+.campo .lin{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px}
+.campo input,.campo textarea{width:100%;min-width:0;border:1px solid var(--linha2);border-radius:9px;padding:9px 11px;background:var(--papel);color:var(--ink)}
+.campo input:disabled,.campo textarea:disabled,.campo input[readonly]{background:var(--papel3);color:var(--ink3)}
+.campo textarea{min-height:88px;resize:vertical}
+.campo .acoes{display:flex;gap:6px}
+.lista{margin:0;padding-left:18px;color:var(--ink2)}.lista li{margin:5px 0}.lista b,.lista code{color:var(--ink)}
+.botoes{display:flex;gap:10px;flex-wrap:wrap}
+.semnada{color:var(--ink3);text-align:center;padding:36px 12px}
+
+/* tela do cadeado (versao publica) */
+#entrada{position:fixed;inset:0;z-index:30;background:var(--fundo);display:grid;place-items:center;padding:20px;overflow:auto}
+#entrada .eb{width:min(410px,100%);background:var(--heroi);border:1px solid var(--linha);border-radius:20px;padding:30px;box-shadow:var(--sombra);display:grid;gap:14px}
+#entrada .lg{width:46px;height:46px;border-radius:13px;font-size:17px}
+#entrada h1{margin:6px 0 0;font-size:30px;line-height:1.1;letter-spacing:-.02em}
+#entrada h1 span{color:var(--verm)}
+#entrada p{margin:0;color:var(--ink2)}
+#entrada .erro{color:var(--verm-tx);font-weight:700;font-size:13px;min-height:19px}
+#entrada .bt{justify-content:center;padding:11px}
+#entrada small{color:var(--ink3);font-size:12px;min-height:16px}
+
+/* janela e aviso */
+#janela{position:fixed;inset:0;background:rgba(8,9,13,.66);display:none;align-items:center;justify-content:center;padding:18px;z-index:40}
+#janela.on{display:flex}
+#janela .folha{background:var(--papel);border:1px solid var(--linha);border-radius:16px;padding:22px;width:min(460px,100%);box-shadow:var(--sombra)}
+#janela h2{margin:0 0 6px;font-size:18px}
+#janela p{margin:0 0 14px;color:var(--ink2)}
+#janela .campo{margin:0 0 12px}
+#janela .erro{color:var(--verm-tx);font-weight:700;min-height:20px;margin:0 0 8px;font-size:13px}
+#janela .bts{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--fundo);padding:10px 16px;border-radius:10px;font-weight:600;opacity:0;transition:.2s;pointer-events:none;z-index:50;max-width:90vw}
+#toast.on{opacity:1;transform:translateX(-50%)}
+
+@media(max-width:1000px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.duas{grid-template-columns:1fr}}
+@media(max-width:860px){
+  #app{grid-template-columns:1fr}
+  #lado{position:fixed;left:0;top:0;width:286px;transform:translateX(-100%);transition:transform .2s;box-shadow:var(--sombra)}
+  body.menu #lado{transform:none}
+  body.menu #veu{display:block;position:fixed;inset:0;background:rgba(8,9,13,.55);z-index:14}
+  #bmenu{display:inline-flex}
+  #main{padding:16px}.topo{padding:12px 16px}.topo h1{font-size:19px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{#lado,.topo,#janela,#toast,.bt{display:none!important}#app{display:block}input[type=password]{display:none}}
+</style>
+</head>
+<body>
+<!-- So na versao publica: a tela do cadeado. Nada da lista aparece antes da senha-mestra. -->
+<div id="entrada" hidden>
+  <div class="eb">
+    <div class="lg">BD</div>
+    <h1>Central de <span>Acessos</span></h1>
+    <p>Esta página está trancada. O conteúdo só aparece com a senha-mestra.</p>
+    <div class="campo"><label for="esenha">Senha-mestra</label><input id="esenha" type="password" autocomplete="off" spellcheck="false"></div>
+    <div class="erro" id="eerro" role="alert"></div>
+    <button class="bt verm" id="eentra" disabled>Abrir</button>
+    <small id="einfo"></small>
+  </div>
+</div>
+<div id="app">
+  <aside id="lado" aria-label="Menu">
+    <div class="marca"><div class="lg">BD</div><div><b>Central de Acessos</b><small>Band · RTM e Merchandising</small></div></div>
+    <nav id="abas" aria-label="Aplicações"></nav>
+    <div class="pe" id="pelado"></div>
+  </aside>
+  <div id="veu"></div>
+  <div id="coluna">
+    <header class="topo">
+      <button class="bt icone" id="bmenu" aria-label="Abrir o menu" title="Abrir o menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+      <h1 id="titulo">Visão geral</h1>
+      <input type="search" id="busca" placeholder="Procurar aplicação, endereço ou usuário" aria-label="Procurar">
+      <button class="bt icone" id="btema" aria-label="Trocar o tema" title="Trocar entre escuro e claro"></button>
+      <button class="bt verm" id="babre">Abrir o cofre</button>
+      <button class="bt" id="btranca" hidden>Trancar</button>
+    </header>
+    <main id="main"></main>
+  </div>
+</div>
+<div id="janela" role="dialog" aria-modal="true"><div class="folha" id="folha"></div></div>
+<div id="toast" role="status"></div>
+
+<script>
+'use strict';
+/* ============================================================================
+   CENTRAL DE ACESSOS
+   Menu ao lado com uma tela por aplicacao (o mesmo desenho do painel de auditoria).
+   A lista de enderecos e usuarios e fixa (const ITENS) e nao tem senha nenhuma.
+   O cofre e um texto embaralhado (AES-GCM de 256 bits; a chave sai da
+   senha-mestra por PBKDF2-SHA256) guardado no localStorage deste navegador.
+   Nada sai deste computador: a pagina nao chama servidor nenhum.
+   ============================================================================ */
+const I={
+ casa:'<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
+ celular:'<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>',
+ tela:'<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',
+ mapa:'<path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/>',
+ escudo:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/>',
+ frasco:'<path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4A2 2 0 0 0 19 18l-5-9V3"/><path d="M7.5 15h9"/>',
+ notebook:'<rect x="4" y="5" width="16" height="11" rx="2"/><path d="M2 20h20"/>',
+ toca:'<circle cx="12" cy="12" r="9"/><path d="M10 8.5l6 3.5-6 3.5z"/>',
+ loja:'<path d="M4 9l1.5-5h13L20 9"/><path d="M4 9v11h16V9"/><path d="M4 9a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0A2.7 2.7 0 0 0 20 9"/><path d="M9 20v-6h6v6"/>',
+ pessoas:'<circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.2c2.8.3 5 2.7 5 5.8"/>',
+ grafico:'<path d="M4 20V4"/><path d="M4 20h16"/><rect x="7" y="11" width="3" height="6"/><rect x="12" y="7" width="3" height="10"/><rect x="17" y="13" width="3" height="4"/>',
+ sobe:'<path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 20h16"/>',
+ agenda:'<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+ conversa:'<path d="M4 5h16v11H9l-5 4V5z"/>',
+ predio:'<rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2"/>',
+ banco:'<ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/>',
+ codigo:'<path d="M8 8l-5 4 5 4M16 8l5 4-5 4M14 5l-4 14"/>',
+ carta:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
+ caixa:'<path d="M3 8l9-5 9 5v8l-9 5-9-5V8z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
+ mais:'<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',
+ cadeado:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+ aberto:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/>',
+ sai:'<path d="M14 5h5v5"/><path d="M19 5l-8 8"/><path d="M11 5H6a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5"/>',
+ lua:'<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
+ sol:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'
+};
+const svg=n=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(I[n]||I.caixa)+'</svg>';
+
+/* A LISTA (grupos, aplicacoes, enderecos e usuarios) fica entre as duas marcas abaixo.
+   Este arquivo, com a lista escrita, e o do computador do Lucas e NUNCA vai para a internet.
+   A versao publica e montada pelo programa ferramentas/central-publica.ps1, que corta tudo o que
+   esta entre as marcas: la a lista so existe embaralhada (arquivo catalogo.json), e so aparece
+   depois da senha-mestra. */
+/* versao publica: a lista nao esta neste arquivo; ela vem embaralhada no catalogo.json */
+const PUBLICO=true;
+let GRUPOS=[],ITENS=[];
+
+/* ---------------- utilidades ---------------- */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2600)}
+const cod=new TextEncoder(),dec=new TextDecoder();
+const paraB64=u=>{let s='';for(let i=0;i<u.length;i++)s+=String.fromCharCode(u[i]);return btoa(s)};
+const deB64=t=>{const s=atob(t),u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u};
+const ehLink=u=>/^https?:\/\//i.test(String(u||''));
+
+/* ---------------- cofre (igual ao da primeira versao) ---------------- */
+const CHAVE_LS='band_central_acessos_v1',VOLTAS=310000;
+let CHAVE=null,SAL=null,COFRE=null,ocioso=null;
+const novoCofre=()=>({senhas:{},logins:{},notas:{},enderecos:{},extras:[]});
+function guardado(){try{const g=JSON.parse(localStorage.getItem(CHAVE_LS)||'null');return g&&g.v===1&&g.sal&&g.iv&&g.dados?g:null}catch(e){return null}}
+async function derivaChave(senha,sal,voltas){
+  const base=await crypto.subtle.importKey('raw',cod.encode(senha),'PBKDF2',false,['deriveKey']);
+  return crypto.subtle.deriveKey({name:'PBKDF2',salt:sal,iterations:voltas,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+}
+async function grava(){
+  if(!CHAVE||!COFRE)return;
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  const dados=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},CHAVE,cod.encode(JSON.stringify(COFRE))));
+  localStorage.setItem(CHAVE_LS,JSON.stringify({v:1,voltas:VOLTAS,sal:paraB64(SAL),iv:paraB64(iv),dados:paraB64(dados),salvoEm:new Date().toISOString()}));
+}
+async function criaCofre(senha){SAL=crypto.getRandomValues(new Uint8Array(16));CHAVE=await derivaChave(senha,SAL,VOLTAS);COFRE=novoCofre();await grava()}
+async function abreCofre(senha){
+  const g=guardado();if(!g)throw new Error('Não há cofre guardado neste navegador.');
+  const sal=deB64(g.sal),ch=await derivaChave(senha,sal,g.voltas||VOLTAS);
+  let claro;
+  try{claro=await crypto.subtle.decrypt({name:'AES-GCM',iv:deB64(g.iv)},ch,deB64(g.dados))}
+  catch(e){throw new Error('Senha-mestra incorreta.')}
+  COFRE=Object.assign(novoCofre(),JSON.parse(dec.decode(claro)));
+  if((g.voltas||VOLTAS)!==VOLTAS){SAL=crypto.getRandomValues(new Uint8Array(16));CHAVE=await derivaChave(senha,SAL,VOLTAS);await grava()}
+  else{SAL=sal;CHAVE=ch}
+  if(arrumaCofre())await grava();
+}
+/* Cofre feito na primeira versao da pagina: la a senha da mesma conta era guardada tela por tela.
+   Agora ela e uma so. A que ja estava anotada passa para o lugar novo; se houver outra diferente
+   para a mesma conta, ela nao se perde: vai para a observacao da tela em que estava. */
+function arrumaCofre(){
+  let mudou=false;
+  ITENS.forEach(it=>(it.contas||[]).forEach(c=>{
+    if(!c.ch)return;const velha=it.id+'|'+c.id,nova='@'+c.ch,v=COFRE.senhas[velha];
+    if(v==null)return;
+    if(!COFRE.senhas[nova])COFRE.senhas[nova]=v;
+    else if(COFRE.senhas[nova]!==v)COFRE.notas[it.id]=((COFRE.notas[it.id]||'')+'\nSenha que estava anotada só nesta tela: '+v).trim();
+    delete COFRE.senhas[velha];mudou=true;
+  }));
+  return mudou;
+}
+const aberto=()=>!!CHAVE&&!!COFRE;
+/* Na versao publica, trancar tambem esconde a lista: ela sai da memoria e a tela volta ao cadeado. */
+let DENTRO=!PUBLICO,CATC=null,catErro='',cofreOutro=false;
+function tranca(msg){CHAVE=null;SAL=null;COFRE=null;clearTimeout(ocioso);if(PUBLICO){GRUPOS=[];ITENS=[];DENTRO=false;cofreOutro=false;MOD='inicio';try{history.replaceState(null,'',location.pathname)}catch(e){}}pinta();if(msg)toast(msg)}
+function mexeu(){clearTimeout(ocioso);if(CHAVE||(PUBLICO&&DENTRO))ocioso=setTimeout(()=>tranca('Trancado: 10 minutos sem uso'),600000)}
+
+/* ---------------- versao publica: a lista vem embaralhada no catalogo.json ---------------- */
+const VOLTAS_PUB=600000;
+async function buscaCatalogo(){
+  try{
+    const r=await fetch('catalogo.json',{cache:'no-store'});if(!r.ok)throw new Error('sem arquivo');
+    const g=await r.json();
+    if(!g||g.v!==1||g.tipo!=='catalogo'||!g.sal||!g.iv||!g.dados)throw new Error('formato');
+    CATC=g;catErro='';
+  }catch(e){CATC=null;catErro='A lista desta página não abriu. Recarregue; se continuar, ela ainda não foi publicada.'}
+  pintaEntrada();
+}
+function pintaEntrada(){
+  $('eerro').textContent=catErro;$('eentra').disabled=!CATC;
+  $('einfo').textContent=CATC&&CATC.geradoEm?'Lista atualizada em '+new Date(CATC.geradoEm).toLocaleDateString('pt-BR')+'.':'';
+}
+async function entraPublico(){
+  const P=$('esenha').value;if(!P||!CATC)return;
+  const b=$('eentra');b.disabled=true;b.textContent='Abrindo…';$('eerro').textContent='';
+  try{
+    const ch=await derivaChave(P,deB64(CATC.sal),CATC.voltas||VOLTAS_PUB);
+    let claro;
+    try{claro=await crypto.subtle.decrypt({name:'AES-GCM',iv:deB64(CATC.iv)},ch,deB64(CATC.dados))}
+    catch(e){throw new Error('Senha-mestra incorreta.')}
+    const cat=JSON.parse(dec.decode(claro));GRUPOS=cat.grupos||[];ITENS=cat.itens||[];
+    /* o cofre das senhas DESTE aparelho abre com a mesma senha-mestra; se ainda nao existe, nasce vazio */
+    cofreOutro=false;
+    if(guardado()){try{await abreCofre(P)}catch(e){cofreOutro=true}}else await criaCofre(P);
+    DENTRO=true;$('esenha').value='';mexeu();pinta();
+  }catch(e){$('eerro').textContent=e.message||'Não consegui abrir.';$('esenha').select()}
+  finally{b.disabled=!CATC;b.textContent='Abrir'}
+}
+/* ---------------- no computador: gerar a lista embaralhada para a versao publica ---------------- */
+async function confereMestra(P){
+  const g=guardado();if(!g)throw new Error('Crie o cofre antes.');
+  const ch=await derivaChave(P,deB64(g.sal),g.voltas||VOLTAS);
+  try{await crypto.subtle.decrypt({name:'AES-GCM',iv:deB64(g.iv)},ch,deB64(g.dados))}catch(e){throw new Error('Senha-mestra incorreta.')}
+}
+async function geraCatalogo(P){
+  /* a lista vai com os usuarios e o endereco que o Lucas anotou; senha, observacao e os acessos
+     que ele acrescentou NAO vao: ficam no cofre de cada aparelho */
+  const itens=ITENS.map(it=>{const o=JSON.parse(JSON.stringify(it));
+    (o.contas||[]).forEach(c=>{const l=COFRE.logins[it.id+'|'+c.id];if(l)c.login=l});
+    if(o.enderecoLivre&&ehLink(COFRE.enderecos[it.id])){o.links=[['Abrir o portal',COFRE.enderecos[it.id]]];o.enderecoLivre=false}
+    return o});
+  const sal=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
+  const ch=await derivaChave(P,sal,VOLTAS_PUB);
+  const dados=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},ch,cod.encode(JSON.stringify({grupos:GRUPOS,itens}))));
+  return {v:1,tipo:'catalogo',voltas:VOLTAS_PUB,sal:paraB64(sal),iv:paraB64(iv),dados:paraB64(dados),geradoEm:new Date().toISOString()};
+}
+function baixaArq(nome,texto){
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([texto],{type:'application/json'}));a.download=nome;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+}
+['click','keydown','input'].forEach(ev=>document.addEventListener(ev,mexeu,true));
+window.addEventListener('pagehide',()=>{CHAVE=null;COFRE=null});
+let gravaT=null;
+function gravaLogo(){clearTimeout(gravaT);gravaT=setTimeout(()=>grava().then(pintaLado).catch(e=>toast('Não consegui guardar: '+e.message)),350)}
+
+/* ---------------- janela (no lugar dos avisos do navegador) ---------------- */
+function janela(html,aoAbrir){$('folha').innerHTML=html;$('janela').classList.add('on');if(aoAbrir)aoAbrir();const p=$('folha').querySelector('input,button');if(p)p.focus()}
+function fechaJanela(){$('janela').classList.remove('on');$('folha').innerHTML=''}
+$('janela').addEventListener('click',e=>{if(e.target===$('janela'))fechaJanela()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('janela').classList.contains('on'))fechaJanela()});
+function pergunta(titulo,texto,sim,aoSim){
+  janela('<h2>'+esc(titulo)+'</h2><p>'+texto+'</p><div class="bts"><button class="bt" id="jnao">Cancelar</button><button class="bt verm" id="jsim">'+esc(sim)+'</button></div>',
+    ()=>{$('jnao').onclick=fechaJanela;$('jsim').onclick=()=>{fechaJanela();aoSim()}});
+}
+const campoJ=(id,rot,tipo,extra)=>'<div class="campo"><label for="'+id+'">'+rot+'</label><input id="'+id+'" type="'+tipo+'" '+(extra||'')+'></div>';
+function janelaAbrir(){
+  if(!guardado())return janelaCriar();
+  janela('<h2>Abrir o cofre</h2><p>Digite a sua senha-mestra.</p>'+campoJ('jsenha','Senha-mestra','password','autocomplete="off"')+
+    '<div class="erro" id="jerro"></div><div class="bts"><button class="bt" id="jnao">Cancelar</button><button class="bt verm" id="jsim">Abrir</button></div>',
+    ()=>{const vai=async()=>{const b=$('jsim');b.disabled=true;b.textContent='Abrindo…';
+        try{await abreCofre($('jsenha').value);fechaJanela();mexeu();pinta();toast('Cofre aberto')}
+        catch(e){$('jerro').textContent=e.message;b.disabled=false;b.textContent='Abrir';$('jsenha').select()}};
+      $('jnao').onclick=fechaJanela;$('jsim').onclick=vai;$('jsenha').onkeydown=e=>{if(e.key==='Enter')vai()}});
+}
+function confereNova(a,b){
+  if(a.length<10)return 'Use pelo menos 10 caracteres. Uma frase é melhor que uma palavra.';
+  if(a!==b)return 'As duas senhas não são iguais.';
+  return '';
+}
+function janelaCriar(){
+  janela('<h2>Criar a senha-mestra</h2><p>Ela abre o cofre e embaralha as senhas guardadas. <b>Se você esquecer, não tem como recuperar.</b> Escolha uma frase que só você saiba.</p>'+
+    campoJ('jn1','Senha-mestra nova','password','autocomplete="new-password"')+campoJ('jn2','Digite de novo','password','autocomplete="new-password"')+
+    '<div class="erro" id="jerro"></div><div class="bts"><button class="bt" id="jnao">Cancelar</button><button class="bt verm" id="jsim">Criar o cofre</button></div>',
+    ()=>{const vai=async()=>{const p=confereNova($('jn1').value,$('jn2').value);if(p)return $('jerro').textContent=p;
+        const b=$('jsim');b.disabled=true;b.textContent='Criando…';
+        try{await criaCofre($('jn1').value);fechaJanela();mexeu();pinta();toast('Cofre criado e aberto')}
+        catch(e){$('jerro').textContent='Não consegui criar: '+e.message;b.disabled=false;b.textContent='Criar o cofre'}};
+      $('jnao').onclick=fechaJanela;$('jsim').onclick=vai;$('jn2').onkeydown=e=>{if(e.key==='Enter')vai()}});
+}
+function janelaTrocar(){
+  janela('<h2>Trocar a senha-mestra</h2><p>As senhas guardadas continuam as mesmas; só muda a senha que abre o cofre.</p>'+
+    campoJ('jn1','Senha-mestra nova','password','autocomplete="new-password"')+campoJ('jn2','Digite de novo','password','autocomplete="new-password"')+
+    '<div class="erro" id="jerro"></div><div class="bts"><button class="bt" id="jnao">Cancelar</button><button class="bt verm" id="jsim">Trocar</button></div>',
+    ()=>{const vai=async()=>{const p=confereNova($('jn1').value,$('jn2').value);if(p)return $('jerro').textContent=p;
+        try{SAL=crypto.getRandomValues(new Uint8Array(16));CHAVE=await derivaChave($('jn1').value,SAL,VOLTAS);await grava();fechaJanela();pinta();toast('Senha-mestra trocada. Baixe uma cópia nova do cofre.')}
+        catch(e){$('jerro').textContent='Não consegui trocar: '+e.message}};
+      $('jnao').onclick=fechaJanela;$('jsim').onclick=vai});
+}
+function janelaGerar(){
+  if(!aberto())return toast('Abra o cofre primeiro');
+  janela('<h2>Gerar a lista da versão pública</h2><p>Digite a senha-mestra de novo. A lista de aplicações, endereços e usuários sai <b>embaralhada por ela</b>, num arquivo chamado <b>catalogo.json</b>. Nenhuma senha vai nesse arquivo.</p>'+
+    campoJ('jsenha','Senha-mestra','password','autocomplete="off"')+
+    '<div class="erro" id="jerro"></div><div class="bts"><button class="bt" id="jnao">Cancelar</button><button class="bt verm" id="jsim">Gerar</button></div>',
+    ()=>{const vai=async()=>{const P=$('jsenha').value,b=$('jsim');b.disabled=true;b.textContent='Gerando…';
+        try{await confereMestra(P);
+          if(P.length<14)throw new Error('Para a versão pública a senha-mestra precisa ter pelo menos 14 caracteres (uma frase). Troque em "Trocar senha-mestra" e gere de novo.');
+          baixaArq('catalogo.json',JSON.stringify(await geraCatalogo(P)));fechaJanela();toast('catalogo.json baixado. Avise o Claude para montar a versão pública.')}
+        catch(e){$('jerro').textContent=e.message;b.disabled=false;b.textContent='Gerar'}};
+      $('jnao').onclick=fechaJanela;$('jsim').onclick=vai;$('jsenha').onkeydown=e=>{if(e.key==='Enter')vai()}});
+}
+function janelaNovo(x){
+  const e=x||{id:'',nome:'',url:'',login:'',senha:'',nota:''};
+  janela('<h2>'+(x?'Editar acesso':'Adicionar acesso')+'</h2>'+
+    campoJ('xn','Nome','text','maxlength="80" value="'+esc(e.nome)+'"')+campoJ('xu','Endereço (link)','text','maxlength="300" placeholder="https://…" value="'+esc(e.url)+'"')+
+    campoJ('xl','Usuário','text','maxlength="120" autocomplete="off" value="'+esc(e.login)+'"')+campoJ('xs','Senha','password','maxlength="200" autocomplete="new-password" value="'+esc(e.senha)+'"')+
+    '<div class="erro" id="jerro"></div><div class="bts"><button class="bt" id="jnao">Cancelar</button><button class="bt verm" id="jsim">Guardar</button></div>',
+    ()=>{$('jnao').onclick=fechaJanela;$('jsim').onclick=()=>{
+      const nome=$('xn').value.trim();if(nome.length<2)return $('jerro').textContent='Dê um nome ao acesso.';
+      const novo={id:e.id||('x'+Date.now().toString(36)),nome,url:$('xu').value.trim(),login:$('xl').value.trim(),senha:$('xs').value,nota:e.nota||''};
+      const i=COFRE.extras.findIndex(y=>y.id===novo.id);if(i>=0)COFRE.extras[i]=novo;else COFRE.extras.push(novo);
+      fechaJanela();grava().then(()=>{MOD='meus';pinta();toast('Acesso guardado')}).catch(er=>toast('Não consegui guardar: '+er.message))}});
+}
+
+/* ---------------- copia de seguranca ---------------- */
+function baixaCopia(){
+  const g=localStorage.getItem(CHAVE_LS);if(!g)return toast('Ainda não há cofre para copiar');
+  const d=new Date(),nome='cofre-de-acessos-'+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+'.json';
+  baixaArq(nome,g);toast('Cópia baixada (embaralhada). Guarde fora das pastas rtm e merch.');
+}
+function trazCopia(){
+  const inp=document.createElement('input');inp.type='file';inp.accept='.json,application/json';
+  inp.onchange=()=>{const f=inp.files&&inp.files[0];if(!f)return;const fr=new FileReader();
+    fr.onload=()=>{let g=null;try{g=JSON.parse(fr.result)}catch(e){}
+      if(!g||g.v!==1||!g.sal||!g.iv||!g.dados)return toast('Este arquivo não é uma cópia do cofre.');
+      const poe=()=>{localStorage.setItem(CHAVE_LS,JSON.stringify(g));tranca();toast('Cópia trazida. Abra o cofre com a senha-mestra dessa cópia.')};
+      if(guardado())pergunta('Trocar o cofre deste navegador?','O cofre que está neste navegador será <b>substituído</b> pela cópia do arquivo. Se você não tiver uma cópia do atual, as senhas dele se perdem.','Substituir',poe);else poe()};
+    fr.readAsText(f)};
+  inp.click();
+}
+
+/* ---------------- contas guardadas (para os numeros do menu) ---------------- */
+/* O usuario e anotado por tela. A SENHA de uma conta que e a mesma em varias telas (marcada com
+   "ch") e guardada uma vez so: digitou numa tela, vale nas outras. */
+const chaveDe=(it,c)=>it.id+'|'+c.id;
+const chaveSenha=(it,c)=>c.ch?'@'+c.ch:chaveDe(it,c);
+const comSenha=it=>aberto()?(it.contas||[]).filter(c=>!!COFRE.senhas[chaveSenha(it,c)]).length:0;
+/* em que outras telas a mesma senha aparece */
+function mesmaSenhaEm(it,c){
+  if(!c.ch)return [];
+  return ITENS.filter(o=>o.id!==it.id&&(o.contas||[]).some(x=>x.ch===c.ch)).map(o=>o.curto||o.nome);
+}
+function totais(){
+  const unicas={};ITENS.forEach(it=>(it.contas||[]).forEach(c=>{unicas[chaveSenha(it,c)]=1}));
+  const contas=Object.keys(unicas).length;
+  const guard=aberto()?Object.keys(unicas).filter(k=>!!COFRE.senhas[k]).length+COFRE.extras.filter(x=>x.senha).length:null;
+  return {apps:ITENS.length,contas,guard,extras:aberto()?COFRE.extras.length:null};
+}
+function bate(it,q){
+  if(!q)return true;
+  const login=c=>(aberto()&&COFRE.logins[chaveDe(it,c)])||c.login||'';
+  return [it.nome,it.curto,it.oque,it.dica||''].concat((it.links||[]).map(l=>l[1]),(it.contas||[]).map(c=>login(c)+' '+c.rot)).join(' ').toLowerCase().indexOf(q)>=0;
+}
+
+/* ---------------- navegacao ---------------- */
+let MOD=(location.hash||'').slice(1)||'inicio';
+const ehItem=id=>ITENS.some(it=>it.id===id);
+function ir(m){MOD=m;try{history.replaceState(null,'','#'+m)}catch(e){}document.body.classList.remove('menu');pinta();$('main').scrollIntoView({block:'start'});window.scrollTo(0,0)}
+window.addEventListener('hashchange',()=>{const m=(location.hash||'').slice(1);if(m&&m!==MOD){MOD=m;pinta()}});
+
+function pintaLado(){
+  const q=$('busca').value.trim().toLowerCase(),ab=aberto();
+  const bot=(id,ic,rot,dir)=>'<button data-mod="'+esc(id)+'"'+(MOD===id?' aria-current="page"':'')+' title="'+esc(rot)+'">'+svg(ic)+'<span class="rot">'+esc(rot)+'</span>'+(dir||'')+'</button>';
+  let h=bot('inicio','casa','Visão geral');
+  let achou=0;
+  GRUPOS.forEach(g=>{
+    const l=ITENS.filter(it=>it.g===g.id&&bate(it,q));if(!l.length)return;achou+=l.length;
+    h+='<div class="grupo">'+esc(g.nome)+'</div>'+l.map(it=>{
+      const n=(it.contas||[]).length,s=comSenha(it);
+      const dir=ab&&n?'<span class="conta'+(s===n?' ok':'')+'" title="'+s+' de '+n+' senhas guardadas">'+s+'/'+n+'</span>':'<span class="pt '+it.selo[1]+'" title="'+esc(it.selo[0])+'"></span>';
+      return bot(it.id,it.ic,it.curto||it.nome,dir)}).join('');
+  });
+  if(q&&!achou)h+='<div class="vazio">Nada encontrado para "'+esc(q)+'".</div>';
+  h+='<div class="grupo">Seus</div>'+bot('meus','mais','Meus outros acessos',ab&&COFRE.extras.length?'<span class="conta ok">'+COFRE.extras.length+'</span>':'')+
+     '<div class="grupo">Cofre</div>'+bot('cofre',ab?'aberto':'cadeado','Cofre e cópia de segurança');
+  $('abas').innerHTML=h;
+  $('abas').querySelectorAll('[data-mod]').forEach(b=>b.onclick=()=>ir(b.dataset.mod));
+  const g=guardado();
+  $('pelado').className='pe'+(ab?' ab':'');
+  $('pelado').innerHTML='<div class="cad">'+svg(ab?'aberto':'cadeado')+'</div><div><b>'+(ab?'Cofre aberto':g?'Cofre trancado':'Sem cofre ainda')+'</b>'+
+    (ab?'tranca sozinho em 10 min':g?'os links funcionam sem ele':'crie para guardar as senhas')+'</div>';
+}
+
+/* ---------------- telas ---------------- */
+function notaCofre(){
+  if(PUBLICO&&cofreOutro&&!aberto())
+    return '<div class="nota amb">'+svg('cadeado')+'<span>O cofre de senhas <b>deste aparelho</b> foi criado com outra senha-mestra, então as senhas ficam escondidas. Para usar as do seu computador: Cofre › Trazer cópia.</span><button class="bt acao" data-mod="cofre">Ir para o cofre</button></div>';
+  if(!window.isSecureContext||!window.crypto||!crypto.subtle)
+    return '<div class="nota amb">'+svg('cadeado')+'<span>Este navegador não deixa embaralhar as senhas nesta página. Abra o arquivo no Chrome ou no Edge atualizados.</span></div>';
+  if(!guardado())return '<div class="nota azul">'+svg('cadeado')+'<span><b>Primeira vez aqui.</b> Os endereços e os usuários já estão prontos. Para guardar as senhas, crie o cofre e escolha uma senha-mestra.</span><button class="bt verm acao" data-acao="abrir">Criar o cofre</button></div>';
+  if(!aberto())return '<div class="nota amb">'+svg('cadeado')+'<span>O cofre está <b>trancado</b>: os links funcionam, mas as senhas ficam escondidas.</span><button class="bt verm acao" data-acao="abrir">Abrir o cofre</button></div>';
+  return '';
+}
+function telaInicio(){
+  const q=$('busca').value.trim().toLowerCase(),t=totais();
+  let h=notaCofre()+'<div class="kpis">'+
+    '<div class="kpi"><b>'+t.apps+'</b><span>aplicações e portais</span></div>'+
+    '<div class="kpi"><b>'+t.contas+'</b><span>contas de acesso listadas</span></div>'+
+    '<div class="kpi"><b>'+(t.guard==null?'—':t.guard)+'</b><span>'+(t.guard==null?'senhas guardadas (abra o cofre)':'senhas guardadas no cofre')+'</span></div>'+
+    '<div class="kpi"><b>'+(t.extras==null?'—':t.extras)+'</b><span>acessos que você acrescentou</span></div></div>';
+  let algum=false;
+  GRUPOS.forEach(g=>{
+    const l=ITENS.filter(it=>it.g===g.id&&bate(it,q));if(!l.length)return;algum=true;
+    h+='<div class="secao"><h2>'+esc(g.nome)+'</h2><span>'+esc(g.sub)+'</span></div><div class="azulejos">'+l.map(it=>{
+      const n=(it.contas||[]).length,s=comSenha(it);
+      return '<button class="azulejo" data-mod="'+esc(it.id)+'"><div class="cima"><div class="ic '+it.selo[1]+'">'+svg(it.ic)+'</div><b>'+esc(it.curto||it.nome)+'</b></div>'+
+        '<p>'+esc(it.oque)+'</p><div class="pe2"><span class="selo '+it.selo[1]+'">'+esc(it.selo[0])+'</span>'+
+        (n?'<span>'+(aberto()?s+' de '+n+(n===1?' senha guardada':' senhas guardadas'):n+(n===1?' conta':' contas'))+'</span>':'<span>sem senha própria</span>')+'</div></button>'}).join('')+'</div>';
+  });
+  if(!algum)h+='<div class="semnada">Nada encontrado para esta busca.</div>';
+  return h;
+}
+function campoConta(it,c){
+  const k=chaveDe(it,c),ks=chaveSenha(it,c),ab=aberto(),outras=mesmaSenhaEm(it,c);
+  const login=ab&&COFRE.logins[k]!=null?COFRE.logins[k]:c.login||'';
+  const senha=ab?(COFRE.senhas[ks]||''):'';
+  return '<div class="acc"><div class="rot">'+svg('pessoas').replace('<svg','<svg style="width:17px;height:17px;flex:none"')+'<span>'+esc(c.rot)+'</span>'+
+      (ab?'<span class="selo '+(senha?'v':'')+'" data-tem="'+esc(ks)+'">'+(senha?'Senha guardada':'Sem senha')+'</span>':'')+'</div>'+
+    '<div class="campo"><label>Usuário</label><div class="lin"><input data-t="login" data-k="'+esc(k)+'" value="'+esc(login)+'" '+(ab?'':'readonly')+' placeholder="'+(ab?'anote aqui':'abra o cofre para anotar')+'" autocomplete="off" spellcheck="false">'+
+      '<div class="acoes"><button class="bt fino" data-copia="login" data-k="'+esc(k)+'">Copiar</button></div></div></div>'+
+    '<div class="campo"><label>Senha</label><div class="lin"><input type="password" data-t="senha" data-k="'+esc(ks)+'" value="'+esc(senha)+'" '+(ab?'':'disabled')+' placeholder="'+(ab?'digite para guardar':'cofre trancado')+'" autocomplete="new-password" spellcheck="false">'+
+      '<div class="acoes"><button class="bt fino" data-ver="'+esc(ks)+'" '+(ab?'':'disabled')+'>Ver</button><button class="bt fino" data-copia="senha" data-k="'+esc(ks)+'" '+(ab?'':'disabled')+'>Copiar</button></div></div></div>'+
+    (outras.length?'<div class="mesma">É a mesma senha em: '+esc(outras.join(', '))+'. Guardou aqui, vale lá também.</div>':'')+'</div>';
+}
+function telaItem(it){
+  const ab=aberto(),nota=ab?(COFRE.notas[it.id]||''):'',g=GRUPOS.find(x=>x.id===it.g);
+  const livre=it.enderecoLivre?(ab?(COFRE.enderecos[it.id]||''):''):'';
+  const links=(it.links||[]).slice();if(it.enderecoLivre&&ehLink(livre))links.push(['Abrir o portal',livre]);
+  let h=notaCofre()+'<section class="heroi"><div class="ic '+it.selo[1]+'">'+svg(it.ic)+'</div><div class="txt">'+
+    '<h2>'+esc(it.nome)+' <span class="selo '+it.selo[1]+'">'+esc(it.selo[0])+'</span></h2><p>'+esc(it.oque)+'</p>'+
+    (links.length?'<div class="abre">'+links.map((l,i)=>'<a class="bt'+(i===0?' verm':'')+'" href="'+esc(l[1])+'" target="_blank" rel="noopener noreferrer">'+esc(l[0])+svg('sai')+'</a>').join('')+'</div>':'')+
+    '</div><span class="selo">'+esc(g?g.nome:'')+'</span></section>';
+  h+='<div class="duas"><section class="cartao"><h3>Endereços</h3>'+
+    (links.length?links.map(l=>'<div class="end"><div><small>'+esc(l[0])+'</small><code>'+esc(l[1])+'</code></div><div class="acoes"><button class="bt fino" data-copiatxt="'+esc(l[1])+'">Copiar</button></div></div>').join(''):'')+
+    (it.enderecoLivre?'<div class="campo" style="margin-top:'+(links.length?'12px':'0')+'"><label>Endereço do portal</label><input data-t="endereco" data-k="'+esc(it.id)+'" value="'+esc(livre)+'" '+(ab?'':'disabled')+' placeholder="'+(ab?'cole o endereço aqui (https://…)':'abra o cofre para anotar')+'"></div>':'')+
+    (!links.length&&!it.enderecoLivre?'<p class="como">Sem endereço.</p>':'')+'</section>'+
+    '<section class="cartao"><h3>Como entra</h3><p class="como">'+esc(it.dica||'Entre com o usuário e a senha desta tela.')+'</p></section></div>';
+  if((it.contas||[]).length)h+='<section class="cartao" style="margin-bottom:16px"><h3>Contas de acesso</h3><div class="contas">'+it.contas.map(c=>campoConta(it,c)).join('')+'</div></section>';
+  h+='<section class="cartao"><h3>Observação</h3><div class="campo"><textarea data-t="nota" data-k="'+esc(it.id)+'" '+(ab?'':'disabled')+' placeholder="'+(ab?'Qualquer lembrete sobre este acesso. Fica guardado no cofre.':'Abra o cofre para ver e anotar.')+'">'+esc(nota)+'</textarea></div></section>';
+  return h;
+}
+function telaMeus(){
+  let h=notaCofre();
+  if(!aberto())return h+'<div class="cartao"><div class="semnada">Os acessos que você acrescentou aparecem aqui quando o cofre está aberto.</div></div>';
+  const q=$('busca').value.trim().toLowerCase(),l=COFRE.extras.filter(x=>!q||(x.nome+' '+x.url+' '+x.login).toLowerCase().indexOf(q)>=0);
+  h+='<section class="heroi"><div class="ic b">'+svg('mais')+'</div><div class="txt"><h2>Meus outros acessos</h2><p>Guarde aqui o que não é dos nossos apps: SAP, e-mail, portais da empresa, o que quiser. Tudo fica dentro do cofre.</p>'+
+    '<div class="abre"><button class="bt verm" data-acao="novo">+ Adicionar acesso</button></div></div></section>';
+  if(!l.length)return h+'<div class="cartao"><div class="semnada">'+(COFRE.extras.length?'Nada encontrado para esta busca.':'Nada aqui ainda.')+'</div></div>';
+  return h+'<div class="contas">'+l.map(x=>'<div class="acc"><div class="rot"><span>'+esc(x.nome)+'</span><span class="selo '+(x.senha?'v':'')+'">'+(x.senha?'Senha guardada':'Sem senha')+'</span></div>'+
+    (x.url?'<div class="campo"><label>Endereço</label><div class="lin"><input value="'+esc(x.url)+'" readonly><div class="acoes">'+(ehLink(x.url)?'<a class="bt fino" href="'+esc(x.url)+'" target="_blank" rel="noopener noreferrer">Abrir</a>':'')+'</div></div></div>':'')+
+    '<div class="campo"><label>Usuário</label><div class="lin"><input value="'+esc(x.login)+'" readonly><div class="acoes"><button class="bt fino" data-xcopia="login" data-x="'+esc(x.id)+'">Copiar</button></div></div></div>'+
+    '<div class="campo"><label>Senha</label><div class="lin"><input type="password" value="'+esc(x.senha)+'" readonly data-xs="'+esc(x.id)+'"><div class="acoes"><button class="bt fino" data-xver="'+esc(x.id)+'">Ver</button><button class="bt fino" data-xcopia="senha" data-x="'+esc(x.id)+'">Copiar</button></div></div></div>'+
+    '<div class="botoes"><button class="bt fino" data-xedita="'+esc(x.id)+'">Editar</button><button class="bt fino" data-xtira="'+esc(x.id)+'">Apagar</button></div></div>').join('')+'</div>';
+}
+function telaCofre(){
+  const ab=aberto(),g=guardado(),t=totais();
+  const quando=g&&g.salvoEm?new Date(g.salvoEm).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}):'';
+  return '<section class="heroi"><div class="ic '+(ab?'v':'a')+'">'+svg(ab?'aberto':'cadeado')+'</div><div class="txt"><h2>'+(ab?'Cofre aberto':g?'Cofre trancado':'Você ainda não tem cofre')+
+      ' <span class="selo '+(ab?'v':'a')+'">'+(ab?'Aberto':g?'Trancado':'Não criado')+'</span></h2>'+
+    '<p>'+(g?'Guardado neste navegador'+(quando?', mexido pela última vez em '+esc(quando):'')+'.'+(ab?' Tem '+t.guard+(t.guard===1?' senha guardada.':' senhas guardadas.'):''):'Crie o cofre para guardar as senhas. Os endereços e os usuários funcionam sem ele.')+'</p>'+
+    '<div class="abre">'+(ab?'<button class="bt verm" data-acao="trancar">Trancar agora</button>':'<button class="bt verm" data-acao="abrir">'+(g?'Abrir o cofre':'Criar o cofre')+'</button>')+'</div></div></section>'+
+   '<div class="duas"><section class="cartao"><h3>Cópia de segurança</h3><p class="como" style="margin-bottom:14px">A cópia sai embaralhada, igual ao cofre. Faça uma de vez em quando e guarde num lugar seu. Ela serve se o navegador for limpo ou se você trocar de computador.</p>'+
+      '<div class="botoes"><button class="bt" data-acao="copia" '+(g?'':'disabled')+'>Baixar cópia do cofre</button><button class="bt" data-acao="traz">Trazer cópia</button></div></section>'+
+    (PUBLICO
+      ?'<section class="cartao"><h3>Senhas neste aparelho</h3><p class="como">Esta é a versão pública. As senhas não vêm com a página: cada aparelho tem o seu cofre. Para ter aqui as senhas do seu computador, baixe a cópia do cofre lá e use <b>Trazer cópia</b> aqui, uma vez. A senha-mestra só é trocada no computador.</p></section></div>'
+      :'<section class="cartao"><h3>Senha-mestra</h3><p class="como" style="margin-bottom:14px">É a única senha que você precisa lembrar. Para trocar, o cofre precisa estar aberto.</p>'+
+        '<div class="botoes"><button class="bt" data-acao="trocar" '+(ab?'':'disabled')+'>Trocar senha-mestra</button></div></section></div>'+
+       '<section class="cartao" style="margin-bottom:16px"><h3>Versão pública (para abrir de qualquer lugar)</h3><p class="como" style="margin-bottom:14px">Na versão pública, quem abre o endereço vê só o cadeado. A lista de aplicações, endereços e usuários vai <b>embaralhada pela sua senha-mestra</b>, num arquivo chamado <b>catalogo.json</b>, e nenhuma senha vai junto. Gere o arquivo aqui sempre que a lista mudar ou que você trocar a senha-mestra, e avise o Claude para publicar. Precisa de uma senha-mestra com 14 caracteres ou mais.</p>'+
+        '<div class="botoes"><button class="bt" data-acao="gerar" '+(ab?'':'disabled')+'>Gerar a lista da versão pública</button></div></section>')+
+   '<section class="cartao"><h3>Como este cofre funciona</h3><ul class="lista">'+
+    '<li><b>Este arquivo não tem senha nenhuma dentro.</b> Os endereços e os usuários ficam escritos nele; as senhas você digita depois de abrir o cofre.</li>'+
+    '<li>As senhas ficam <b>embaralhadas com a sua senha-mestra</b> e guardadas só <b>neste navegador, neste computador</b>. Sem a senha-mestra ninguém lê, nem abrindo o arquivo.</li>'+
+    '<li><b>Se você esquecer a senha-mestra, não tem como recuperar.</b> Não existe "esqueci a senha": é isso que deixa o cofre seguro.</li>'+
+    '<li><b>Abra sempre no mesmo navegador.</b> Em outro navegador o cofre aparece vazio; aí use <b>Trazer cópia</b>.</li>'+
+    '<li><b>Nunca coloque este arquivo nem a cópia do cofre nas pastas <code>rtm</code> e <code>merch</code></b>: elas são públicas na internet.</li>'+
+    '<li>O cofre tranca sozinho depois de 10 minutos sem uso e quando a página é fechada.</li>'+
+    '<li>Ele protege contra quem abrir o arquivo ou mexer no navegador. Não protege se o computador estiver com vírus que grava o que você digita.</li></ul></section>';
+}
+
+/* ---------------- pintar e ligar ---------------- */
+function pintaTema(){$('btema').innerHTML=svg(document.documentElement.dataset.tema==='claro'?'lua':'sol')}
+function pinta(){
+  const ab=aberto(),tem=!!guardado();
+  /* versao publica ainda trancada: so o cadeado na tela, e nada da lista no HTML */
+  if(PUBLICO&&!DENTRO){$('app').hidden=true;$('entrada').hidden=false;$('main').innerHTML='';$('abas').innerHTML='';$('pelado').innerHTML='';$('titulo').textContent='';pintaEntrada();return}
+  $('app').hidden=false;$('entrada').hidden=true;
+  if(MOD!=='inicio'&&MOD!=='meus'&&MOD!=='cofre'&&!ehItem(MOD))MOD='inicio';
+  $('babre').hidden=ab;$('babre').textContent=tem?'Abrir o cofre':'Criar o cofre';$('btranca').hidden=!(ab||(PUBLICO&&DENTRO));
+  const it=ITENS.find(x=>x.id===MOD);
+  $('titulo').textContent=it?(it.curto||it.nome):MOD==='meus'?'Meus outros acessos':MOD==='cofre'?'Cofre e cópia de segurança':'Visão geral';
+  $('main').innerHTML=it?telaItem(it):MOD==='meus'?telaMeus():MOD==='cofre'?telaCofre():telaInicio();
+  pintaLado();pintaTema();liga();
+}
+function copia(texto,oque){
+  if(!texto)return toast('Nada para copiar');
+  const fim=()=>toast(oque+' copiado');
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(texto).then(fim).catch(()=>copiaVelho(texto,fim));else copiaVelho(texto,fim);
+}
+function copiaVelho(texto,fim){const t=document.createElement('textarea');t.value=texto;t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();
+  try{document.execCommand('copy');fim()}catch(e){toast('Não consegui copiar')}t.remove()}
+function liga(){
+  const L=$('main');
+  L.querySelectorAll('[data-mod]').forEach(b=>b.onclick=()=>ir(b.dataset.mod));
+  L.querySelectorAll('[data-acao]').forEach(b=>b.onclick=()=>({abrir:janelaAbrir,trancar:()=>tranca('Cofre trancado'),novo:()=>janelaNovo(null),copia:baixaCopia,traz:trazCopia,trocar:janelaTrocar,gerar:janelaGerar}[b.dataset.acao]||(()=>{}))());
+  L.querySelectorAll('input[data-t],textarea[data-t]').forEach(el=>el.oninput=()=>{
+    if(!aberto())return;const k=el.dataset.k,v=el.value;
+    const onde={login:'logins',senha:'senhas',nota:'notas',endereco:'enderecos'}[el.dataset.t];
+    if(v==='')delete COFRE[onde][k];else COFRE[onde][k]=v;
+    if(el.dataset.t==='senha'){const s=L.querySelector('[data-tem="'+CSS.escape(k)+'"]');if(s){s.textContent=v?'Senha guardada':'Sem senha';s.className='selo '+(v?'v':'')}}
+    gravaLogo()});
+  L.querySelectorAll('input[data-t="endereco"]').forEach(el=>el.onchange=()=>{grava().then(pinta)});
+  L.querySelectorAll('[data-ver]').forEach(b=>b.onclick=()=>{const i=L.querySelector('input[data-t="senha"][data-k="'+CSS.escape(b.dataset.ver)+'"]');
+    const mostra=i.type==='password';i.type=mostra?'text':'password';b.textContent=mostra?'Esconder':'Ver'});
+  L.querySelectorAll('[data-copia]').forEach(b=>b.onclick=()=>{const i=L.querySelector('input[data-t="'+b.dataset.copia+'"][data-k="'+CSS.escape(b.dataset.k)+'"]');
+    copia(i?i.value:'',b.dataset.copia==='senha'?'Senha':'Usuário')});
+  L.querySelectorAll('[data-copiatxt]').forEach(b=>b.onclick=()=>copia(b.dataset.copiatxt,'Endereço'));
+  L.querySelectorAll('[data-xver]').forEach(b=>b.onclick=()=>{const i=L.querySelector('input[data-xs="'+CSS.escape(b.dataset.xver)+'"]');
+    const mostra=i.type==='password';i.type=mostra?'text':'password';b.textContent=mostra?'Esconder':'Ver'});
+  L.querySelectorAll('[data-xcopia]').forEach(b=>b.onclick=()=>{const x=aberto()&&COFRE.extras.find(y=>y.id===b.dataset.x);if(x)copia(x[b.dataset.xcopia],b.dataset.xcopia==='senha'?'Senha':'Usuário')});
+  L.querySelectorAll('[data-xedita]').forEach(b=>b.onclick=()=>{const x=aberto()&&COFRE.extras.find(y=>y.id===b.dataset.xedita);if(x)janelaNovo(x)});
+  L.querySelectorAll('[data-xtira]').forEach(b=>b.onclick=()=>{const x=aberto()&&COFRE.extras.find(y=>y.id===b.dataset.xtira);if(!x)return;
+    pergunta('Apagar este acesso?','"'+esc(x.nome)+'" sai do cofre, com o usuário e a senha.','Apagar',()=>{COFRE.extras=COFRE.extras.filter(y=>y.id!==x.id);grava().then(()=>{pinta();toast('Acesso apagado')})})});
+}
+$('babre').onclick=janelaAbrir;
+$('btranca').onclick=()=>tranca('Cofre trancado');
+$('bmenu').onclick=()=>document.body.classList.toggle('menu');
+$('veu').onclick=()=>document.body.classList.remove('menu');
+$('btema').onclick=()=>{const novo=document.documentElement.dataset.tema==='claro'?'escuro':'claro';document.documentElement.dataset.tema=novo;try{localStorage.setItem('central_tema',novo)}catch(e){}pintaTema()};
+/* a busca filtra o menu ao lado; na visao geral e em "meus", filtra tambem a tela */
+$('busca').oninput=()=>{if($('busca').value.trim()&&ehItem(MOD))MOD='inicio';if(MOD==='inicio'||MOD==='meus')pinta();else pintaLado()};
+$('eentra').onclick=entraPublico;
+$('esenha').onkeydown=e=>{if(e.key==='Enter')entraPublico()};
+pinta();
+if(PUBLICO)buscaCatalogo();
+</script>
+</body>
+</html>
