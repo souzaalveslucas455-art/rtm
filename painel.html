@@ -165,9 +165,9 @@ main{overflow-y:auto;min-width:0}
 /* ---------- Ao vivo ---------- */
 .av{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(340px,1fr);gap:18px;align-items:start}
 .trilha{background:#0F1012;color:#E4E4E7;border-radius:18px;padding:18px 20px 16px}
-.trilha .eixo{position:relative;height:22px;margin-left:150px;margin-right:70px;font-size:11.5px;color:#8E8E96}
+.trilha .eixo{position:relative;height:22px;margin-left:150px;margin-right:106px;font-size:11.5px;color:#8E8E96}
 .trilha .eixo span{position:absolute;transform:translateX(-50%)}
-.faixa{display:grid;grid-template-columns:140px minmax(0,1fr) 60px;gap:10px;align-items:center;padding:10px 0;border-top:1px solid #1E1F23}
+.faixa{display:grid;grid-template-columns:140px minmax(0,1fr) 96px;gap:10px;align-items:center;padding:10px 0;border-top:1px solid #1E1F23}
 .faixa .qm b{display:block;color:#fff;font-size:14.5px} .faixa .qm small{color:#8E8E96;font-size:12px}
 .faixa .nn{text-align:right;font-weight:800;font-size:22px;color:#fff;font-variant-numeric:tabular-nums}
 .faixa .nn small{display:block;font-size:11px;color:#8E8E96;font-weight:600}
@@ -182,9 +182,28 @@ main{overflow-y:auto;min-width:0}
 .legav{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#A1A1AA;margin-top:12px}
 .legav i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 #avmapa{height:460px;border-radius:18px;overflow:hidden;background:#E9EAEC}
+/* O mapa tem camadas próprias com números altos (até 1000). Sem isto elas disputavam com a tela toda
+   e passavam por cima da ficha do cliente (#dlg), tampando as respostas. Com "isolate", as camadas do
+   mapa valem só dentro do mapa. */
+#avmapa,#pqmapa,.leaflet-container{isolation:isolate;z-index:0}
 .pulsa{border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 0 currentColor;animation:radar 1.6s ease-out infinite}
 @keyframes radar{0%{box-shadow:0 0 0 0 currentColor}100%{box-shadow:0 0 0 18px transparent}}
 .diasel{display:flex;gap:6px;align-items:center}
+/* Ao vivo com todas as frentes: a pesquisa tem uma faixa branca em cima do bloco e é quadrada no mapa */
+.avfr{display:flex;gap:4px;align-items:center;margin-right:8px}
+.avfr .bt[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.pista .bl.pq{border-radius:3px;box-shadow:inset 0 5px 0 rgba(255,255,255,.92),0 0 0 1px rgba(0,0,0,.35)}
+.pista .bl.pq.ult{box-shadow:inset 0 5px 0 rgba(255,255,255,.92),0 0 0 2px #fff,0 0 14px 2px currentColor}
+.legav b{color:#E4E4E7;font-weight:700;margin-right:2px}
+.legav i.pq{border-radius:2px;box-shadow:inset 0 3px 0 rgba(255,255,255,.92)}
+.avn{width:26px;height:26px;border-radius:50%;border:2px solid #fff;outline:2.5px solid transparent;display:flex;align-items:center;justify-content:center;
+ font:800 11.5px/1 system-ui,sans-serif;box-shadow:0 2px 6px rgba(0,0,0,.35)}
+.avn.pq{border-radius:6px}
+.avleg{background:rgba(255,255,255,.94);border-radius:10px;padding:8px 10px;font:600 12px/1.6 system-ui,sans-serif;color:#1A1D21;box-shadow:0 2px 10px rgba(0,0,0,.18);display:flex;flex-direction:column}
+.avleg i{display:inline-block;width:16px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.avleg .f{color:#5B6270;margin-top:3px}
+.avleg .bo,.avleg .qd{display:inline-block;width:10px;height:10px;background:#9CA3AF;margin:0 4px 0 0;vertical-align:-1px}
+.avleg .bo{border-radius:50%} .avleg .qd{border-radius:2px;margin-left:8px}
 @media(max-width:1200px){.av{grid-template-columns:1fr}}
 /* barras claras dos módulos */
 .lb{display:grid;grid-template-columns:minmax(110px,180px) minmax(0,1fr) 70px;gap:10px;align-items:center;padding:6px 0;font-size:13.5px}
@@ -282,6 +301,52 @@ main{overflow-y:auto;min-width:0}
 .ajustes label{display:flex;flex-direction:column;gap:5px;font-size:11.5px;font-weight:700;color:var(--ink2)}
 .ajustes input,.ajustes select{border:1px solid var(--linha);border-radius:9px;padding:7px 10px;background:#fff;width:120px}
 .ajustes select{width:auto}
+/* ---- frentes de trabalho ---- */
+.cartao.fr{border-left:5px solid var(--linha)}
+.cartao.fr.pros{border-left-color:var(--verm)}
+.cartao.fr.pesq{border-left-color:var(--azul)}
+.cartao.fr>.tt{flex-wrap:wrap}
+.cartao.fr .frn{width:26px;height:26px;border-radius:50%;background:#EEF0F3;color:var(--ink2);font-weight:800;font-size:13px;
+ display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.cartao.fr.foco .frn{background:var(--ink);color:#fff}
+.selo.frfoco,.cartao.fr>.tt .selo.frfoco{background:var(--ink);color:#fff}
+.cartao.fr>.tt .selo.r{color:var(--verm-esc)} .cartao.fr>.tt .selo.b{color:var(--azul)}
+.cartao.fr .ajustes input{width:158px}
+.frbar{height:8px;border-radius:5px;background:#EEF0F3;overflow:hidden;margin-top:14px}
+.frbar i{display:block;height:100%;background:var(--ink2)}
+.cartao.fr.pros .frbar i{background:var(--verm)} .cartao.fr.pesq .frbar i{background:var(--azul)}
+.frnum{margin-top:7px;font-size:13.5px;color:var(--ink2)} .frnum b{color:var(--ink);font-size:16px}
+.frquem{margin-top:4px;font-size:12.5px;color:var(--ink2)}
+.frpasso{display:flex;align-items:center;gap:9px;font-weight:700;font-size:14px;margin:20px 0 10px}
+.frpasso b{width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;font-size:12.5px;display:flex;align-items:center;justify-content:center}
+/* ---- formulários ---- */
+.fmgrade{display:grid;grid-template-columns:minmax(220px,300px) minmax(0,1fr);gap:18px;align-items:start}
+@media(max-width:900px){.fmgrade{grid-template-columns:minmax(0,1fr)}}
+.fmlista{display:flex;flex-direction:column;gap:10px}
+.fmitem{background:var(--papel);border:1px solid var(--linha);border-radius:12px;padding:12px 14px;cursor:pointer}
+.fmitem.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.fmitem b{display:block;font-size:14px} .fmitem span{display:block;font-size:12.5px;color:var(--ink2);margin-top:3px;line-height:1.45}
+.fmq{border:1px solid var(--linha);border-radius:12px;padding:12px;margin-top:14px;background:#FAFBFC}
+.fmq .frn{width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;font-weight:800;font-size:13px;
+ display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.fmqt{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.fmq input:not([type=checkbox]),.fmq select{border:1px solid var(--linha);border-radius:9px;padding:7px 10px;background:#fff}
+.fmq .fmtx{flex:1;min-width:220px;font-weight:600}
+.fmops{margin:10px 0 0 34px;display:flex;flex-direction:column;gap:7px;align-items:flex-start}
+.fmop{display:flex;gap:10px;align-items:center;flex-wrap:wrap;width:100%}
+.fmop input:not([type=checkbox]){flex:1;min-width:200px;max-width:420px}
+.fmregras{margin:10px 0 0 34px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--ink2)}
+.fmregras label{display:flex;gap:6px;align-items:center}
+.fmres{display:grid;grid-template-columns:minmax(120px,34%) minmax(0,1fr) 96px;gap:12px;align-items:center;font-size:13.5px;padding:5px 0}
+.fmres .frbar{margin:0} .fmres b{text-align:right;font-variant-numeric:tabular-nums}
+/* fotos das perguntas de foto: miniaturas nos resultados e foto grande na ficha do cliente */
+.pqfotos{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px}
+.pqfotobt{border:1px solid var(--linha);background:#fff;border-radius:12px;padding:0;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;text-align:left}
+.pqfotobt:hover{border-color:var(--ink2)}
+.pqfotobt span{font-size:11.5px;color:var(--ink2);padding:6px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pqfotop{width:100%;aspect-ratio:1;object-fit:cover;background:#E9EAEC;display:block}
+.pqfotog{max-width:100%;max-height:340px;border-radius:12px;background:#E9EAEC;display:block}
+.pqfotofalta{font-size:12px;color:var(--ink2);padding:8px;display:block}
 .cidlista{columns:4 220px;margin-top:12px;max-height:340px;overflow:auto;border:1px solid var(--linha);border-radius:10px;padding:10px 12px;font-size:13px}
 .cidlista label{display:flex;gap:7px;align-items:center;padding:3px 0;break-inside:avoid;font-weight:500;color:var(--ink)}
 .cidlista small{color:var(--ink3);margin-left:auto}
@@ -297,6 +362,8 @@ body.teste #faixateste button{border:1px solid #1A1D21;background:transparent;co
 body.teste .app{height:calc(100% - 36px);margin-top:36px}
 body.teste #moldura{top:36px}
 body.teste #entrada{top:36px}
+/* a ficha do cliente também começa abaixo da faixa: antes a faixa tampava o nome e o botão Fechar */
+body.teste #dlg{top:36px}
 body.teste .cab{top:0}
 .quem a{color:#cfd1d6}
 /* ---------- Pesquisa com clientes BAND ---------- */
@@ -313,7 +380,36 @@ body.teste .cab{top:0}
 .pqd.n{border-left-color:var(--verm)} .pqd.n>b{color:var(--verm)}
 .pqd.w{border-left-color:#D97706} .pqd.w>b{color:var(--amb)}
 .pqd.p{border-left-color:var(--verde)} .pqd.p>b{color:var(--verde)}
-.pqgr{display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:14px;align-items:start}
+/* quadros das perguntas: lado a lado, da mesma altura dentro de cada linha, sem buraco */
+.pqgr{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:14px;align-items:stretch}
+.pqgr>.cartao{display:flex;flex-direction:column;min-width:0}
+.pqgr>.cartao>.cc{flex:1}
+.pqgr>.cartao>.tt{flex-wrap:wrap;row-gap:2px}
+.pqgr>.cartao.larga{grid-column:1/-1}
+.pqgr>.cartao.larga .pqobs{columns:3 300px;column-gap:28px}
+.pqgr>.cartao.larga .pqobs p{break-inside:avoid}
+.pqh{margin:10px 2px -6px;font-size:12.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2);display:flex;align-items:center;gap:10px}
+.pqh::after{content:"";flex:1;height:1px;background:var(--linha)}
+/* os números de cima */
+.kpgs{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:12px;align-items:stretch}
+@media(max-width:1250px){.kpgs{grid-auto-flow:row;grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){.kpgs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.pqgr.q4{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:760px){.pqgr.q4{grid-template-columns:minmax(0,1fr)}}
+.kpg{background:var(--papel);border:1px solid var(--linha);border-radius:16px;padding:15px 17px 16px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.kpg .rt{font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);line-height:1.3;min-height:30px}
+.kpg>b{font-size:34px;font-weight:800;letter-spacing:-.02em;line-height:1.1;font-variant-numeric:tabular-nums}
+.kpg>b small{font-size:14px;font-weight:700;color:var(--ink2);letter-spacing:0}
+.kpg .sb{font-size:12.5px;color:var(--ink2);line-height:1.35}
+.kpb,.kps{height:7px;border-radius:5px;background:#EEF0F3;overflow:hidden;margin-top:auto}
+.kpb{position:relative;top:8px;margin-bottom:8px} .kps{display:flex;margin:10px 0 6px}
+.kpb i{display:block;height:100%;border-radius:5px;background:var(--ink)} .kps i{display:block;height:100%}
+.kpg.g>b{color:var(--verde)} .kpg.g .kpb i{background:var(--verde)}
+.kpg.a>b{color:var(--amb)} .kpg.a .kpb i{background:#D97706}
+.kpg.v>b{color:var(--verm)} .kpg.v .kpb i{background:var(--verm)}
+.kpg.v{border-color:#F3B4BF;background:#FFF7F8}
+.kpg.escuro{background:var(--ink);border-color:var(--ink);color:#fff}
+.kpg.escuro .rt{color:#A1A1AA} .kpg.escuro .sb{color:#C7C7CF}
 .pqgr .lb{grid-template-columns:minmax(120px,1fr) minmax(0,1fr) 98px}
 .pqgr details,.pqac details{margin-top:10px;font-size:13px}
 .pqgr summary,.pqac summary{cursor:pointer;color:var(--azul);font-weight:600}
@@ -375,7 +471,7 @@ body.teste .cab{top:0}
    o que protege os dados é o login do coordenador e as regras do banco.
    Tudo o que este painel guarda no navegador usa chaves com o prefixo rtm_painel_.
    ============================================================================ */
-const VERSAO='1.3.0';
+const VERSAO='1.4.0';
 const SUPA={url:'https://kqpdledhaghuzuwjkvrf.supabase.co',chave:'sb_publishable_dMdB5b_G5X5TnXemexGIXQ_GWXS6cid'};
 const K_SESSAO='rtm_painel_sessao',K_EMAIL='rtm_painel_email';
 /* Portal de teste: o mesmo painel aberto com "?teste" no endereço. Lê e grava na pasta "rtm_teste"
@@ -536,17 +632,28 @@ async function carregaVisitas(){
 async function atualizaTudo(silencioso){
   try{
     /* a pesquisa trata os próprios erros: sem o r05 no banco, o resto do painel segue normal */
-    await Promise.all([carregaDevs(),carregaRoteiros(),carregaVisitas(),carregaMsgs(),carregaPesquisa()]);
+    /* as frentes também: sem o r07 no banco, a tela delas avisa e o resto segue normal */
+    await Promise.all([carregaDevs(),carregaRoteiros(),carregaVisitas(),carregaMsgs(),carregaPesquisa(),carregaFrentes(),carregaFormularios()]);
     pintaLado();pintaMain();if(!silencioso)toast('Atualizado');
   }catch(e){if(e.semSessao)return sessaoCaiu();toast('Não consegui atualizar: '+e.message)}
 }
 
 /* ---------------- base (fica fora do arquivo, na pasta privada rtm-base) ---------------- */
 const IDB_NOME='rtm_painel';
-function idb(){return new Promise((ok,erro)=>{const r=indexedDB.open(IDB_NOME,1);
-  r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>ok(r.result);r.onerror=()=>erro(r.error)})}
-async function idbLe(k){const db=await idb();return new Promise(ok=>{const t=db.transaction('kv').objectStore('kv').get(k);t.onsuccess=()=>ok(t.result);t.onerror=()=>ok(null)})}
-async function idbGrava(k,v){const db=await idb();return new Promise(ok=>{const t=db.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=()=>ok(true);t.onerror=()=>ok(false)})}
+/* A cópia da base guardada no navegador é só um atalho para não baixar 3 MB a cada abertura. Nada
+   aqui pode segurar o painel: se o navegador não responde (disco cheio, janela anônima, dados do
+   site bloqueados, gravação recusada), as funções desistem depois de alguns segundos e o painel
+   segue com a base baixada do servidor. Antes, uma gravação recusada deixava a tela para sempre em
+   "Abrindo a base de clientes…". */
+const comPrazo=(p,ms,padrao)=>Promise.race([Promise.resolve(p).catch(()=>padrao),new Promise(ok=>setTimeout(()=>ok(padrao),ms))]);
+function idb(){return new Promise((ok,erro)=>{let r;try{r=indexedDB.open(IDB_NOME,1)}catch(e){return erro(e)}
+  r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>ok(r.result);r.onerror=()=>erro(r.error);r.onblocked=()=>erro(new Error('ocupado'))})}
+function idbLe(k){return comPrazo(idb().then(db=>new Promise(ok=>{const t=db.transaction('kv').objectStore('kv').get(k);t.onsuccess=()=>ok(t.result);t.onerror=()=>ok(null)})),6000,null)}
+function idbGrava(k,v){return comPrazo(idb().then(db=>new Promise(ok=>{const t=db.transaction('kv','readwrite');t.objectStore('kv').put(v,k);
+  t.oncomplete=()=>ok(true);t.onerror=()=>ok(false);t.onabort=()=>ok(false)})),20000,false)}
+/* em que passo a abertura da base está: aparece ao lado do "Abrindo a base…", para dar para ver onde parou */
+function basePasso(t){D.basePasso=t;try{document.querySelectorAll('.passobase').forEach(e=>e.textContent=t)}catch(e){}}
+const abreComPrazo=buf=>Promise.race([abreGz(buf),new Promise((_,er)=>setTimeout(()=>er(new Error('o navegador demorou mais de 90 segundos para abrir o arquivo da base')),90000))]);
 async function abreGz(buf){
   const u8=new Uint8Array(buf);
   if(u8[0]===0x1f&&u8[1]===0x8b){
@@ -562,20 +669,26 @@ function resumoBase(b){
 }
 /* confere a versao no servidor (arquivo pequeno) e so baixa a base se mudou */
 async function carregaBase(forcar){
-  D.baseEstado='carregando';pintaMainSe('base');
+  D.baseEstado='carregando';basePasso('conferindo a versão no servidor');pintaMainSe('base');
   try{
     let info=null;
     try{info=JSON.parse(new TextDecoder().decode(await baixa('rtm-base','versao.json')))}
     catch(e){if(e.semSessao)throw e;info=null}
     D.baseInfo=info;
     if(!info){D.base=null;D.baseEstado='sem';pintaLado();pintaMainSe('base');return}
+    basePasso('procurando a cópia guardada neste navegador');
     const guardada=await idbLe('base');
     if(!forcar&&guardada&&guardada.versao===info.versao&&guardada.buf){
-      D.base=await abreGz(guardada.buf);D.baseOrigem='guardada no navegador';
+      basePasso('abrindo a cópia guardada');
+      D.base=await abreComPrazo(guardada.buf);D.baseOrigem='guardada no navegador';D.baseGuardou=true;
     }else{
+      basePasso('baixando do servidor (3 MB)');
       const buf=await baixa('rtm-base',info.arquivo||'base.json.gz');
-      D.base=await abreGz(buf);D.baseOrigem='baixada agora';
-      await idbGrava('base',{versao:info.versao,buf});
+      basePasso('abrindo o arquivo');
+      D.base=await abreComPrazo(buf);D.baseOrigem='baixada agora';
+      /* guardar no navegador não segura a tela: se não der, a base só é baixada de novo na próxima abertura */
+      D.baseGuardou=null;
+      idbGrava('base',{versao:info.versao,buf}).then(ok=>{D.baseGuardou=ok;pintaMainSe('base')});
     }
     D.baseResumo=resumoBase(D.base);D.baseEstado='ok';
   }catch(e){
@@ -584,6 +697,9 @@ async function carregaBase(forcar){
   }
   pintaLado();pintaMainSe('base');pintaMainSe('dash');
   if(MOD==='pesquisa'&&FPQ.aba==='camp')pintaMain();   /* a montagem da pesquisa usa a base */
+  /* a "Nova frente" também: aberta antes de a base terminar de abrir, ela ficava parada em
+     "Abrindo a base de clientes…" para sempre */
+  if(MOD==='frentes'&&FRD.nova)pintaMain();
 }
 async function enviaBase(arq){
   if(!arq)return;
@@ -623,11 +739,13 @@ const IC={
  conc:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
  simul:'<path d="M4 4h16v16H4zM8 8h3M8 12h8M8 16h5"/>',
  pesquisa:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 11l2 2 4-4M9 17h6"/>',
+ frentes:'<path d="M5 21V4"/><path d="M5 4h12l-2.5 4 2.5 4H5"/>',
+ formularios:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>',
  sair:'<path d="M15 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4M10 17l5-5-5-5M15 12H3"/>'
 };
 const svg=(k,w=18)=>'<svg width="'+w+'" height="'+w+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(IC[k]||'')+'</svg>';
 const MODULOS=[
-  ['Operação',[['aovivo','Ao vivo',0],['mapa','Mapa de oportunidade',0],['planejar','Planejar campo',0],['visitas','Visitas',0],['pesquisa','Pesquisa',0],['msgs','Mensagens',0]]],
+  ['Operação',[['aovivo','Ao vivo',0],['frentes','Frentes de trabalho',0],['formularios','Formulários',0],['mapa','Mapa de oportunidade',0],['planejar','Planejar campo',0],['visitas','Visitas',0],['pesquisa','Pesquisa',0],['msgs','Mensagens',0]]],
   ['Análise',[['dash','Dashboards',0],['desemp','Desempenho',0],['funil','Funil de conversão',0],['conc','Concorrência e horários',0],['simul','Simulador',0]]],
   ['Estrutura',[['devs','Desenvolvedores',0],['base','Base de dados',0]]]
 ];
@@ -677,7 +795,7 @@ function mostraMapa(){
 window.addEventListener('message',e=>{if(e.origin===location.origin&&e.data==='roteiro-publicado'){D.rotCompleto=undefined;carregaRoteiros().then(pintaLado).catch(()=>{})}});
 function pintaMain(){
   if(mostraMapa()){$('main').innerHTML='';return}
-  const f={visitas:mVisitas,msgs:mMsgs,devs:mDevs,base:mBase,dash:mDash,aovivo:mAoVivo,desemp:mDesemp,funil:mFunil,conc:mConc,pesquisa:mPesquisa}[MOD];
+  const f={visitas:mVisitas,msgs:mMsgs,devs:mDevs,base:mBase,dash:mDash,aovivo:mAoVivo,desemp:mDesemp,funil:mFunil,conc:mConc,pesquisa:mPesquisa,frentes:mFrentes,formularios:mFormularios}[MOD];
   if(f){$('main').innerHTML=f();try{liga[MOD]&&liga[MOD]()}catch(e){console.error(e)}return}
   const b=BREVE[MOD]||BREVE.aovivo;
   $('main').innerHTML=cab(b[0],'Em construção')+'<div class="corpo"><div class="cartao"><div class="cc" style="padding:28px">'+
@@ -685,6 +803,287 @@ function pintaMain(){
     '<p style="margin:0;color:var(--ink2);line-height:1.6;max-width:70ch">'+esc(b[1])+'</p></div></div></div>';
 }
 const liga={};
+
+/* ---------------- módulo: Frentes de trabalho ----------------
+   Uma frente é um trabalho que o time faz em campo: a prospecção (pontos que ainda não são
+   clientes BAND) e cada pesquisa ativa (clientes BAND). Aqui o coordenador põe as frentes em
+   ordem e dá prazo. A PRIMEIRA da lista é o foco: o app mostra ela em destaque na tela inicial.
+   O banco guarda só a ordem e as datas; o avanço sai do que o painel já lê. */
+const FRD={cfg:{},estado:'',erro:'',lendo:null,salvando:false,nova:false};
+function carregaFrentes(){
+  if(FRD.lendo)return FRD.lendo;
+  FRD.lendo=(async()=>{
+    try{
+      const j=await rpc('frentes');
+      FRD.cfg={};(j.frentes||[]).forEach(f=>FRD.cfg[f.id]={inicio:f.inicio||'',prazo:f.prazo||'',ordem:f.ordem});
+      FRD.estado='ok';FRD.erro='';
+    }catch(e){
+      if(e.semSessao)throw e;
+      /* o banco ainda não tem as funções das frentes (falta rodar o r07) */
+      FRD.estado=/Could not find the function|PGRST202/i.test(e.message)?'sembanco':'erro';FRD.erro=e.message;
+    }finally{FRD.lendo=null}
+  })();
+  return FRD.lendo;
+}
+function frRecarrega(){return carregaFrentes().then(()=>pintaMainSe('frentes')).catch(e=>{if(e.semSessao)sessaoCaiu()})}
+const frBR=iso=>iso?iso.slice(8,10)+'/'+iso.slice(5,7):'';
+function frLista(){
+  const emUso=D.roteiros.find(r=>r.emUso),ativos=D.devs.filter(d=>d.ativo);
+  const l=[{id:'prospeccao',tipo:'pros',nome:'Prospecção',publico:'Não é cliente BAND',abre:'planejar',abreTxt:'Abrir o planejador',
+    total:emUso?(+emUso.clientes||0):0,un:'pontos do roteiro',unFeito:'visitas',quem:ativos.map(d=>d.nome),semTotal:'Sem roteiro publicado'}];
+  PQD.lista.filter(p=>p.status==='ativa').forEach(p=>{
+    const meus=PQD.p&&PQD.p.id===p.id?[...new Set(PQD.cli.map(c=>c.dev).filter(Boolean))].map(pqNomeDev):[];
+    l.push({id:p.id,tipo:'pesq',nome:p.nome,publico:'Cliente BAND',abre:'pesquisa',abreTxt:'Ver respostas',
+      total:+p.clientes||0,feitos:+p.respostas||0,un:'clientes',unFeito:'respondidos',quem:meus,semTotal:'Sem clientes'})});
+  l.forEach((f,i)=>{const c=FRD.cfg[f.id]||{};f.inicio=c.inicio||'';f.prazo=c.prazo||'';f.ordem=c.ordem!=null?+c.ordem:1000+i});
+  /* na prospecção contam as visitas registradas dentro do período da frente */
+  const pr=l[0],ini=pr.inicio?new Date(pr.inicio+'T00:00:00'):null,fim=pr.prazo?new Date(pr.prazo+'T23:59:59'):null;
+  pr.feitos=D.visitas.filter(v=>{const d=dataDe(v);return (!ini||(d&&d>=ini))&&(!fim||(d&&d<=fim))}).length;
+  return l.sort((a,b)=>a.ordem-b.ordem);
+}
+function frPrazo(f){
+  const h=pqHoje();
+  if(f.total&&f.feitos>=f.total)return ['concluída','v'];
+  if(f.inicio&&f.inicio>h)return ['começa em '+frBR(f.inicio),'c'];
+  if(!f.prazo)return ['sem prazo definido','c'];
+  const dias=Math.round((new Date(f.prazo+'T12:00:00')-new Date(h+'T12:00:00'))/86400000);
+  if(dias<0)return ['atrasada há '+(-dias)+(dias===-1?' dia':' dias'),'r'];
+  if(dias===0)return ['o prazo é hoje','a'];
+  return ['faltam '+dias+(dias===1?' dia':' dias'),dias<=2?'a':'v'];
+}
+function mFrentes(){
+  const sub='O que o time faz agora: a ordem, o prazo e o foco de cada frente';
+  if(!FRD.estado){frRecarrega();return cab('Frentes de trabalho','Carregando…')+'<div class="corpo"><div class="carregando">Buscando as frentes</div></div>'}
+  let aviso='';
+  if(FRD.estado==='sembanco')aviso='<div class="aviso"><b>Falta um passo no banco.</b> Para guardar a ordem e os prazos é preciso o arquivo <b>sql/r07</b> rodado no SQL Editor do Supabase. Enquanto isso, o app escolhe a frente do dia sozinho.</div>';
+  if(FRD.estado==='erro')aviso='<div class="aviso">Não consegui ler as frentes: '+esc(FRD.erro)+'</div>';
+  const l=frLista();
+  const cards=l.map((f,i)=>{
+    const pz=frPrazo(f),pct=f.total?Math.min(100,Math.round(f.feitos/f.total*100)):0;
+    return '<div class="cartao fr '+f.tipo+(i===0?' foco':'')+'" data-fr="'+esc(f.id)+'">'+
+      '<div class="tt"><span class="frn">'+(i+1)+'</span><h2>'+esc(f.nome)+'</h2>'+
+        '<span class="selo '+(f.tipo==='pros'?'r':'b')+'">'+f.publico+'</span>'+
+        (i===0?'<span class="selo frfoco">Foco agora</span>':'')+
+        '<div class="acoes">'+(i>0?'<button class="bt peq escuro" data-frfoco="'+esc(f.id)+'">Tornar foco</button>':'')+
+          '<button class="bt peq" data-frsobe="'+esc(f.id)+'"'+(i===0?' disabled':'')+' aria-label="Subir na ordem" title="Subir na ordem">▲</button>'+
+          '<button class="bt peq" data-frdesce="'+esc(f.id)+'"'+(i===l.length-1?' disabled':'')+' aria-label="Descer na ordem" title="Descer na ordem">▼</button>'+
+          '<button class="bt peq" data-frabre="'+f.abre+'">'+f.abreTxt+'</button></div></div>'+
+      '<div class="cc"><div class="ajustes">'+
+        '<label>Começa em<input type="date" data-frini="'+esc(f.id)+'" value="'+esc(f.inicio)+'"></label>'+
+        '<label>Prazo final<input type="date" data-frfim="'+esc(f.id)+'" value="'+esc(f.prazo)+'"></label>'+
+        '<span class="selo '+pz[1]+'" style="margin-bottom:6px">'+pz[0]+'</span></div>'+
+        '<div class="frbar"><i style="width:'+pct+'%"></i></div>'+
+        '<div class="frnum">'+(f.total?'<b>'+fmt(f.feitos)+'</b> '+f.unFeito+' de '+fmt(f.total)+' '+f.un+' · '+pct+'%':f.semTotal)+'</div>'+
+        (f.quem.length?'<div class="frquem">Quem faz: '+esc(f.quem.join(', '))+'</div>':'')+
+      '</div></div>';
+  }).join('');
+  return cab('Frentes de trabalho',sub)+'<div class="corpo">'+aviso+
+    '<div class="info">A primeira frente da lista é o <b>foco agora</b>: ela aparece em destaque na tela inicial do app de todo o time, com o prazo. '+
+      'As outras aparecem logo abaixo, nesta ordem. O que você mudar aqui chega ao app na sincronização seguinte.</div>'+
+    cards+
+    /* Nova frente: num lugar só, as perguntas (formulário), a campanha (clientes e quem visita) e o prazo */
+    (FRD.nova
+      ?'<div class="cartao" id="frnovacartao"><div class="tt"><h2>Nova frente</h2><span>perguntas, clientes, quem visita e prazo, tudo aqui</span></div><div class="cc">'+
+          '<div class="info" style="margin-bottom:14px">Uma frente nova é uma pesquisa com clientes BAND. As perguntas vêm de um formulário: para criar ou mudar as perguntas, use '+
+            '<a href="#formularios" data-frabre="formularios">Formulários</a> e volte aqui.'+
+            (PQD.lista.some(x=>x.status==='ativa')?' O time pode ter mais de uma pesquisa em campo ao mesmo tempo: cada uma vira uma frente no app.':'')+'</div>'+
+          nbCorpo(PQD.lista.find(x=>x.status==='ativa')||null,true)+'</div></div>'
+      :'<div class="cartao"><div class="tt"><h2>Nova frente</h2><span>uma pesquisa nova, com as suas perguntas</span>'+
+          '<div class="acoes"><button class="bt escuro" id="frnova">Criar nova frente</button></div></div>'+
+          '<div class="cc" style="color:var(--ink2);font-size:13.5px;line-height:1.6">Num passo só você escolhe as perguntas (formulário), os clientes, quem visita e o prazo, e publica. '+
+          'As perguntas são montadas em <a href="#formularios" data-frabre="formularios">Formulários</a>.</div></div>')+
+  '</div>';
+}
+/* guarda a lista inteira (são poucas linhas): a ordem da tela vira a ordem no banco */
+async function frSalva(l,msg){
+  if(FRD.salvando)return;
+  FRD.salvando=true;
+  l.forEach((f,i)=>FRD.cfg[f.id]={inicio:f.inicio,prazo:f.prazo,ordem:i+1});
+  pintaMainSe('frentes');
+  try{
+    await rpc('frentes_salvar',{p_frentes:l.map((f,i)=>({id:f.id,tipo:f.tipo==='pros'?'prospeccao':'pesquisa',inicio:f.inicio||null,prazo:f.prazo||null,ordem:i+1}))});
+    toast(msg);
+  }catch(e){
+    if(e.semSessao)return sessaoCaiu();
+    toast(/Could not find the function|PGRST202/i.test(e.message)?'Ainda não dá para guardar: falta rodar o arquivo r07 no banco.':'Não consegui guardar: '+e.message);
+    FRD.estado='';
+  }finally{FRD.salvando=false;pintaMainSe('frentes')}
+}
+liga.frentes=()=>{
+  const m=$('main'),acha=id=>frLista().findIndex(f=>f.id===id);
+  const move=(id,para)=>{const l=frLista(),i=acha(id);if(i<0||para<0||para>=l.length)return;
+    const [f]=l.splice(i,1);l.splice(para,0,f);
+    frSalva(l,para===0?'"'+f.nome+'" é o foco agora':'Ordem guardada')};
+  m.querySelectorAll('[data-frfoco]').forEach(b=>b.onclick=()=>move(b.dataset.frfoco,0));
+  m.querySelectorAll('[data-frsobe]').forEach(b=>b.onclick=()=>move(b.dataset.frsobe,acha(b.dataset.frsobe)-1));
+  m.querySelectorAll('[data-frdesce]').forEach(b=>b.onclick=()=>move(b.dataset.frdesce,acha(b.dataset.frdesce)+1));
+  m.querySelectorAll('[data-frabre]').forEach(b=>b.onclick=e=>{e.preventDefault();if(b.dataset.frabre==='pesquisa'&&b.tagName==='A')FPQ.aba='camp';ir(b.dataset.frabre)});
+  if($('frnova'))$('frnova').onclick=()=>{FRD.nova=true;NB.inicio=pqHoje();NB.prazo='';NB.foco=false;pintaMain();
+    const c=$('frnovacartao');if(c&&c.scrollIntoView)c.scrollIntoView({block:'start'})};
+  nbLiga();
+  const data=(el,campo)=>{el.onchange=()=>{const l=frLista(),f=l.find(x=>x.id===(el.dataset.frini||el.dataset.frfim));if(!f)return;
+    f[campo]=el.value||'';
+    if(f.inicio&&f.prazo&&f.prazo<f.inicio){toast('O prazo final não pode ser antes do começo');return pintaMain()}
+    frSalva(l,campo==='prazo'?'Prazo guardado':'Data de começo guardada')}};
+  m.querySelectorAll('[data-frini]').forEach(el=>data(el,'inicio'));
+  m.querySelectorAll('[data-frfim]').forEach(el=>data(el,'prazo'));
+};
+
+/* ---------------- módulo: Formulários ----------------
+   Um formulário é uma lista de perguntas montada pelo coordenador. Ao publicar uma pesquisa,
+   ele escolhe o formulário; a pesquisa guarda uma cópia das perguntas e o app responde por elas.
+   Toda pesquisa começa com a pergunta de chegada (falou com o responsável, ausente, fechado...),
+   que é fixa: as perguntas do formulário aparecem quando o desenvolvedor fala com o responsável.
+   Pergunta: {id, t (texto), tipo: uma|varias|nota|texto, ops: [[valor, texto]], opc (pode pular),
+              alerta: [valores que abrem acompanhamento], se: {idDaPergunta: [valores]}}. */
+const FMD={lista:[],estado:'',erro:'',lendo:null,sel:null,rasc:null,sujo:false,salvando:false};
+const FM_TIPO={uma:'Uma opção',varias:'Várias opções',nota:'Nota de 0 a 10',texto:'Texto livre',numero:'Número',foto:'Foto'};
+function carregaFormularios(){
+  if(FMD.lendo)return FMD.lendo;
+  FMD.lendo=(async()=>{
+    try{FMD.lista=(await rpc('formularios')).formularios||[];FMD.estado='ok';FMD.erro=''}
+    catch(e){
+      if(e.semSessao)throw e;
+      FMD.estado=/Could not find the function|PGRST202/i.test(e.message)?'sembanco':'erro';FMD.erro=e.message;
+    }finally{FMD.lendo=null}
+  })();
+  return FMD.lendo;
+}
+function fmRecarrega(){return carregaFormularios().then(()=>{pintaMainSe('formularios');pintaMainSe('pesquisa')}).catch(e=>{if(e.semSessao)sessaoCaiu()})}
+const fmNovoId=(lista,pre)=>{let n=1;lista.forEach(x=>{const m=new RegExp('^'+pre+'(\\d+)$').exec(String(Array.isArray(x)?x[0]:x.id));if(m)n=Math.max(n,+m[1]+1)});return pre+n};
+function fmAbre(id){
+  if(FMD.sujo&&!confirm('Sair deste formulário sem salvar o que mudou?'))return;
+  const f=FMD.lista.find(x=>x.id===id);
+  FMD.sel=id;FMD.sujo=false;
+  FMD.rasc=f?JSON.parse(JSON.stringify({id:f.id,nome:f.nome,perguntas:f.perguntas||[]}))
+            :{id:null,nome:'',perguntas:[{id:'p1',t:'',tipo:'uma',ops:[['o1','Sim'],['o2','Não']]}]};
+  pintaMainSe('formularios');
+}
+/* o que impede salvar: devolve o texto do problema, ou vazio */
+function fmConfere(r){
+  if(String(r.nome||'').trim().length<3)return 'Dê um nome ao formulário (pelo menos 3 letras).';
+  if(!r.perguntas.length)return 'O formulário precisa de pelo menos uma pergunta.';
+  for(let i=0;i<r.perguntas.length;i++){const q=r.perguntas[i],n='Pergunta '+(i+1);
+    if(String(q.t||'').trim().length<3)return n+': escreva a pergunta.';
+    if(q.tipo==='uma'||q.tipo==='varias'){
+      const ops=(q.ops||[]).filter(o=>String(o[1]||'').trim());
+      if(ops.length<2)return n+': precisa de pelo menos duas opções escritas.';
+      if(new Set(ops.map(o=>String(o[1]).trim().toLowerCase())).size<ops.length)return n+': há opções repetidas.';
+    }
+  }
+  return '';
+}
+function fmLimpa(r){
+  const ids=new Set(r.perguntas.map(q=>q.id));
+  return {id:r.id,nome:String(r.nome).trim().replace(/\s+/g,' ').slice(0,80),perguntas:r.perguntas.map(q=>{
+    const escolha=q.tipo==='uma'||q.tipo==='varias';
+    const ops=escolha?(q.ops||[]).filter(o=>String(o[1]||'').trim()).map(o=>[o[0],String(o[1]).trim().slice(0,120)]):[];
+    const val=new Set(ops.map(o=>o[0])),o={id:q.id,t:String(q.t).trim().slice(0,240),tipo:q.tipo};
+    if(escolha){o.ops=ops;const al=(q.alerta||[]).filter(v=>val.has(v));if(al.length)o.alerta=al}
+    if(q.opc)o.opc=true;
+    /* número: a unidade é opcional (portas, caixas, R$...) */
+    if(q.tipo==='numero'&&String(q.un||'').trim())o.un=String(q.un).trim().slice(0,12);
+    /* a condição só vale se a pergunta de que ela depende ainda existe e vem antes */
+    const k=Object.keys(q.se||{})[0],dep=k&&r.perguntas.find(x=>x.id===k);
+    if(dep&&ids.has(k)&&r.perguntas.indexOf(dep)<r.perguntas.indexOf(q)){
+      const v=(q.se[k]||[]).filter(x=>(dep.ops||[]).some(y=>y[0]===x&&String(y[1]||'').trim()));
+      if(v.length)o.se={[k]:v};
+    }
+    return o})};
+}
+function mFormularios(){
+  const sub='As perguntas de cada pesquisa: monte aqui e escolha ao publicar a pesquisa';
+  if(!FMD.estado){fmRecarrega();return cab('Formulários','Carregando…')+'<div class="corpo"><div class="carregando">Buscando os formulários</div></div>'}
+  let aviso='';
+  if(FMD.estado==='sembanco')aviso='<div class="aviso"><b>Falta um passo no banco.</b> Para guardar formulários é preciso o arquivo <b>sql/r07</b> rodado no SQL Editor do Supabase.</div>';
+  if(FMD.estado==='erro')aviso='<div class="aviso">Não consegui ler os formulários: '+esc(FMD.erro)+'</div>';
+  const cards='<div class="fmitem'+(FMD.sel==='padrao'?' on':'')+'" data-fm="padrao"><b>Pesquisa BAND (padrão)</b><span>O questionário que já vem no app: consultor, pedidos, BAND TOGO, 24 Horas, entrega e relacionamento. Não dá para editar.</span></div>'+
+    FMD.lista.map(f=>'<div class="fmitem'+(FMD.sel===f.id?' on':'')+'" data-fm="'+esc(f.id)+'"><b>'+esc(f.nome)+'</b><span>'+
+      (f.perguntas||[]).length+((f.perguntas||[]).length===1?' pergunta':' perguntas')+(f.emUso?' · em uso em '+f.emUso+(f.emUso===1?' pesquisa':' pesquisas'):'')+'</span></div>').join('');
+  let ed='';
+  const r=FMD.rasc;
+  if(FMD.sel==='padrao')ed='<div class="cartao"><div class="tt"><h2>Pesquisa BAND (padrão)</h2></div><div class="cc" style="color:var(--ink2);font-size:13.5px;line-height:1.6">'+
+    'É o questionário completo que já está no app e na tela de Resultados da Pesquisa, com os acompanhamentos automáticos. Para perguntas diferentes, crie um formulário novo.</div></div>';
+  else if(r){
+    const perg=r.perguntas.map((q,i)=>{
+      const escolha=q.tipo==='uma'||q.tipo==='varias';
+      const antes=r.perguntas.slice(0,i).filter(x=>(x.tipo==='uma'||x.tipo==='varias')&&(x.ops||[]).some(o=>String(o[1]||'').trim()));
+      const k=Object.keys(q.se||{})[0],dep=antes.find(x=>x.id===k);
+      return '<div class="fmq" data-q="'+i+'"><div class="fmqt"><span class="frn">'+(i+1)+'</span>'+
+          '<input class="fmtx" data-qt="'+i+'" maxlength="240" placeholder="Escreva a pergunta" value="'+esc(q.t||'')+'">'+
+          '<select data-qtipo="'+i+'">'+Object.keys(FM_TIPO).map(t=>'<option value="'+t+'"'+(q.tipo===t?' selected':'')+'>'+FM_TIPO[t]+'</option>').join('')+'</select>'+
+          '<button class="bt peq" data-qsobe="'+i+'"'+(i===0?' disabled':'')+' aria-label="Subir a pergunta" title="Subir">▲</button>'+
+          '<button class="bt peq" data-qdesce="'+i+'"'+(i===r.perguntas.length-1?' disabled':'')+' aria-label="Descer a pergunta" title="Descer">▼</button>'+
+          '<button class="bt peq" data-qtira="'+i+'" aria-label="Tirar a pergunta" title="Tirar a pergunta">✕</button></div>'+
+        (escolha?'<div class="fmops">'+(q.ops||[]).map((o,j)=>'<div class="fmop"><input data-qo="'+i+'|'+j+'" maxlength="120" placeholder="Opção '+(j+1)+'" value="'+esc(o[1]||'')+'">'+
+            '<label class="marca-cx" title="Quando o cliente responder isto, abre um acompanhamento para o supervisor"><input type="checkbox" data-qal="'+i+'|'+j+'"'+((q.alerta||[]).indexOf(o[0])>=0?' checked':'')+'> abre acompanhamento</label>'+
+            '<button class="bt peq" data-qotira="'+i+'|'+j+'"'+((q.ops||[]).length<=2?' disabled':'')+' aria-label="Tirar a opção">✕</button></div>').join('')+
+          '<button class="bt peq" data-qomais="'+i+'">+ opção</button></div>':'')+
+        (q.tipo==='numero'?'<div class="fmregras"><label>Unidade (opcional)<input data-qun="'+i+'" maxlength="12" style="width:150px" placeholder="portas, caixas, R$…" value="'+esc(q.un||'')+'"></label>'+
+            '<span>No app o desenvolvedor digita só o número. Nos resultados aparecem a média, a soma, o menor e o maior.</span></div>':'')+
+        (q.tipo==='foto'?'<div class="fmregras"><span>No app o desenvolvedor tira a foto na hora, com a câmera. Ela fica na pasta privada de fotos e aparece nos resultados e na ficha do cliente.</span></div>':'')+
+        '<div class="fmregras"><label class="marca-cx"><input type="checkbox" data-qopc="'+i+'"'+(q.opc?' checked':'')+'> pode pular</label>'+
+          (antes.length?'<label>Aparece<select data-qse="'+i+'"><option value="">sempre</option>'+antes.map(x=>'<option value="'+esc(x.id)+'"'+(dep&&dep.id===x.id?' selected':'')+'>só se a pergunta '+(r.perguntas.indexOf(x)+1)+' for</option>').join('')+'</select></label>'+
+            (dep?'<label>respondida com<select data-qsev="'+i+'">'+(dep.ops||[]).filter(o=>String(o[1]||'').trim()).map(o=>'<option value="'+esc(o[0])+'"'+((q.se[k]||[]).indexOf(o[0])>=0?' selected':'')+'>'+esc(o[1])+'</option>').join('')+'</select></label>':''):'')+
+        '</div></div>';
+    }).join('');
+    ed='<div class="cartao"><div class="tt"><h2>'+(r.id?'Editar formulário':'Formulário novo')+'</h2><span>'+(FMD.sujo?'há mudanças não salvas':'')+'</span>'+
+        '<div class="acoes"><button class="bt verm" id="fmsalva">Salvar formulário</button></div></div><div class="cc">'+
+        '<div class="ajustes"><label style="flex:1;min-width:260px">Nome do formulário<input id="fmnome" maxlength="80" style="width:100%" placeholder="Por exemplo: Pesquisa de geladeiras" value="'+esc(r.nome||'')+'"></label></div>'+
+        '<div class="info" style="margin-top:14px">Toda pesquisa começa com a pergunta de chegada (falou com o responsável, ausente, fechado, trocou de dono…), que é fixa. '+
+          'As perguntas abaixo aparecem quando o desenvolvedor fala com o responsável.</div>'+
+        '<div id="fmmsg" class="aviso esc" style="margin-top:12px" role="alert"></div>'+
+        perg+'<button class="bt" id="fmmais" style="margin-top:14px">+ Adicionar pergunta</button></div></div>';
+  }else ed='<div class="cartao"><div class="cc vazio">Escolha um formulário ao lado ou crie um novo.</div></div>';
+  return cab('Formulários',sub,'<button class="bt escuro" id="fmnovo">Novo formulário</button>')+'<div class="corpo">'+aviso+
+    '<div class="fmgrade"><div class="fmlista">'+cards+'</div><div>'+ed+'</div></div></div>';
+}
+async function fmSalva(){
+  const r=FMD.rasc;if(!r||FMD.salvando)return;
+  const prob=fmConfere(r),msg=$('fmmsg');
+  if(prob){if(msg){msg.textContent=prob;msg.classList.remove('esc')}return toast(prob)}
+  FMD.salvando=true;const b=$('fmsalva');if(b){b.disabled=true;b.textContent='Salvando…'}
+  try{
+    const j=await rpc('formulario_salvar',{p_formulario:fmLimpa(r)});
+    FMD.sujo=false;await carregaFormularios();FMD.sel=j.id||r.id;
+    const f=FMD.lista.find(x=>x.id===FMD.sel);if(f)FMD.rasc=JSON.parse(JSON.stringify({id:f.id,nome:f.nome,perguntas:f.perguntas||[]}));
+    toast('Formulário salvo');
+  }catch(e){
+    if(e.semSessao)return sessaoCaiu();
+    toast(/Could not find the function|PGRST202/i.test(e.message)?'Ainda não dá para salvar: falta rodar o arquivo r07 no banco.':'Não consegui salvar: '+e.message);
+  }finally{FMD.salvando=false;pintaMainSe('formularios')}
+}
+liga.formularios=()=>{
+  const m=$('main'),r=FMD.rasc,muda=()=>{FMD.sujo=true},redesenha=()=>{FMD.sujo=true;const y=m.scrollTop;pintaMain();m.scrollTop=y};
+  m.querySelectorAll('[data-fm]').forEach(c=>c.onclick=()=>fmAbre(c.dataset.fm));
+  if($('fmnovo'))$('fmnovo').onclick=()=>fmAbre('novo');
+  if(!r||FMD.sel==='padrao')return;
+  const ij=s=>s.split('|').map(Number);
+  $('fmnome').oninput=e=>{r.nome=e.target.value;muda()};
+  m.querySelectorAll('[data-qt]').forEach(el=>el.oninput=()=>{r.perguntas[+el.dataset.qt].t=el.value;muda()});
+  /* sem redesenhar a cada letra, para o cursor não sair do campo; as listas "respondida com"
+     das perguntas seguintes pegam o texto novo no próximo redesenho (acrescentar, mover, trocar) */
+  m.querySelectorAll('[data-qo]').forEach(el=>el.oninput=()=>{const [i,j]=ij(el.dataset.qo);r.perguntas[i].ops[j][1]=el.value;muda()});
+  m.querySelectorAll('[data-qun]').forEach(el=>el.oninput=()=>{r.perguntas[+el.dataset.qun].un=el.value;muda()});
+  m.querySelectorAll('[data-qtipo]').forEach(el=>el.onchange=()=>{const q=r.perguntas[+el.dataset.qtipo];q.tipo=el.value;
+    if((q.tipo==='uma'||q.tipo==='varias')&&!(q.ops||[]).length)q.ops=[['o1',''],['o2','']];redesenha()});
+  m.querySelectorAll('[data-qal]').forEach(el=>el.onchange=()=>{const [i,j]=ij(el.dataset.qal),q=r.perguntas[i],v=q.ops[j][0];
+    q.alerta=(q.alerta||[]).filter(x=>x!==v);if(el.checked)q.alerta.push(v);muda()});
+  m.querySelectorAll('[data-qopc]').forEach(el=>el.onchange=()=>{r.perguntas[+el.dataset.qopc].opc=el.checked;muda()});
+  m.querySelectorAll('[data-qomais]').forEach(el=>el.onclick=()=>{const q=r.perguntas[+el.dataset.qomais];q.ops=q.ops||[];q.ops.push([fmNovoId(q.ops,'o'),'']);redesenha()});
+  m.querySelectorAll('[data-qotira]').forEach(el=>el.onclick=()=>{const [i,j]=ij(el.dataset.qotira);r.perguntas[i].ops.splice(j,1);redesenha()});
+  m.querySelectorAll('[data-qtira]').forEach(el=>el.onclick=()=>{if(r.perguntas.length<=1)return toast('O formulário precisa de pelo menos uma pergunta');
+    r.perguntas.splice(+el.dataset.qtira,1);redesenha()});
+  const troca=(i,para)=>{if(para<0||para>=r.perguntas.length)return;const [q]=r.perguntas.splice(i,1);r.perguntas.splice(para,0,q);redesenha()};
+  m.querySelectorAll('[data-qsobe]').forEach(el=>el.onclick=()=>troca(+el.dataset.qsobe,+el.dataset.qsobe-1));
+  m.querySelectorAll('[data-qdesce]').forEach(el=>el.onclick=()=>troca(+el.dataset.qdesce,+el.dataset.qdesce+1));
+  m.querySelectorAll('[data-qse]').forEach(el=>el.onchange=()=>{const q=r.perguntas[+el.dataset.qse],dep=r.perguntas.find(x=>x.id===el.value);
+    if(!dep)delete q.se;else{const o=(dep.ops||[]).find(y=>String(y[1]||'').trim());q.se={[dep.id]:o?[o[0]]:[]}}redesenha()});
+  m.querySelectorAll('[data-qsev]').forEach(el=>el.onchange=()=>{const q=r.perguntas[+el.dataset.qsev],k=Object.keys(q.se||{})[0];if(k){q.se[k]=[el.value];muda()}});
+  $('fmmais').onclick=()=>{r.perguntas.push({id:fmNovoId(r.perguntas,'p'),t:'',tipo:'uma',ops:[['o1',''],['o2','']]});redesenha();
+    const c=m.querySelectorAll('[data-qt]');if(c.length)c[c.length-1].focus()};
+  $('fmsalva').onclick=fmSalva;
+};
 
 /* ---------------- datas ---------------- */
 const hojeBR=()=>{const d=new Date();return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear()};
@@ -798,77 +1197,148 @@ const corDev=l=>{const i=D.devs.findIndex(d=>d.login===l);return PAL_DEV[(i<0?0:
 const durMin=v=>v.duracaoMin||(v.duracaoSeg?Math.round(v.duracaoSeg/60):null);
 
 /* ---------------- módulo: Ao vivo ---------------- */
-const FA={dia:null};
+const FA={dia:null,fr:''};
 let avMapa=null;
+/* Tudo o que o desenvolvedor registrou no dia, de QUALQUER frente: as visitas de prospecção e as
+   respostas das pesquisas. Cada registro vira um "evento" com hora, lugar e cor; é com os eventos
+   que a trilha do dia e o trajeto no mapa são desenhados. Frente nova que guardar hora e GPS entra aqui. */
+const AV_FR={pros:'Prospecção',pesq:'Pesquisa'};
+const COR_PQ={ok:'#38BDF8',voltar:'#FBBF24',nao:'#71717A'},AV_PQ_NOME={ok:'Pesquisa respondida',voltar:'Pesquisa: voltar depois',nao:'Pesquisa sem contato'};
+/* As respostas do dia de TODAS as pesquisas, ativas ou encerradas (função pesquisa_respostas_do_dia,
+   do arquivo r07). Enquanto ela não responde, ou se o banco ainda não tem a função, o Ao vivo usa as
+   respostas da pesquisa que está carregada no painel, como sempre foi. */
+const AVD={dia:'',pedido:'',resp:[],estado:'',lendo:null,quando:0};
+function avEventos(dia){
+  const ev=D.visitas.filter(v=>v.data===dia).map(v=>{const s=situacao(v)[0];
+    return {fr:'pros',dev:v.devLogin,nome:v.nome||'',j:janela(v),hora:v.hora,gps:v.gps&&isFinite(v.gps.lat)?{lat:+v.gps.lat,lon:+v.gps.lon}:null,
+      cor:corSit(v),sit:s,dur:durMin(v),km:+v.dist,quer:s==='Quer cadastro',id:v.cnpj}});
+  const doDia=AVD.estado==='ok'&&AVD.dia===dia;
+  (doDia?AVD.resp:Object.values(PQD.resp||{})).forEach(r=>{
+    if(r.data!==dia)return;
+    /* vindo do dia inteiro, o nome do cliente e o da pesquisa já estão na própria resposta */
+    const c=doDia?r:(PQD.porCod[r.cod]||{}),fim=hm(r.hora),dur=r.duracao_seg?Math.max(1,Math.round(r.duracao_seg/60)):null;
+    const tipo=r.situacao==='falou'?'ok':PQ_VOLTAR.includes(r.situacao)?'voltar':'nao';
+    ev.push({fr:'pesq',pid:r.pesquisa||(PQD.p&&PQD.p.id)||'',pq:r.pesquisaNome||(PQD.p&&PQD.p.nome)||'',
+      dev:r.devLogin,nome:c.nome||('Cliente '+r.cod),j:fim==null?null:[fim-(dur||6),fim],hora:r.hora,
+      gps:r.gps_lat!=null&&isFinite(+r.gps_lat)?{lat:+r.gps_lat,lon:+r.gps_lon}:null,
+      cor:COR_PQ[tipo],sit:AV_PQ_NOME[tipo],dur,km:r.dist==null?NaN:(+r.dist)/1000,quer:false,id:r.cod});
+  });
+  return FA.fr?ev.filter(e=>e.fr===FA.fr):ev;
+}
+/* o nome da frente de um registro: na pesquisa, com o nome da pesquisa (pode haver mais de uma em campo) */
+const avFrente=e=>e.fr==='pesq'&&e.pq?'Pesquisa · '+e.pq:AV_FR[e.fr];
+const avAssina=dia=>JSON.stringify(avEventos(dia).map(e=>[e.fr,e.dev,e.id,e.pid||'',e.hora,e.sit]));
+function carregaAoVivo(dia){
+  if(AVD.lendo)return AVD.lendo;
+  AVD.pedido=dia;
+  AVD.lendo=(async()=>{
+    const antes=avAssina(dia);
+    try{
+      const j=await rpc('pesquisa_respostas_do_dia',{p_data:dia});
+      AVD.resp=j.respostas||[];AVD.dia=dia;AVD.estado='ok';
+    }catch(e){
+      if(e.semSessao)throw e;
+      /* banco ainda sem a função (falta rodar o r07): não pede de novo até recarregar o painel */
+      AVD.estado=/Could not find the function|PGRST202/i.test(e.message)?'sembanco':'erro';
+    }finally{AVD.quando=Date.now();AVD.lendo=null}
+    /* o coordenador trocou de dia enquanto a resposta vinha: busca o dia que está na tela */
+    const naTela=FA.dia||hojeBR();
+    if(MOD==='aovivo'&&naTela!==dia&&AVD.estado!=='sembanco'){setTimeout(()=>carregaAoVivo(naTela),0);return}
+    /* só refaz a tela se mudou alguma coisa e ninguém está com uma ficha aberta */
+    if(MOD==='aovivo'&&!$('dlg').classList.contains('on')&&avAssina(dia)!==antes)pintaMain();
+  })().catch(e=>{if(e&&e.semSessao)sessaoCaiu()});
+  return AVD.lendo;
+}
+/* abre a ficha de uma resposta; se ela é de outra pesquisa, carrega antes essa pesquisa no painel */
+async function avAbrePq(pid,cod){
+  if(pid&&(!PQD.p||PQD.p.id!==pid)){
+    if(PQD.lendo)await PQD.lendo.catch(()=>{});
+    const at=PQD.lista.find(x=>x.status==='ativa');
+    PQD.sel=at&&at.id===pid?null:pid;
+    try{await carregaPesquisa(true);pintaLado()}catch(e){if(e.semSessao)return sessaoCaiu()}
+    if(!PQD.p||PQD.p.id!==pid)return toast('Não consegui abrir a pesquisa desta resposta');
+  }
+  abrePq(cod);
+}
 function mAoVivo(){
   if(!D.carregou.visitas)return cab('Ao vivo','Carregando…')+'<div class="corpo"><div class="carregando">Buscando as visitas</div></div>';
   const dia=FA.dia||hojeBR(),ehHoje=dia===hojeBR();
-  const l=D.visitas.filter(v=>v.data===dia);
-  const devs=D.devs.filter(d=>d.ativo||l.some(v=>v.devLogin===d.login));
-  let h0=7*60,h1=19*60;l.forEach(v=>{const j=janela(v);if(j){h0=Math.min(h0,Math.floor(j[0]/60)*60);h1=Math.max(h1,Math.ceil(j[1]/60)*60)}});
+  if(AVD.estado!=='sembanco'&&!AVD.lendo&&(AVD.pedido!==dia||Date.now()-AVD.quando>50000))carregaAoVivo(dia);
+  const l=avEventos(dia),nPros=l.filter(e=>e.fr==='pros').length,nPesq=l.length-nPros;
+  const devs=D.devs.filter(d=>d.ativo||l.some(e=>e.dev===d.login));
+  let h0=7*60,h1=19*60;l.forEach(e=>{if(e.j){h0=Math.min(h0,Math.floor(e.j[0]/60)*60);h1=Math.max(h1,Math.ceil(e.j[1]/60)*60)}});
   const pos=m=>(m-h0)/(h1-h0)*100;
   const agora=new Date(),agoraM=agora.getHours()*60+agora.getMinutes();
-  const emCampo=ehHoje?devs.filter(d=>l.some(v=>v.devLogin===d.login&&hm(v.hora)!=null&&agoraM-hm(v.hora)<=60)).length:null;
-  const quer=l.filter(v=>situacao(v)[0]==='Quer cadastro').length,durs=l.map(durMin).filter(x=>x>0),dists=l.map(v=>+v.dist).filter(x=>isFinite(x)&&x>=0&&x<500);
+  const emCampo=ehHoje?devs.filter(d=>l.some(e=>e.dev===d.login&&hm(e.hora)!=null&&agoraM-hm(e.hora)<=60)).length:null;
+  const quer=l.filter(e=>e.quer).length,durs=l.map(e=>e.dur).filter(x=>x>0),dists=l.map(e=>e.km).filter(x=>isFinite(x)&&x>=0&&x<500);
   const marcas=[];for(let m=h0;m<=h1;m+=60)marcas.push('<span style="left:'+pos(m)+'%">'+(m/60)+'h</span>');
   const faixas=devs.map(d=>{
-    const vs=l.filter(v=>v.devLogin===d.login).map(v=>({v,j:janela(v)})).filter(x=>x.j).sort((a,b)=>a.j[0]-b.j[0]);
+    const vs=l.filter(e=>e.dev===d.login&&e.j).sort((a,b)=>a.j[0]-b.j[0]);
     let blocos='',ant=null;
-    vs.forEach((x,i)=>{
-      if(ant!=null&&x.j[0]-ant>=60){const meio=(ant+x.j[0])/2,par=x.j[0]-ant;
+    vs.forEach((e,i)=>{
+      if(ant!=null&&e.j[0]-ant>=60){const meio=(ant+e.j[0])/2,par=e.j[0]-ant;
         blocos+='<span class="par" style="left:'+pos(meio)+'%">parado '+Math.floor(par/60)+'h'+String(par%60).padStart(2,'0')+'</span>'}
-      const c=corSit(x.v),ult=ehHoje&&i===vs.length-1;
-      blocos+='<span class="bl'+(ult?' ult':'')+'" data-c="'+esc(x.v.cnpj)+'" title="'+esc((x.v.nome||'')+' · '+hmTxt(x.j[0])+'–'+hmTxt(x.j[1])+' · '+situacao(x.v)[0])+'" style="left:'+pos(x.j[0])+'%;width:'+Math.max(.6,pos(x.j[1])-pos(x.j[0]))+'%;background:'+c+';color:'+c+'"></span>';
-      ant=Math.max(ant||0,x.j[1]);
+      const ult=ehHoje&&i===vs.length-1;
+      blocos+='<span class="bl'+(e.fr==='pesq'?' pq':'')+(ult?' ult':'')+'" data-fr="'+e.fr+'" data-id="'+esc(e.id)+'" data-pid="'+esc(e.pid||'')+'" title="'+esc(avFrente(e)+' · '+e.nome+' · '+hmTxt(e.j[0])+'–'+hmTxt(e.j[1])+' · '+e.sit)+
+        '" style="left:'+pos(e.j[0])+'%;width:'+Math.max(.6,pos(e.j[1])-pos(e.j[0]))+'%;background:'+e.cor+';color:'+e.cor+'"></span>';
+      ant=Math.max(ant||0,e.j[1]);
     });
     if(ehHoje&&agoraM>h0&&agoraM<h1)blocos+='<span class="agora" style="left:'+pos(agoraM)+'%"></span>';
-    const ult=vs.length?vs[vs.length-1].j[1]:null;
-    const sub=vs.length?hmTxt(vs[0].j[0])+' às '+hmTxt(ult)+(ehHoje?' · há '+Math.max(0,agoraM-ult)+' min':''):'sem visita '+(ehHoje?'hoje':'neste dia');
+    const ult=vs.length?vs[vs.length-1].j[1]:null,np=vs.filter(e=>e.fr==='pros').length,nq=vs.length-np;
+    const sub=vs.length?hmTxt(vs[0].j[0])+' às '+hmTxt(ult)+(ehHoje?' · há '+Math.max(0,agoraM-ult)+' min':''):'sem registro '+(ehHoje?'hoje':'neste dia');
     return '<div class="faixa"><div class="qm"><b><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:'+corDev(d.login)+';margin-right:6px"></span>'+esc(d.nome)+'</b><small>'+esc(sub)+'</small></div>'+
-      '<div class="pista">'+blocos+'</div><div class="nn">'+vs.length+'<small>visitas</small></div></div>';
+      '<div class="pista">'+blocos+'</div><div class="nn">'+vs.length+'<small>'+(np&&nq?np+' visitas · '+nq+' pesq.':nq?(nq===1?'pesquisa':'pesquisas'):(np===1?'visita':'visitas'))+'</small></div></div>';
   }).join('');
-  return cab('Ao vivo','A trilha do dia: cada visita no horário em que aconteceu',
+  const chip=(k,t)=>'<button class="bt peq" data-avfr="'+k+'" aria-pressed="'+(FA.fr===k)+'">'+t+'</button>';
+  return cab('Ao vivo','A trilha do dia, de todas as frentes: cada registro no horário e no lugar em que aconteceu',
+     '<div class="avfr" role="group" aria-label="Frente">'+chip('','Todas as frentes')+chip('pros','Prospecção')+chip('pesq','Pesquisa')+'</div>'+
      '<div class="diasel"><button class="bt peq" id="avant" aria-label="Dia anterior">←</button><b style="min-width:92px;text-align:center">'+(ehHoje?'Hoje':esc(dia))+'</b>'+
      '<button class="bt peq" id="avprox" aria-label="Próximo dia"'+(ehHoje?' disabled':'')+'>→</button></div>')+
    '<div class="corpo"><div class="kpis">'+
-    '<div class="kpi"><b>'+fmt(l.length)+'</b><span>visitas '+(ehHoje?'hoje':'no dia')+'</span></div>'+
-    (ehHoje?'<div class="kpi g"><b>'+emCampo+' de '+devs.length+'</b><span>em campo agora (visita na última hora)</span></div>':'')+
-    '<div class="kpi v"><b>'+fmt(quer)+'</b><span>querem se cadastrar agora</span></div>'+
+    '<div class="kpi"><b>'+fmt(l.length)+'</b><span>registros '+(ehHoje?'hoje':'no dia')+(FA.fr?'':' · '+fmt(nPros)+' de prospecção e '+fmt(nPesq)+' de pesquisa')+'</span></div>'+
+    (ehHoje?'<div class="kpi g"><b>'+emCampo+' de '+devs.length+'</b><span>em campo agora (registro na última hora)</span></div>':'')+
+    (FA.fr==='pesq'?'':'<div class="kpi v"><b>'+fmt(quer)+'</b><span>querem se cadastrar agora</span></div>')+
     '<div class="kpi"><b>'+(durs.length?Math.round(med(durs))+' min':'—')+'</b><span>duração mediana</span></div>'+
     '<div class="kpi a"><b>'+(dists.length?fmtKm(med(dists)):'—')+'</b><span>distância mediana do endereço</span></div></div>'+
    '<div class="av"><div class="trilha"><div class="eixo">'+marcas.join('')+'</div>'+(faixas||'<div class="vazio" style="color:#8E8E96">Nenhum desenvolvedor ativo.</div>')+
-    '<div class="legav">'+Object.keys(COR_SIT).map(k=>'<span><i style="background:'+COR_SIT[k]+'"></i>'+k+'</span>').join('')+
-     '<span style="color:#FBBF24">▭ intervalo de 1 hora ou mais sem visita</span></div></div>'+
+    '<div class="legav">'+(FA.fr==='pesq'?'':'<b>Prospecção</b>'+Object.keys(COR_SIT).map(k=>'<span><i style="background:'+COR_SIT[k]+'"></i>'+k+'</span>').join(''))+'</div>'+
+    '<div class="legav">'+(FA.fr==='pros'?'':'<b>Pesquisa</b>'+Object.keys(COR_PQ).map(k=>'<span><i class="pq" style="background:'+COR_PQ[k]+'"></i>'+AV_PQ_NOME[k].replace(/^Pesquisa:? /,'')+'</span>').join(''))+
+     '<span style="color:#FBBF24">▭ intervalo de 1 hora ou mais sem registro</span></div></div>'+
    '<div id="avmapa"></div></div>'+
-   (l.length?'':'<div class="info">Sem visitas '+(ehHoje?'hoje ainda':'neste dia')+'. A trilha se preenche sozinha a cada minuto conforme o app envia.</div>')+'</div>';
+   (l.length?'':'<div class="info">Sem registros '+(ehHoje?'hoje ainda':'neste dia')+(FA.fr?' nesta frente':'')+'. A trilha se preenche sozinha a cada minuto conforme o app envia.</div>')+'</div>';
 }
 liga.aovivo=()=>{
   if(!$('avant'))return;
   const muda=d=>{const m=(FA.dia||hojeBR()).split('/'),dt=new Date(+m[2],+m[1]-1,+m[0]+d);
     FA.dia=String(dt.getDate()).padStart(2,'0')+'/'+String(dt.getMonth()+1).padStart(2,'0')+'/'+dt.getFullYear();if(FA.dia===hojeBR())FA.dia=null;pintaMain()};
   $('avant').onclick=()=>muda(-1);$('avprox').onclick=()=>muda(1);
-  document.querySelectorAll('.pista .bl').forEach(b=>b.onclick=()=>abreFicha(b.dataset.c));
+  document.querySelectorAll('[data-avfr]').forEach(b=>b.onclick=()=>{FA.fr=b.dataset.avfr;pintaMain()});
+  document.querySelectorAll('.pista .bl').forEach(b=>b.onclick=()=>b.dataset.fr==='pesq'?avAbrePq(b.dataset.pid,b.dataset.id):abreFicha(b.dataset.id));
   desenhaAvMapa();
 };
+/* O trajeto de cada desenvolvedor: uma linha na cor dele ligando as paradas na ordem em que
+   aconteceram, numeradas. Bolinha = prospecção; quadrado = pesquisa. A última parada de hoje pulsa. */
 function desenhaAvMapa(){
   const el=$('avmapa');if(!el)return;
   if(typeof L==='undefined'){el.innerHTML='<div class="vazio">O mapa não carregou (sem internet?).</div>';return}
   if(avMapa){try{avMapa.remove()}catch(e){}avMapa=null}
   avMapa=L.map(el,{zoomControl:true,attributionControl:true});
   L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',{maxZoom:18,attribution:'Esri, HERE, Garmin'}).addTo(avMapa);
-  const dia=FA.dia||hojeBR(),ehHoje=dia===hojeBR(),pts=[];
+  const dia=FA.dia||hojeBR(),ehHoje=dia===hojeBR(),ev=avEventos(dia),pts=[],leg=[];
   D.devs.forEach(d=>{
-    const vs=D.visitas.filter(v=>v.data===dia&&v.devLogin===d.login&&v.gps&&isFinite(v.gps.lat)).sort((a,b)=>(hm(a.hora)||0)-(hm(b.hora)||0));
+    const vs=ev.filter(e=>e.dev===d.login&&e.gps).sort((a,b)=>(hm(a.hora)||0)-(hm(b.hora)||0));
     if(!vs.length)return;const cor=corDev(d.login);
-    L.polyline(vs.map(v=>[v.gps.lat,v.gps.lon]),{color:cor,weight:3,opacity:.55,dashArray:'6 6'}).addTo(avMapa);
-    vs.forEach((v,i)=>{pts.push([v.gps.lat,v.gps.lon]);const ult=i===vs.length-1;
-      const mk=ult&&ehHoje?L.marker([v.gps.lat,v.gps.lon],{icon:L.divIcon({className:'',iconSize:[18,18],iconAnchor:[9,9],
-          html:'<div class="pulsa" style="width:18px;height:18px;background:'+cor+';color:'+cor+'"></div>'})})
-        :L.circleMarker([v.gps.lat,v.gps.lon],{radius:7,color:'#fff',weight:2,fillColor:corSit(v),fillOpacity:1});
-      mk.bindTooltip('<b>'+esc(d.nome)+'</b> · '+esc(v.hora)+'<br>'+esc(v.nome||'')+'<br>'+esc(situacao(v)[0]));
-      mk.on('click',()=>abreFicha(v.cnpj));mk.addTo(avMapa)});
+    leg.push('<span><i style="background:'+cor+'"></i>'+esc(d.nome)+' · '+vs.length+(vs.length===1?' parada':' paradas')+'</span>');
+    L.polyline(vs.map(e=>[e.gps.lat,e.gps.lon]),{color:cor,weight:4,opacity:.75,lineJoin:'round'}).addTo(avMapa);
+    vs.forEach((e,i)=>{pts.push([e.gps.lat,e.gps.lon]);const ult=ehHoje&&i===vs.length-1;
+      const mk=L.marker([e.gps.lat,e.gps.lon],{zIndexOffset:ult?500:i,icon:L.divIcon({className:'',iconSize:[26,26],iconAnchor:[13,13],
+        html:'<div class="avn'+(e.fr==='pesq'?' pq':'')+(ult?' pulsa':'')+'" style="background:'+(ult?cor:e.cor)+';color:'+(ult?cor:'#0F1012')+';outline-color:'+cor+'"><span'+(ult?' style="color:#fff"':'')+'>'+(i+1)+'</span></div>'})});
+      mk.bindTooltip('<b>'+esc(d.nome)+'</b> · parada '+(i+1)+' · '+esc(e.hora||'')+'<br>'+esc(avFrente(e))+': '+esc(e.nome)+'<br>'+esc(e.sit));
+      mk.on('click',()=>e.fr==='pesq'?avAbrePq(e.pid,e.id):abreFicha(e.id));mk.addTo(avMapa)});
   });
-  if(pts.length)avMapa.fitBounds(pts,{padding:[30,30],maxZoom:15});else avMapa.setView([-16.68,-49.26],10);
+  if(leg.length){const C=L.control({position:'bottomleft'});
+    C.onAdd=()=>{const dv=L.DomUtil.create('div','avleg');dv.innerHTML=leg.join('')+'<span class="f"><b class="bo"></b>prospecção <b class="qd"></b>pesquisa</span>';return dv};C.addTo(avMapa)}
+  if(pts.length)avMapa.fitBounds(pts,{padding:[34,34],maxZoom:15});else avMapa.setView([-16.68,-49.26],10);
 }
 
 /* ---------------- módulo: Desempenho ---------------- */
@@ -1444,7 +1914,7 @@ function abreNoMapa(nome){
    ============================================================================ */
 const PQD={lista:[],p:null,cli:[],porCod:{},resp:{},ac:{},desde:null,versao:null,sel:null,estado:'',erro:'',lendo:null,mudou:false};
 const FPQ={aba:'res',rota:'',cons:'',seg:'',dev:'',sit:'',q:'',para:'',nivel:'',venc:false};
-const NB={gc:'',sv:'',rotas:null,nome:'',nomeAuto:true};   /* a pesquisa que está sendo montada */
+const NB={gc:'',sv:'',rotas:null,nome:'',nomeAuto:true,form:'',inicio:'',prazo:'',foco:false,manter:true};   /* a pesquisa que está sendo montada */
 const PQ_VOLTAR=['funcionario','ausente','fechado','noturno'];
 /* As perguntas são as do app (rtm/index.html, lista PQ_QUEST). Aqui servem para dar nome às
    respostas: [id, rótulo, tipo, opções [valor, texto, tom]]. Mudou lá, muda aqui também. */
@@ -1475,6 +1945,15 @@ const PQ_NIVEL={urgente:['Urgente','r',0],alto:['Alto','a',1],normal:['Normal','
 const PQ_STATUS={aberto:'Aberto',tratando:'Em tratativa',resolvido:'Resolvido',cancelado:'Cancelado'};
 const PQ_COR={p:'#16A34A',w:'#D97706',n:'#E4002B','':'#2563EB'};
 const PQ_PARAS=['Supervisor','Gerente','Logística','Cadastro','Suporte do BAND TOGO','Desenvolvedor'];
+/* A lista acima é o questionário padrão. Uma pesquisa publicada com um formulário próprio traz as
+   perguntas dela: as três primeiras (chegada) valem para qualquer pesquisa e as do formulário entram
+   em seguida, com o código "f_" na frente, como o app grava. */
+const PQ_Q_PADRAO=PQ_Q.slice(),PQ_Q_CHEGADA=PQ_Q.slice(0,3);
+function pqUsaPerguntas(lista){
+  const proprias=Array.isArray(lista)&&lista.length?lista.map(q=>['f_'+q.id,q.t,q.tipo,(q.ops||[]).map(o=>[o[0],o[1],(q.alerta||[]).indexOf(o[0])>=0?'n':'']),q.un||'']):null;
+  PQ_Q.length=0;(proprias?PQ_Q_CHEGADA.concat(proprias):PQ_Q_PADRAO).forEach(q=>PQ_Q.push(q));
+}
+const pqProprio=()=>!!(PQD.p&&Array.isArray(PQD.p.perguntas)&&PQD.p.perguntas.length);
 const pqQ=id=>PQ_Q.find(q=>q[0]===id);
 const pqTemV=v=>!(v==null||v===''||(Array.isArray(v)&&!v.length));
 /* o texto de uma resposta, como o desenvolvedor viu no app */
@@ -1484,7 +1963,20 @@ function pqRot(id,v,r){
   if(q[2]==='varias')return (Array.isArray(v)?v:[v]).map(um).join(', ');
   if(q[2]==='nota')return v+' de 10';
   if(q[2]==='texto')return String(v);
+  if(q[2]==='numero')return pqNumTxt(v)+(q[4]?' '+q[4]:'');
+  if(q[2]==='foto')return 'Foto tirada';
   return um(v);
+}
+const pqNumTxt=v=>Number(v).toLocaleString('pt-BR',{maximumFractionDigits:2});
+/* Pergunta de foto: a resposta é o caminho da foto na pasta privada. Só caminho no formato que o app
+   grava é aceito; o link de cada imagem vale 1 hora e é pedido depois que a tela é desenhada. */
+const PQ_FOTO_OK=/^visitas\/[a-z0-9._-]+\/[A-Za-z0-9_]+\.jpg$/;
+const pqFotoTag=(cam,cls,alt)=>PQ_FOTO_OK.test(String(cam||''))?'<img class="'+cls+'" data-pqfoto="'+esc(cam)+'" alt="'+esc(alt||'Foto')+'">':'<span style="color:var(--ink2)">sem foto</span>';
+function pqLigaFotos(raiz){
+  raiz.querySelectorAll('img[data-pqfoto]').forEach(im=>{
+    linkFoto(im.dataset.pqfoto).then(u=>{if(u)im.src=u;else{const s=document.createElement('span');s.className='pqfotofalta';s.textContent='foto ainda não chegou';im.replaceWith(s)}})
+      .catch(e=>{if(e&&e.semSessao)sessaoCaiu()});
+  });
 }
 const pqHoje=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const pqAberto=a=>a.status==='aberto'||a.status==='tratando';
@@ -1514,6 +2006,7 @@ function carregaPesquisa(tudo){
       }
       if((PQD.p&&PQD.p.id)!==(j.pesquisa&&j.pesquisa.id)||(PQD.p&&j.pesquisa&&PQD.p.status!==j.pesquisa.status))PQD.mudou=true;
       PQD.p=j.pesquisa||null;
+      pqUsaPerguntas(PQD.p&&PQD.p.perguntas);
       if(!PQD.p){PQD.cli=[];PQD.porCod={};PQD.resp={};PQD.ac={};PQD.versao=null;PQD.desde=null}
       else{
         if(j.clientes){PQD.cli=j.clientes;PQD.porCod={};j.clientes.forEach(c=>PQD.porCod[c.cod]=c);PQD.versao=PQD.p.versao;PQD.mudou=true}
@@ -1560,7 +2053,9 @@ function mPesquisa(){
   }
   const ativa=PQD.lista.find(x=>x.status==='ativa');
   return cab('Pesquisa',p?esc(p.nome)+' · '+fmt(PQD.cli.length)+' clientes'+(p.status==='encerrada'?' · encerrada':''):'Perguntas de negócio para quem já é cliente BAND')+
-    '<div class="filtros"><div class="abas" role="tablist">'+abas.map(a=>'<button role="tab" data-aba="'+a[0]+'" aria-selected="'+(FPQ.aba===a[0])+'"'+(!p&&a[0]!=='camp'?' disabled':'')+'>'+a[1]+'</button>').join('')+'</div></div>'+
+    '<div class="filtros"><div class="abas" role="tablist">'+abas.map(a=>'<button role="tab" data-aba="'+a[0]+'" aria-selected="'+(FPQ.aba===a[0])+'"'+(!p&&a[0]!=='camp'?' disabled':'')+'>'+a[1]+'</button>').join('')+'</div>'+
+      /* com mais de uma pesquisa (ativa ou encerrada), a escolha de qual ver fica aqui em cima */
+      (PQD.lista.length>1&&p?'<label style="margin-left:auto">Pesquisa na tela<select id="pqqual">'+PQD.lista.map(x=>'<option value="'+esc(x.id)+'"'+(x.id===p.id?' selected':'')+'>'+esc(x.nome)+(x.status==='ativa'?' · ativa':' · encerrada')+'</option>').join('')+'</select></label>':'')+'</div>'+
     (filtros?'<div class="filtros">'+filtros+'</div>':'')+
     '<div class="corpo">'+
     (p&&p.status==='encerrada'?'<div class="aviso" style="display:flex;gap:12px;align-items:center"><span style="flex:1">Você está vendo uma pesquisa <b>encerrada</b>. Ela não aparece mais no app dos desenvolvedores.</span>'+
@@ -1569,6 +2064,24 @@ function mPesquisa(){
 }
 
 /* ---------- Resultados ---------- */
+/* Os números de cima: o que é, o número, uma linha explicando e, quando ajuda, uma barrinha. */
+function pqKpiG(rot,num,sub,tom,miolo){
+  return '<div class="kpg '+(tom||'')+'"><span class="rt">'+rot+'</span><b>'+num+'</b><span class="sb">'+sub+'</span>'+(miolo||'')+'</div>';
+}
+const pqBarrinha=pc=>'<div class="kpb"><i style="width:'+Math.max(0,Math.min(100,pc))+'%"></i></div>';
+/* os três primeiros valem para qualquer pesquisa: tamanho, respondidas e para voltar */
+function pqKpisBase(cl,N,feitas,voltar){
+  const nr=new Set(cl.map(c=>c.rota)).size,nd=new Set(cl.map(c=>c.dev).filter(Boolean)).size,pc=pct(feitas.length,N);
+  return pqKpiG('Clientes na pesquisa',fmt(N),nr+(nr===1?' rota':' rotas')+' · '+nd+(nd===1?' desenvolvedor':' desenvolvedores'),'escuro')+
+    pqKpiG('Respondidas',fmt(feitas.length)+'<small> de '+fmt(N)+'</small>',fpct(pc)+' dos clientes','g',pqBarrinha(pc))+
+    pqKpiG('Para voltar',fmt(voltar.length),'fechado, ausente ou só à noite',voltar.length?'a':'');
+}
+const pqKpiAcomp=(ab,venc)=>pqKpiG('Acompanhamentos abertos',fmt(ab.length),venc.length?venc.length+(venc.length===1?' vencido':' vencidos'):(ab.length?'nenhum vencido':'nada pendente'),
+  venc.length?'v':'',ab.length?pqBarrinha(pct(venc.length,ab.length)):'');
+/* os assuntos do questionário padrão, para os quadros das perguntas ficarem agrupados */
+const PQ_SECAO=[['Chegada ao cliente',['situacao','volta_quando','cadastro_novo']],['Consultor de vendas',['vend_freq','vend_cumpre','vend_nota']],
+  ['Pedidos e BAND TOGO',['pedido_como','app_tem','app_motivo']],['Projeto 24 Horas',['p24','p24_motivo','p24_interesse']],
+  ['Compras e entrega',['compra_freq','entrega','falta','divergencia']],['Relacionamento',['nps','intencao','melhorar']],['Na visita',['acoes','obs']]];
 function pqBarra2(nm,sub,a,b,tot){
   return '<div class="lb"><div>'+nm+(sub?'<small>'+sub+'</small>':'')+'</div><div class="tr"><i title="respondidas" style="width:'+(tot?a/tot*100:0)+'%;background:#16A34A"></i>'+
     '<i title="para voltar" style="width:'+(tot?b/tot*100:0)+'%;background:#F5A524"></i></div><div class="vl">'+fpct(pct(a,tot))+'</div></div>';
@@ -1607,7 +2120,7 @@ function pqCartaoPerg(q,rs){
   const id=q[0],tipo=q[2];
   if(tipo==='texto'){
     const l=rs.filter(r=>r.r&&pqTemV(r.r[id]));if(!l.length)return '';
-    return '<div class="cartao"><div class="tt"><h2>'+esc(q[1])+'</h2><span>'+l.length+(l.length>12?' · os 12 mais recentes':'')+'</span></div><div class="cc"><div class="pqobs">'+
+    return '<div class="cartao larga"><div class="tt"><h2>'+esc(q[1])+'</h2><span>'+l.length+(l.length>12?' · os 12 mais recentes':'')+'</span></div><div class="cc"><div class="pqobs">'+
       l.slice(-12).reverse().map(r=>'<p><b>'+esc((PQD.porCod[r.cod]||{}).nome||r.cod)+'</b>'+esc(r.r[id])+'</p>').join('')+'</div></div></div>';
   }
   if(tipo==='nota'){
@@ -1644,21 +2157,60 @@ function pqPorConsultor(cl){
       '<td class="num">'+(x.nps==null?'—':(x.nps>0?'+':'')+x.nps)+'</td><td class="num"'+ruim(x.ab,1)+'>'+fmt(x.ab)+'</td></tr>').join('')+
     '</tbody></table></div></div>';
 }
+/* Resultados de uma pesquisa com formulário próprio: um quadro por pergunta, com a contagem de cada
+   opção, a média das notas ou os últimos textos. Só entram as respostas de quem falou com o responsável. */
+function pqResProprio(cl){
+  const N=cl.length,cods=new Set(cl.map(c=>c.cod)),rs=cl.map(c=>PQD.resp[c.cod]).filter(Boolean);
+  const voltar=rs.filter(r=>PQ_VOLTAR.includes(r.situacao)),feitas=rs.filter(r=>!PQ_VOLTAR.includes(r.situacao)),fal=rs.filter(r=>r.situacao==='falou');
+  const ab=pqAcs().filter(a=>cods.has(a.cod)&&pqAberto(a)),venc=ab.filter(pqVencido);
+  let h='<div class="kpgs">'+pqKpisBase(cl,N,feitas,voltar)+
+    pqKpiG('Falaram com o responsável',fmt(fal.length),feitas.length?fpct(pct(fal.length,feitas.length))+' das respondidas':'ainda sem respostas','',feitas.length?pqBarrinha(pct(fal.length,feitas.length)):'')+
+    pqKpiAcomp(ab,venc)+'</div>';
+  if(!rs.length)h+='<div class="info">Ainda não chegou nenhuma resposta'+(N<PQD.cli.length?' neste filtro':'')+'. Os números aparecem sozinhos conforme os desenvolvedores enviam pelo app.</div>';
+  const barra=(rot,n,base,ruim)=>'<div class="fmres"><span>'+esc(rot)+'</span><div class="frbar"><i style="width:'+(base?Math.round(n/base*100):0)+'%'+(ruim?';background:var(--verm)':'')+'"></i></div><b>'+fmt(n)+' · '+(base?fpct(pct(n,base)):'—')+'</b></div>';
+  h+='<h3 class="pqh">Pergunta a pergunta</h3><div class="pqgr">'+PQ_Q.slice(3).map((q,i)=>{
+    const id=q[0],tipo=q[2],ops=q[3]||[];let corpo='',base=0;
+    if(tipo==='nota'){const v=pqNums(fal,id);base=v.length;
+      corpo=base?'<p style="margin:0 0 10px"><b style="font-size:22px">'+fmt1(pqMedia(v))+'</b> <span style="color:var(--ink2)">de média</span></p>'+
+        [[9,10,'9 e 10'],[7,8,'7 e 8'],[0,6,'0 a 6']].map(f=>barra(f[2],v.filter(x=>x>=f[0]&&x<=f[1]).length,base,f[1]===6)).join(''):''}
+    else if(tipo==='texto'){const v=fal.filter(r=>pqTemV(r.r&&r.r[id]));base=v.length;
+      corpo=v.slice(-6).reverse().map(r=>'<p style="margin:0 0 8px;font-size:13.5px"><b>'+esc((PQD.porCod[r.cod]||{}).nome||r.cod)+':</b> '+esc(r.r[id])+'</p>').join('')}
+    else if(tipo==='numero'){const v=pqNums(fal,id),un=q[4]?' '+esc(q[4]):'';base=v.length;
+      const linhaN=(rot,x)=>'<div class="fmres" style="grid-template-columns:1fr auto"><span>'+rot+'</span><b>'+pqNumTxt(x)+un+'</b></div>';
+      corpo=base?'<p style="margin:0 0 10px"><b style="font-size:22px">'+pqNumTxt(pqMedia(v))+un+'</b> <span style="color:var(--ink2)">de média</span></p>'+
+        linhaN('Soma de todos',v.reduce((a,b)=>a+b,0))+linhaN('Menor',Math.min.apply(null,v))+linhaN('Maior',Math.max.apply(null,v)):''}
+    else if(tipo==='foto'){const v=fal.filter(r=>pqTemV(r.r&&r.r[id]));base=v.length;
+      /* as 12 mais recentes; clicar numa foto abre a ficha do cliente, com a foto grande */
+      corpo='<div class="pqfotos">'+v.slice(-12).reverse().map(r=>{const nm=(PQD.porCod[r.cod]||{}).nome||r.cod;
+        return '<button class="pqfotobt" data-cod="'+esc(r.cod)+'" title="'+esc(nm)+'">'+pqFotoTag(r.r[id],'pqfotop','Foto de '+nm)+'<span>'+esc(nm)+'</span></button>'}).join('')+'</div>'+
+        (base>12?'<p style="margin:10px 0 0;color:var(--ink2);font-size:12.5px">Mostrando as 12 mais recentes de '+fmt(base)+'. As outras estão na ficha de cada cliente (aba Respostas).</p>':'')}
+    else{const c=pqConta(fal,id);base=c.base;corpo=ops.map(o=>barra(o[1],c.n[o[0]]||0,base,o[2]==='n')).join('')}
+    return '<div class="cartao"><div class="tt"><h2>'+(i+1)+'. '+esc(q[1])+'</h2><span>'+(FM_TIPO[tipo]||'')+' · '+fmt(base)+(base===1?' resposta':' respostas')+'</span></div>'+
+      '<div class="cc">'+(base?corpo:'<span style="color:var(--ink2)">Ninguém respondeu esta pergunta ainda.</span>')+'</div></div>';
+  }).join('')+'</div>';
+  return h;
+}
 function pqResTab(){
   const cl=pqCliF(),N=cl.length;
   if(!N)return '<div class="vazio">Nenhum cliente neste filtro.</div>';
+  if(pqProprio())return pqResProprio(cl);
   const cods=new Set(cl.map(c=>c.cod)),rs=cl.map(c=>PQD.resp[c.cod]).filter(Boolean);
   const voltar=rs.filter(r=>PQ_VOLTAR.includes(r.situacao)),feitas=rs.filter(r=>!PQ_VOLTAR.includes(r.situacao)),fal=rs.filter(r=>r.situacao==='falou');
   const ab=pqAcs().filter(a=>cods.has(a.cod)&&pqAberto(a)),venc=ab.filter(pqVencido);
   const nps=pqNums(fal,'nps'),npsV=pqNps(nps),nota=pqMedia(pqNums(fal,'vend_nota'));
-  let h='<div class="kpis">'+pqKpi(fmt(N),'clientes na pesquisa')+
-    pqKpi(fmt(feitas.length)+' <small style="font-size:14px;color:var(--ink2)">'+fpct(pct(feitas.length,N))+'</small>','respondidas','g')+
-    pqKpi(fmt(voltar.length),'para voltar (fechado, ausente, só à noite)')+
-    pqKpi(npsV==null?'—':(npsV>0?'+':'')+npsV,'NPS · '+nps.length+(nps.length===1?' nota':' notas'),npsV==null?'':npsV>=50?'g':npsV<0?'v':'a')+
-    pqKpi(nota==null?'—':fmt1(nota),'nota média do consultor de vendas',nota!=null&&nota<6?'v':'')+
-    pqKpi(fmt(ab.length),'acompanhamentos abertos'+(venc.length?' · '+venc.length+(venc.length===1?' vencido':' vencidos'):''),venc.length?'v':'')+'</div>';
+  const notas=pqNums(fal,'vend_nota'),prom=nps.filter(x=>x>=9).length,det=nps.filter(x=>x<=6).length;
+  let h='<div class="kpgs">'+pqKpisBase(cl,N,feitas,voltar)+
+    pqKpiG('NPS · recomendaria a BAND?',npsV==null?'—':(npsV>0?'+':'')+npsV,
+      nps.length?'vai de -100 a +100 · '+nps.length+(nps.length===1?' nota':' notas'):'ainda sem notas',npsV==null?'':npsV>=50?'g':npsV<0?'v':'a',
+      nps.length?'<div class="kps" title="promotores, neutros e detratores"><i style="width:'+prom/nps.length*100+'%;background:var(--verde)"></i><i style="width:'+(nps.length-prom-det)/nps.length*100+'%;background:#D4D4D8"></i><i style="width:'+det/nps.length*100+'%;background:var(--verm)"></i></div>'+
+        '<span class="sb" title="Promotores deram nota 9 ou 10; detratores, de 0 a 6. O NPS é a diferença entre os dois.">'+fpct(pct(prom,nps.length))+' promotores · '+fpct(pct(det,nps.length))+' detratores</span>':'')+
+    pqKpiG('Nota do consultor de vendas',nota==null?'—':fmt1(nota)+'<small> de 10</small>',notas.length?notas.length+(notas.length===1?' nota':' notas')+' dos clientes':'ainda sem notas',
+      nota==null?'':nota<6?'v':nota<8?'a':'g',nota==null?'':pqBarrinha(nota*10))+
+    pqKpiAcomp(ab,venc)+'</div>';
   if(!rs.length)h+='<div class="info">Ainda não chegou nenhuma resposta'+(N<PQD.cli.length?' neste filtro':'')+'. Os números aparecem sozinhos conforme os desenvolvedores enviam pelo app.</div>';
-  h+=pqDestaques(fal);
+  const dest=pqDestaques(fal);
+  if(dest)h+='<h3 class="pqh">O que os clientes disseram</h3>'+dest;
+  h+='<h3 class="pqh">Andamento</h3>';
   /* andamento */
   const grupo=(chave,nome,sub)=>{const g={};cl.forEach(c=>{const k=c[chave]||'';const x=g[k]=g[k]||{k,n:0,f:0,v:0,c};x.n++;const r=PQD.resp[c.cod];if(r){if(PQ_VOLTAR.includes(r.situacao))x.v++;else x.f++}});
     return Object.values(g).sort((a,b)=>String(a.k).localeCompare(String(b.k),'pt-BR',{numeric:true})).map(x=>pqBarra2(esc(nome(x)),esc(sub(x)),x.f,x.v,x.n)).join('')};
@@ -1666,10 +2218,15 @@ function pqResTab(){
       grupo('dev',x=>pqNomeDev(x.k),x=>x.f+' de '+x.n+(x.v?' · '+x.v+' para voltar':''))+'</div></div>'+
     '<div class="cartao"><div class="tt"><h2>Andamento por rota</h2></div><div class="cc">'+
       grupo('rota',x=>'Rota '+(x.k||'—'),x=>(x.c.consultor?x.c.consultor+' · ':'')+x.f+' de '+x.n)+'</div></div></div>';
-  if(fal.length)h+=pqPorConsultor(cl);
-  const cards=PQ_Q.map(q=>pqCartaoPerg(q,q[0]==='situacao'?rs:(q[0]==='volta_quando'||q[0]==='cadastro_novo'||q[0]==='obs')?rs:fal)).filter(Boolean);
-  if(cards.length)h+='<div class="pqgr">'+cards.join('')+'</div>';
-  h+='<div class="cartao"><div class="tt"><h2>Mapa da pesquisa</h2><div class="pqleg"><span><i style="background:#9CA3AF"></i>a fazer</span><span><i style="background:#16A34A"></i>respondida</span>'+
+  if(fal.length)h+='<h3 class="pqh">Consultores de vendas</h3>'+pqPorConsultor(cl);
+  /* pergunta a pergunta, em blocos por assunto: os cartões de cada bloco ficam lado a lado, com a mesma altura */
+  const feito={},doId=id=>{const q=pqQ(id);if(!q)return '';feito[id]=1;
+    return pqCartaoPerg(q,(id==='situacao'||id==='volta_quando'||id==='cadastro_novo'||id==='obs')?rs:fal)};
+  const blocos=PQ_SECAO.map(s=>[s[0],s[1].map(doId).filter(Boolean)]);
+  blocos.push(['Outras perguntas',PQ_Q.filter(q=>!feito[q[0]]).map(q=>pqCartaoPerg(q,fal)).filter(Boolean)]);
+  /* quatro quadros num bloco ficam em duas linhas de dois, em vez de três e um sozinho */
+  blocos.forEach(b=>{if(b[1].length)h+='<h3 class="pqh">'+b[0]+'</h3><div class="pqgr'+(b[1].length===4?' q4':'')+'">'+b[1].join('')+'</div>'});
+  h+='<h3 class="pqh">Onde estão os clientes</h3><div class="cartao"><div class="tt"><h2>Mapa da pesquisa</h2><div class="pqleg"><span><i style="background:#9CA3AF"></i>a fazer</span><span><i style="background:#16A34A"></i>respondida</span>'+
      '<span><i style="background:#F5A524"></i>para voltar</span><span><i style="background:#E4002B"></i>com acompanhamento aberto</span><span><i style="background:#52525B"></i>sem contato</span></div></div><div id="pqmapa"></div></div>';
   return h;
 }
@@ -1767,10 +2324,11 @@ function abrePq(cod,foco){
     h+='<h3 class="pqsec">Respostas</h3><dl>'+
       linha('Quando',esc(r.data)+' às '+esc(r.hora)+' · '+esc(pqNomeDev(r.devLogin)))+
       linha('Visita',[r.duracao_seg?Math.max(1,Math.round(r.duracao_seg/60))+' min de pesquisa':'',r.dist!=null?'a '+fmtKm(r.dist/1000)+' do cliente':'sem GPS',r.tentativas>1?r.tentativas+'ª tentativa':''].filter(Boolean).join(' · '))+
-      PQ_Q.filter(q=>pqTemV(rr[q[0]])).map(q=>'<dt>'+esc(q[1])+'</dt><dd>'+esc(pqRot(q[0],rr[q[0]],rr))+'</dd>').join('')+
+      PQ_Q.filter(q=>pqTemV(rr[q[0]])).map(q=>'<dt>'+esc(q[1])+'</dt><dd>'+(q[2]==='foto'?pqFotoTag(rr[q[0]],'pqfotog','Foto: '+q[1]):esc(pqRot(q[0],rr[q[0]],rr)))+'</dd>').join('')+
       (r.gps_lat!=null?linha('Onde respondeu','<a href="https://www.google.com/maps?q='+(+r.gps_lat)+','+(+r.gps_lon)+'" target="_blank" rel="noopener">abrir no mapa</a>'):'')+'</dl>';
   }else h+='<div class="vazio">Este cliente ainda não foi respondido.</div>';
   $('folha').innerHTML=h;$('dlg').classList.add('on');$('fecha').onclick=fechaFicha;
+  pqLigaFotos($('folha'));
   $('folha').querySelectorAll('.pqac[data-acid]').forEach(box=>{
     box.querySelectorAll('[data-st]').forEach(b=>b.onclick=()=>box.querySelectorAll('[data-st]').forEach(x=>x.setAttribute('aria-pressed',x===b)));
     box.querySelector('[data-salva]').onclick=()=>pqSalvaAc(box.dataset.acid,box);
@@ -1831,7 +2389,7 @@ function pqBaixaRespostas(){
   pqCsv('pesquisa-respostas-'+pqHoje()+'.csv',
     ['Código','Cliente','Rota','Consultor de vendas','Supervisão','Segmento','Bairro','Cidade','Desenvolvedor','Data','Hora','Situação'].concat(qs.map(q=>q[1]),['Acompanhamentos abertos','Duração (min)','Distância (m)','Tentativas']),
     pqRespF().map(([c,r])=>{const rr=r.r||{};return [c.cod,c.nome,c.rota,c.consultor,c.sv,c.seg,c.bairro,c.cidade,pqNomeDev(r.devLogin),r.data,r.hora,pqRot('situacao',r.situacao)]
-      .concat(qs.map(q=>pqTemV(rr[q[0]])?(q[2]==='nota'?rr[q[0]]:pqRot(q[0],rr[q[0]],rr)):''),[abertos[c.cod]||0,r.duracao_seg?Math.round(r.duracao_seg/60):'',r.dist==null?'':r.dist,r.tentativas||1])}));
+      .concat(qs.map(q=>pqTemV(rr[q[0]])?(q[2]==='nota'||q[2]==='numero'||q[2]==='foto'?rr[q[0]]:pqRot(q[0],rr[q[0]],rr)):''),[abertos[c.cod]||0,r.duracao_seg?Math.round(r.duracao_seg/60):'',r.dist==null?'':r.dist,r.tentativas||1])}));
 }
 function pqBaixaAcomp(){
   const br=t=>t?String(t).slice(0,10).split('-').reverse().join('/'):'';
@@ -1891,8 +2449,19 @@ function pqCampTab(){
         '<span style="color:var(--ink2);font-size:13px">Trocar o desenvolvedor de uma rota muda a lista no app dele na próxima sincronização. As respostas já dadas ficam.</span></div>':'')+'</div></div>';
   }
   /* montar */
-  h+='<div class="cartao"><div class="tt"><h2>'+(p?'Montar outra pesquisa ou acrescentar rotas':'Montar a pesquisa')+'</h2><span>gerência, supervisão e quem visita cada rota</span></div><div class="cc">';
-  if(D.baseEstado!=='ok')h+=(D.baseEstado==='carregando'||!D.baseEstado?'<div class="carregando">Abrindo a base de clientes…</div>':'<div class="aviso">Para montar a pesquisa o painel precisa da base. Envie a base em <b>Base de dados</b>.</div>');
+  h+='<div class="cartao"><div class="tt"><h2>'+(p?'Montar outra pesquisa ou acrescentar rotas':'Montar a pesquisa')+'</h2><span>gerência, supervisão e quem visita cada rota</span></div><div class="cc">'+
+    nbCorpo(p,false)+'</div></div>';
+  if(PQD.lista.length>1||(PQD.lista.length&&!p))h+='<div class="cartao"><div class="tt"><h2>Todas as pesquisas</h2></div><table class="tab"><thead><tr><th>Pesquisa</th><th>Publicada</th><th>Situação</th><th class="num">Clientes</th><th class="num">Respostas</th><th class="num">Acomp. abertos</th><th></th></tr></thead><tbody>'+
+    PQD.lista.map(x=>'<tr><td><b>'+esc(x.nome)+'</b><small>'+esc(x.escopo)+'</small></td><td>'+new Date(x.criadaEm).toLocaleDateString('pt-BR')+'</td><td><span class="selo '+(x.status==='ativa'?'v':'c')+'">'+(x.status==='ativa'?'Ativa':'Encerrada')+'</span></td>'+
+      '<td class="num">'+fmt(x.clientes)+'</td><td class="num">'+fmt(x.respostas)+'</td><td class="num">'+fmt(x.acompanhamentos)+'</td><td>'+(p&&p.id===x.id?'<span style="color:var(--ink2)">na tela</span>':'<button class="bt peq" data-ver="'+esc(x.id)+'">Ver</button>')+'</td></tr>').join('')+'</tbody></table></div>';
+  return h;
+}
+/* O miolo de montar uma pesquisa: perguntas, clientes e quem visita. Serve à aba Campanha da Pesquisa
+   e ao "Nova frente" das Frentes de trabalho, que acrescenta o prazo e publica tudo de uma vez. */
+function nbCorpo(p,naFrente){
+  let h='';
+  if(D.baseEstado!=='ok')h+=(D.baseEstado==='carregando'||!D.baseEstado?'<div class="carregando">Abrindo a base de clientes… <span class="passobase">'+esc(D.basePasso||'')+'</span></div>'
+    :'<div class="aviso">Para montar a pesquisa o painel precisa da base'+(D.baseEstado==='erro'?', e não consegui abrir: '+esc(D.baseErro||'')+'. Clique em Atualizar ou recarregue a página.':'. Envie a base em <b>Base de dados</b>.')+'</div>');
   else if(!cliBand())h+='<div class="aviso">A base em uso não tem a lista de clientes BAND.</div>';
   else{
     const dd=D.base.D,doRec=r=>dd.meta[r]||{};
@@ -1903,9 +2472,13 @@ function pqCampTab(){
     if(NB.nomeAuto)NB.nome='Pesquisa '+NB.gc.replace(/^GC\.\s*/,'')+(NB.sv?' · '+NB.sv:'');
     const rs=nbRotas(),marc=rs.filter(x=>NB.rotas[x.rota]!==undefined),tot=marc.reduce((s,x)=>s+x.n,0),porDev={};
     marc.forEach(x=>{const k=NB.rotas[x.rota]||'';porDev[k]=(porDev[k]||0)+x.n});
+    if(naFrente)h+='<div class="frpasso" style="margin-top:0"><b>1</b> Perguntas, clientes e quem visita</div>';
     h+='<div class="ajustes"><label>Gerência<select id="nbgc">'+gcs.map(x=>'<option'+(x===NB.gc?' selected':'')+'>'+esc(x)+'</option>').join('')+'</select></label>'+
       '<label>Supervisão<select id="nbsv"><option value="">Todas da gerência</option>'+svs.map(x=>'<option'+(x===NB.sv?' selected':'')+'>'+esc(x)+'</option>').join('')+'</select></label>'+
       '<label style="flex:1;min-width:260px">Nome da pesquisa<input id="nbnome" maxlength="120" style="width:100%" value="'+esc(NB.nome)+'"></label>'+
+      /* as perguntas: o questionário padrão do app ou um formulário montado no módulo Formulários */
+      '<label>Formulário (perguntas)<select id="nbform"><option value="">Pesquisa BAND (padrão)</option>'+
+        FMD.lista.map(f=>'<option value="'+esc(f.id)+'"'+(NB.form===f.id?' selected':'')+'>'+esc(f.nome)+'</option>').join('')+'</select></label>'+
       '<button class="bt" id="nbauto">Dividir por igual</button></div>'+
       '<table class="tab" style="margin-top:14px"><thead><tr><th style="width:36px"><input type="checkbox" id="nbtodas" aria-label="Marcar todas"'+(marc.length===rs.length&&rs.length?' checked':'')+'></th><th>Rota</th><th>Consultor de vendas</th><th>Supervisão</th><th>Tipo</th><th class="num">Clientes</th><th>Quem visita</th></tr></thead><tbody>'+
       rs.map(x=>{const on=NB.rotas[x.rota]!==undefined;
@@ -1914,13 +2487,17 @@ function pqCampTab(){
       '<div class="info" style="margin-top:14px"><b>'+marc.length+(marc.length===1?' rota':' rotas')+', '+fmt(tot)+' clientes.</b> '+
         Object.keys(porDev).sort().map(k=>esc(pqNomeDev(k))+': <b>'+fmt(porDev[k])+'</b>').join(' · ')+
         '<br>A lista sai da base '+esc(D.base.versao)+'. Cada desenvolvedor vê só os clientes dele, por distância.</div>'+
-      '<div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap"><button class="bt verm" id="nbpub"'+(tot?'':' disabled')+'>Publicar pesquisa nova</button>'+
-      (p&&p.status==='ativa'&&!PQD.sel?'<button class="bt" id="nbadd"'+(tot?'':' disabled')+'>Acrescentar estas rotas à pesquisa ativa</button>':'')+'</div>';
+      /* na frente nova, o prazo entra junto e tudo é publicado de uma vez */
+      (naFrente?'<div class="frpasso"><b>2</b> Prazo</div><div class="ajustes">'+
+          '<label>Começa em<input type="date" id="nbini" style="width:158px" value="'+esc(NB.inicio||'')+'"></label>'+
+          '<label>Prazo final<input type="date" id="nbfim" style="width:158px" value="'+esc(NB.prazo||'')+'"></label>'+
+          '<label class="marca-cx" style="flex-direction:row;align-items:center;margin-bottom:8px"><input type="checkbox" id="nbfoco"'+(NB.foco?' checked':'')+'> Deixar esta frente como o foco agora</label></div>'+
+          (PQD.lista.some(x=>x.status==='ativa')?'<div class="ajustes" style="margin-top:4px"><label class="marca-cx" style="flex-direction:row;align-items:center"><input type="checkbox" id="nbmanter"'+(NB.manter?' checked':'')+
+            '> Manter ativas as pesquisas que já estão em campo (desmarcado, elas são encerradas ao publicar)</label></div>':''):'')+
+      '<div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap"><button class="bt verm" id="nbpub"'+(tot?'':' disabled')+'>'+(naFrente?'Publicar a frente':'Publicar pesquisa nova')+'</button>'+
+      (naFrente?'<button class="bt" id="nbcancela">Cancelar</button>'
+        :(p&&p.status==='ativa'&&!PQD.sel?'<button class="bt" id="nbadd"'+(tot?'':' disabled')+'>Acrescentar estas rotas à pesquisa ativa</button>':''))+'</div>';
   }
-  h+='</div></div>';
-  if(PQD.lista.length>1||(PQD.lista.length&&!p))h+='<div class="cartao"><div class="tt"><h2>Todas as pesquisas</h2></div><table class="tab"><thead><tr><th>Pesquisa</th><th>Publicada</th><th>Situação</th><th class="num">Clientes</th><th class="num">Respostas</th><th class="num">Acomp. abertos</th><th></th></tr></thead><tbody>'+
-    PQD.lista.map(x=>'<tr><td><b>'+esc(x.nome)+'</b><small>'+esc(x.escopo)+'</small></td><td>'+new Date(x.criadaEm).toLocaleDateString('pt-BR')+'</td><td><span class="selo '+(x.status==='ativa'?'v':'c')+'">'+(x.status==='ativa'?'Ativa':'Encerrada')+'</span></td>'+
-      '<td class="num">'+fmt(x.clientes)+'</td><td class="num">'+fmt(x.respostas)+'</td><td class="num">'+fmt(x.acompanhamentos)+'</td><td>'+(p&&p.id===x.id?'<span style="color:var(--ink2)">na tela</span>':'<button class="bt peq" data-ver="'+esc(x.id)+'">Ver</button>')+'</td></tr>').join('')+'</tbody></table></div>';
   return h;
 }
 async function nbPublica(acrescenta){
@@ -1928,19 +2505,44 @@ async function nbPublica(acrescenta){
   if(!cl.length)return toast('Marque pelo menos uma rota');
   if(cl.length>8000)return toast('São '+fmt(cl.length)+' clientes. O limite é 8.000 por vez: escolha uma supervisão.');
   if(!acrescenta&&!nome)return toast('Dê um nome para a pesquisa');
+  /* publicando pela tela de Frentes: o prazo vai junto */
+  const naFrente=!acrescenta&&MOD==='frentes'&&FRD.nova;
+  /* pela tela de Frentes dá para publicar sem encerrar as pesquisas que já estão em campo */
+  const manter=naFrente&&NB.manter;
+  if(naFrente&&NB.inicio&&NB.prazo&&NB.prazo<NB.inicio)return toast('O prazo final não pode ser antes do começo');
   const semDev=cl.filter(c=>!c.dev).length;
+  const form=acrescenta?null:(FMD.lista.find(f=>f.id===NB.form)||null);
   const msg=(acrescenta?'Acrescentar '+fmt(cl.length)+' clientes à pesquisa "'+ativa.nome+'"?\n\nQuem já está nela continua, com as respostas guardadas.'
-      :'Publicar a pesquisa "'+nome+'" com '+fmt(cl.length)+' clientes?'+(ativa?'\n\nA pesquisa "'+ativa.nome+'" será encerrada. As respostas dela ficam guardadas.':''))+
+      :'Publicar a pesquisa "'+nome+'" com '+fmt(cl.length)+' clientes?\n\nPerguntas: '+(form?'formulário "'+form.nome+'" ('+form.perguntas.length+(form.perguntas.length===1?' pergunta)':' perguntas)'):'Pesquisa BAND (padrão)')+'.'+
+        (naFrente?'\nPrazo: '+(NB.inicio?'começa em '+frBR(NB.inicio):'sem data de começo')+', '+(NB.prazo?'termina em '+frBR(NB.prazo):'sem prazo final')+(NB.foco?'. Vira o foco agora.':'.'):'')+
+        (ativa?(manter?'\n\nA pesquisa "'+ativa.nome+'" continua ativa: o time fica com mais de uma frente de pesquisa.'
+                      :'\n\nA pesquisa "'+ativa.nome+'" será encerrada. As respostas dela ficam guardadas.'):''))+
     '\n\nOs desenvolvedores recebem a lista na próxima sincronização do app.'+
     (semDev?'\n\nAtenção: '+fmt(semDev)+' clientes estão sem desenvolvedor e não aparecem em nenhum app.':'');
   if(!confirm(msg))return;
   const b=$(acrescenta?'nbadd':'nbpub');b.disabled=true;b.textContent='Enviando…';
   try{
     if(acrescenta)await rpc('pesquisa_ajustar',{p_id:ativa.id,p_mudanca:{clientes:cl}});
-    else await rpc('pesquisa_publicar',{p_pesquisa:{nome,escopo:NB.gc+(NB.sv?' / '+NB.sv:''),baseVersao:D.base.versao,clientes:cl}});
+    else{
+      /* a pesquisa leva uma cópia das perguntas do formulário escolhido; sem formulário, vale o questionário padrão do app */
+      const pp={nome,escopo:NB.gc+(NB.sv?' / '+NB.sv:''),baseVersao:D.base.versao,clientes:cl};
+      if(form){pp.formulario=form.id;pp.perguntas=form.perguntas}
+      if(manter)pp.manter=true;
+      const j=await rpc('pesquisa_publicar',{p_pesquisa:pp});
+      if(naFrente){
+        /* a frente nova entra na lista com as datas; marcada como foco, vai para o primeiro lugar */
+        PQD.sel=null;await carregaPesquisa(true);
+        const l=frLista(),nova=l.find(f=>f.id===(j&&j.id));
+        if(nova){nova.inicio=NB.inicio||'';nova.prazo=NB.prazo||'';
+          l.splice(l.indexOf(nova),1);if(NB.foco)l.unshift(nova);else l.push(nova)}
+        FRD.nova=false;NB.nomeAuto=true;NB.prazo='';NB.foco=false;
+        pintaLado();$('main').scrollTop=0;
+        return frSalva(l,'Frente "'+nome+'" publicada');
+      }
+    }
     PQD.sel=null;FPQ.aba='camp';await pqRecarrega(true);$('main').scrollTop=0;
     toast(acrescenta?'Clientes acrescentados à pesquisa':'Pesquisa publicada');
-  }catch(e){if(e.semSessao)return sessaoCaiu();toast('Não consegui publicar: '+e.message);pintaMainSe('pesquisa')}
+  }catch(e){if(e.semSessao)return sessaoCaiu();toast('Não consegui publicar: '+e.message);pintaMainSe('pesquisa');pintaMainSe('frentes')}
 }
 async function pqAjusta(mudanca,feito){
   try{await rpc('pesquisa_ajustar',{p_id:PQD.p.id,p_mudanca:mudanca});await pqRecarrega(true);toast(feito)}
@@ -1953,6 +2555,7 @@ liga.pesquisa=()=>{
   if($('pqvenc'))$('pqvenc').onchange=e=>{FPQ.venc=e.target.checked;pintaMain()};
   if($('pqq')){let t;$('pqq').oninput=e=>{FPQ.q=e.target.value;clearTimeout(t);t=setTimeout(()=>{pintaMain();const i=$('pqq');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length)}},250)}}
   m.querySelectorAll('[data-cod]').forEach(e=>e.onclick=()=>abrePq(e.dataset.cod,e.dataset.ac||null));
+  pqLigaFotos(m);   /* as fotos das perguntas de foto: o link de cada uma é pedido agora */
   m.querySelectorAll('tr[data-cons]').forEach(tr=>tr.onclick=()=>{FPQ.cons=FPQ.cons===tr.dataset.cons?'':tr.dataset.cons;pintaMain();m.scrollTop=0});
   if($('pqcsvresp'))$('pqcsvresp').onclick=pqBaixaRespostas;
   if($('pqcsvac'))$('pqcsvac').onclick=pqBaixaAcomp;
@@ -1967,30 +2570,41 @@ liga.pesquisa=()=>{
   if($('pqdist'))$('pqdist').onclick=()=>{const rotas={};m.querySelectorAll('select[data-rdev]').forEach(s=>{if(s.value!==s.dataset.era)rotas[s.dataset.rdev]=s.value});
     const n=Object.keys(rotas).length;if(!n)return toast('Nenhuma rota mudou de desenvolvedor');
     if(confirm('Trocar o desenvolvedor de '+n+(n===1?' rota':' rotas')+'?'))pqAjusta({rotas},'Distribuição salva')};
-  /* montar */
-  if($('nbgc')){
-    $('nbgc').onchange=e=>{NB.gc=e.target.value;NB.sv='';nbDistribui();pintaMain()};
-    $('nbsv').onchange=e=>{NB.sv=e.target.value;nbDistribui();pintaMain()};
-    $('nbnome').oninput=e=>{NB.nome=e.target.value;NB.nomeAuto=!e.target.value.trim()};
-    $('nbauto').onclick=()=>{nbDistribui();pintaMain()};
-    $('nbtodas').onchange=e=>{if(e.target.checked)nbDistribui();else NB.rotas={};pintaMain()};
-    m.querySelectorAll('[data-nbr]').forEach(c=>c.onchange=()=>{if(c.checked)NB.rotas[c.dataset.nbr]='';else delete NB.rotas[c.dataset.nbr];pintaMain()});
-    m.querySelectorAll('[data-nbd]').forEach(s=>s.onchange=()=>{NB.rotas[s.dataset.nbd]=s.value;pintaMain()});
-    $('nbpub').onclick=()=>nbPublica(false);
-    if($('nbadd'))$('nbadd').onclick=()=>nbPublica(true);
-  }
+  nbLiga();
+  if($('pqqual'))$('pqqual').onchange=e=>{PQD.sel=e.target.value||null;pqRecarrega(true)};
   if(FPQ.aba==='res')desenhaPqMapa();
 };
+/* liga os campos de montar a pesquisa (na aba Campanha e no "Nova frente") */
+function nbLiga(){
+  const m=$('main'),y=()=>{const t=m.scrollTop;pintaMain();m.scrollTop=t};
+  if(!$('nbgc'))return;
+  $('nbgc').onchange=e=>{NB.gc=e.target.value;NB.sv='';nbDistribui();y()};
+  $('nbsv').onchange=e=>{NB.sv=e.target.value;nbDistribui();y()};
+  $('nbnome').oninput=e=>{NB.nome=e.target.value;NB.nomeAuto=!e.target.value.trim()};
+  if($('nbform'))$('nbform').onchange=e=>{NB.form=e.target.value};
+  $('nbauto').onclick=()=>{nbDistribui();y()};
+  $('nbtodas').onchange=e=>{if(e.target.checked)nbDistribui();else NB.rotas={};y()};
+  m.querySelectorAll('[data-nbr]').forEach(c=>c.onchange=()=>{if(c.checked)NB.rotas[c.dataset.nbr]='';else delete NB.rotas[c.dataset.nbr];y()});
+  m.querySelectorAll('[data-nbd]').forEach(s=>s.onchange=()=>{NB.rotas[s.dataset.nbd]=s.value;y()});
+  $('nbpub').onclick=()=>nbPublica(false);
+  if($('nbadd'))$('nbadd').onclick=()=>nbPublica(true);
+  if($('nbini'))$('nbini').onchange=e=>{NB.inicio=e.target.value};
+  if($('nbfim'))$('nbfim').onchange=e=>{NB.prazo=e.target.value};
+  if($('nbfoco'))$('nbfoco').onchange=e=>{NB.foco=e.target.checked};
+  if($('nbmanter'))$('nbmanter').onchange=e=>{NB.manter=e.target.checked};
+  if($('nbcancela'))$('nbcancela').onclick=()=>{FRD.nova=false;pintaMain();m.scrollTop=0};
+}
 
 /* ---------------- módulo: Base de dados ---------------- */
 function mBase(){
   const i=D.baseInfo,r=D.baseResumo;
   let estado='';
-  if(D.baseEstado==='carregando')estado='<div class="carregando">Conferindo a base no servidor…</div>';
+  if(D.baseEstado==='carregando')estado='<div class="carregando">Abrindo a base… <span class="passobase">'+esc(D.basePasso||'')+'</span></div>';
   else if(D.baseEstado==='sem')estado='<div class="aviso"><b>Nenhuma base enviada ainda.</b> Envie o arquivo da base (base-rtm-….json.gz) '+
     'com o botão "Enviar base". Ela fica na pasta privada do Supabase e só o coordenador consegue baixar.</div>';
   else if(D.baseEstado==='erro')estado='<div class="aviso">Não consegui abrir a base: '+esc(D.baseErro)+'</div>';
-  else if(D.baseEstado==='ok')estado='<div class="ok">Base <b>'+esc(r.versao)+'</b> pronta ('+esc(D.baseOrigem)+').</div>';
+  else if(D.baseEstado==='ok')estado='<div class="ok">Base <b>'+esc(r.versao)+'</b> pronta ('+esc(D.baseOrigem)+').'+
+    (D.baseGuardou===false?' Este navegador não deixou guardar a cópia da base, então ela é baixada de novo a cada abertura do painel (funciona, só demora alguns segundos a mais).':'')+'</div>';
   const pop=D.base&&D.base.populacao;
   return cab('Base de dados','Receita Federal × clientes BAND, guardada na pasta privada do Supabase',
      TESTE?'':'<button class="bt escuro" id="benvia">Enviar base</button>')+
@@ -2017,15 +2631,20 @@ liga.base=()=>{if($('benvia'))$('benvia').onclick=()=>$('arqBase').click()};
 if(TESTE){
   document.body.classList.add('teste');
   try{document.title='TESTE · '+document.title}catch(e){}
-  /* zera roteiros, visitas, pesquisas e mensagens do ambiente de teste; os usuários de teste ficam */
+  /* zera roteiros, visitas, pesquisas, frentes, formulários e mensagens do ambiente de teste; os
+     usuários de teste ficam */
   $('blimpa').onclick=async()=>{
     if(!EU)return toast('Entre no portal de teste primeiro');
-    if(!confirm('Limpar os dados de teste?\n\nApaga roteiros, visitas, pesquisas e mensagens do ambiente de teste. Os usuários de teste continuam.\n\nA produção não é tocada.'))return;
+    if(!confirm('Limpar os dados de teste?\n\nApaga roteiros, visitas, pesquisas, frentes (ordem e prazos), FORMULÁRIOS e mensagens do ambiente de teste. Os usuários de teste continuam.\n\nA produção não é tocada.'))return;
     try{
       const j=await rpc('limpar_teste');
       /* o que estava na tela era do que foi apagado: zera e lê tudo de novo */
       D.visitas=[];D.visDesde=null;D.visCnpj=null;D.rotCompleto=undefined;
       PQD.p=null;PQD.cli=[];PQD.porCod={};PQD.resp={};PQD.ac={};PQD.desde=null;PQD.versao=null;PQD.sel=null;
+      /* o formulário que estava aberto e a frente que estava sendo montada também foram apagados:
+         sem isto, "Salvar formulário" tentava regravar um formulário que não existe mais */
+      FMD.sel=null;FMD.rasc=null;FMD.sujo=false;FRD.nova=false;FRD.cfg={};NB.form='';
+      AVD.resp=[];AVD.dia='';AVD.pedido='';AVD.quando=0;if(AVD.estado==='ok')AVD.estado='';
       await atualizaTudo(true);
       toast('Dados de teste limpos: '+fmt(j.visitas)+' visitas, '+fmt(j.respostas)+' pesquisas, '+fmt(j.roteiros)+' roteiros');
     }catch(e){if(e.semSessao)return sessaoCaiu();toast('Não consegui limpar: '+e.message)}

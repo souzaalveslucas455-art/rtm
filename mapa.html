@@ -625,10 +625,16 @@ window.RTM=(function(){
     if(!r.ok)throw new Error(r.status===400||r.status===404?'A base ainda não foi enviada. Envie em Painel > Base de dados.':msg(r.j,r.status));
     return r.buf;
   }
-  function idb(){return new Promise((ok,er)=>{const r=indexedDB.open('rtm_painel',1);
-    r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>ok(r.result);r.onerror=()=>er(r.error)})}
-  async function idbLe(k){const db=await idb();return new Promise(ok=>{const t=db.transaction('kv').objectStore('kv').get(k);t.onsuccess=()=>ok(t.result);t.onerror=()=>ok(null)})}
-  async function idbGrava(k,v){const db=await idb();return new Promise(ok=>{const t=db.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=()=>ok(true);t.onerror=()=>ok(false)})}
+  /* A cópia da base guardada no navegador é só um atalho. Nada aqui pode segurar o mapa: se o
+     navegador não responde (disco cheio, janela anônima, dados do site bloqueados, gravação
+     recusada), as funções desistem depois de alguns segundos e o mapa segue com a base baixada.
+     É a mesma correção do painel (lá a tela ficava para sempre em "Abrindo a base de clientes…"). */
+  const comPrazo=(p,ms,padrao)=>Promise.race([Promise.resolve(p).catch(()=>padrao),new Promise(ok=>setTimeout(()=>ok(padrao),ms))]);
+  function idb(){return new Promise((ok,er)=>{let r;try{r=indexedDB.open('rtm_painel',1)}catch(e){return er(e)}
+    r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>ok(r.result);r.onerror=()=>er(r.error);r.onblocked=()=>er(new Error('ocupado'))})}
+  function idbLe(k){return comPrazo(idb().then(db=>new Promise(ok=>{const t=db.transaction('kv').objectStore('kv').get(k);t.onsuccess=()=>ok(t.result);t.onerror=()=>ok(null)})),6000,null)}
+  function idbGrava(k,v){return comPrazo(idb().then(db=>new Promise(ok=>{const t=db.transaction('kv','readwrite');t.objectStore('kv').put(v,k);
+    t.oncomplete=()=>ok(true);t.onerror=()=>ok(false);t.onabort=()=>ok(false)})),20000,false)}
   async function abre(buf){const u=new Uint8Array(buf);
     if(u[0]===0x1f&&u[1]===0x8b)return JSON.parse(await new Response(new Blob([buf]).stream().pipeThrough(new DecompressionStream('gzip'))).text());
     return JSON.parse(new TextDecoder().decode(u))}
@@ -678,7 +684,9 @@ window.RTM=(function(){
       let base=null;const g=await idbLe('base');
       if(g&&g.buf&&g.versao===info.versao){diz('Abrindo a base guardada…');base=await abre(g.buf)}
       else{diz('Baixando a base ('+(info.bytes?Math.round(info.bytes/104857.6)/10+' MB':'')+')…');
-        const buf=await baixa(info.arquivo||'base.json.gz');base=await abre(buf);await idbGrava('base',{versao:info.versao,buf})}
+        const buf=await baixa(info.arquivo||'base.json.gz');diz('Abrindo a base…');base=await abre(buf);
+        /* guardar a cópia não segura o mapa: se não der, a base só é baixada de novo na próxima abertura */
+        idbGrava('base',{versao:info.versao,buf})}
       const poe=(id,tipo,txt)=>{const e=document.createElement('script');e.id=id;e.type=tipo;e.textContent=txt;document.body.appendChild(e)};
       poe('D','application/json',JSON.stringify(base.D));poe('R','text/plain',base.R);poe('C','text/plain',base.C);
       window.RTM.base={versao:base.versao,populacao:base.populacao};
