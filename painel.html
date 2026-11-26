@@ -192,6 +192,32 @@ main{overflow-y:auto;min-width:0}
 /* Ao vivo com todas as frentes: a pesquisa tem uma faixa branca em cima do bloco e é quadrada no mapa */
 .avfr{display:flex;gap:4px;align-items:center;margin-right:8px}
 .avfr .bt[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+/* Ao vivo: um cartão por desenvolvedor, para ver um de cada vez. A barra da esquerda é a cor dele na trilha e no mapa. */
+.avdevs{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.avdev{display:flex;flex-direction:column;gap:2px;min-width:0;text-align:left;background:var(--papel);border:1px solid var(--linha);border-left:5px solid var(--cd,var(--ink3));border-radius:14px;padding:12px 14px;cursor:pointer}
+.avdev:hover{box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.avdev[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);border-left-color:var(--cd,#fff);color:#fff}
+.avdev .nm{font-weight:700;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.avdev .qt{font-size:24px;font-weight:800;line-height:1.15;font-variant-numeric:tabular-nums}
+.avdev .qt small{font-size:12px;font-weight:600;color:var(--ink2);margin-left:5px}
+.avdev .st{font-size:12px;color:var(--ink2)}
+.avdev .st i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;background:var(--ink3)}
+.avdev .st i.on{background:#16A34A}
+.avdev[aria-pressed="true"] .qt small,.avdev[aria-pressed="true"] .st{color:#C9CBD1}
+/* Ao vivo: os cartões de informação. Em cima o que é, no meio o número, embaixo de onde ele vem. */
+.avks{display:grid;grid-template-columns:repeat(var(--m,4),minmax(0,1fr));gap:12px}
+/* em duas fileiras sem buraco: com número ímpar de cartões, o primeiro ocupa dois lugares; em tela larga cabem todos numa fileira só */
+.avks.impar .avk:first-child{grid-column:span 2}
+@media(min-width:1750px){.avks{grid-template-columns:repeat(var(--n,7),minmax(0,1fr))}.avks.impar .avk:first-child{grid-column:auto}}
+@media(max-width:900px){.avks{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.avk{display:flex;flex-direction:column;gap:3px;min-width:0;background:var(--papel);border:1px solid var(--linha);border-radius:14px;padding:13px 15px}
+.avk .rt{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--ink2)}
+.avk .rt svg{flex:none}
+.avk>b{font-size:26px;font-weight:800;letter-spacing:-.01em;line-height:1.2;font-variant-numeric:tabular-nums}
+.avk>b small{font-size:13px;font-weight:600;color:var(--ink2);margin-left:5px}
+.avk .dt{font-size:12.5px;color:var(--ink2);line-height:1.45}
+.avk .dt strong{color:var(--ink);font-weight:600}
+.avk.v>b{color:var(--verm)} .avk.g>b{color:var(--verde)} .avk.a>b{color:var(--azul)} .avk.m>b{color:var(--amb)}
 .pista .bl.pq{border-radius:3px;box-shadow:inset 0 5px 0 rgba(255,255,255,.92),0 0 0 1px rgba(0,0,0,.35)}
 .pista .bl.pq.ult{box-shadow:inset 0 5px 0 rgba(255,255,255,.92),0 0 0 2px #fff,0 0 14px 2px currentColor}
 .legav b{color:#E4E4E7;font-weight:700;margin-right:2px}
@@ -471,7 +497,7 @@ body.teste .cab{top:0}
    o que protege os dados é o login do coordenador e as regras do banco.
    Tudo o que este painel guarda no navegador usa chaves com o prefixo rtm_painel_.
    ============================================================================ */
-const VERSAO='1.4.0';
+const VERSAO='1.5.0';
 const SUPA={url:'https://kqpdledhaghuzuwjkvrf.supabase.co',chave:'sb_publishable_dMdB5b_G5X5TnXemexGIXQ_GWXS6cid'};
 const K_SESSAO='rtm_painel_sessao',K_EMAIL='rtm_painel_email';
 /* Portal de teste: o mesmo painel aberto com "?teste" no endereço. Lê e grava na pasta "rtm_teste"
@@ -1197,7 +1223,7 @@ const corDev=l=>{const i=D.devs.findIndex(d=>d.login===l);return PAL_DEV[(i<0?0:
 const durMin=v=>v.duracaoMin||(v.duracaoSeg?Math.round(v.duracaoSeg/60):null);
 
 /* ---------------- módulo: Ao vivo ---------------- */
-const FA={dia:null,fr:''};
+const FA={dia:null,fr:'',dev:''};
 let avMapa=null;
 /* Tudo o que o desenvolvedor registrou no dia, de QUALQUER frente: as visitas de prospecção e as
    respostas das pesquisas. Cada registro vira um "evento" com hora, lugar e cor; é com os eventos
@@ -1264,15 +1290,67 @@ function mAoVivo(){
   if(!D.carregou.visitas)return cab('Ao vivo','Carregando…')+'<div class="corpo"><div class="carregando">Buscando as visitas</div></div>';
   const dia=FA.dia||hojeBR(),ehHoje=dia===hojeBR();
   if(AVD.estado!=='sembanco'&&!AVD.lendo&&(AVD.pedido!==dia||Date.now()-AVD.quando>50000))carregaAoVivo(dia);
-  const l=avEventos(dia),nPros=l.filter(e=>e.fr==='pros').length,nPesq=l.length-nPros;
-  const devs=D.devs.filter(d=>d.ativo||l.some(e=>e.dev===d.login));
+  const todos=avEventos(dia);
+  const devs=D.devs.filter(d=>d.ativo||todos.some(e=>e.dev===d.login));
+  /* desenvolvedor escolhido no cartão: os números, a trilha e o mapa passam a ser só dele */
+  const sel=devs.find(d=>d.login===FA.dev)||null;if(!sel)FA.dev='';
+  const l=sel?todos.filter(e=>e.dev===sel.login):todos,nPros=l.filter(e=>e.fr==='pros').length,nPesq=l.length-nPros;
   let h0=7*60,h1=19*60;l.forEach(e=>{if(e.j){h0=Math.min(h0,Math.floor(e.j[0]/60)*60);h1=Math.max(h1,Math.ceil(e.j[1]/60)*60)}});
   const pos=m=>(m-h0)/(h1-h0)*100;
   const agora=new Date(),agoraM=agora.getHours()*60+agora.getMinutes();
-  const emCampo=ehHoje?devs.filter(d=>l.some(e=>e.dev===d.login&&hm(e.hora)!=null&&agoraM-hm(e.hora)<=60)).length:null;
+  const emAtiv=d=>todos.some(e=>e.dev===d.login&&hm(e.hora)!=null&&agoraM-hm(e.hora)<=60);
+  const emCampo=ehHoje?devs.filter(emAtiv).length:null;
+  /* o primeiro e o último horário do dia de um desenvolvedor, em minutos */
+  const pontasDe=ls=>{let a=null,b=null;ls.forEach(e=>{const i=e.j?e.j[0]:hm(e.hora),f=e.j?e.j[1]:hm(e.hora);
+    if(i!=null&&(a==null||i<a))a=i;if(f!=null&&(b==null||f>b))b=f});return a==null?null:[Math.round(a),Math.round(b)]};
+  const pontas=d=>pontasDe(todos.filter(e=>e.dev===d.login));
+  const ha=m=>{m=Math.max(0,m);return m<60?m+' min':Math.floor(m/60)+'h'+String(m%60).padStart(2,'0')};
+  const cartoes='<div class="avdevs" role="group" aria-label="Desenvolvedor">'+
+    '<button class="avdev" data-avdev="" aria-pressed="'+!sel+'"><span class="nm">Todos os desenvolvedores</span>'+
+     '<span class="qt">'+fmt(todos.length)+'<small>'+(todos.length===1?'registro':'registros')+'</small></span>'+
+     '<span class="st">'+(ehHoje?emCampo+' de '+devs.length+' em campo agora':devs.length+(devs.length===1?' desenvolvedor':' desenvolvedores'))+'</span></button>'+
+    devs.map(d=>{const n=todos.filter(e=>e.dev===d.login).length,p=pontas(d),on=ehHoje&&emAtiv(d);
+      const st=!n||!p?'sem registro '+(ehHoje?'hoje':'neste dia'):ehHoje?(on?'em campo':'parado')+' · último há '+ha(agoraM-p[1]):'das '+hmTxt(p[0])+' às '+hmTxt(p[1]);
+      return '<button class="avdev" data-avdev="'+esc(d.login)+'" aria-pressed="'+(sel===d)+'" style="--cd:'+corDev(d.login)+'" title="Ver só '+esc(d.nome)+'"><span class="nm">'+esc(d.nome)+'</span>'+
+       '<span class="qt">'+fmt(n)+'<small>'+(n===1?'registro':'registros')+'</small></span><span class="st"><i'+(on?' class="on"':'')+'></i>'+esc(st)+'</span></button>'}).join('')+'</div>';
   const quer=l.filter(e=>e.quer).length,durs=l.map(e=>e.dur).filter(x=>x>0),dists=l.map(e=>e.km).filter(x=>isFinite(x)&&x>=0&&x<500);
+  /* ---- os cartões de informação: em cada um, o número, de onde ele vem e o detalhe exato ---- */
+  const pG=pontasDe(l);
+  const avIc=p=>'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';
+  const kc=(cls,ic,rot,val,dt)=>'<div class="avk'+(cls?' '+cls:'')+'"><span class="rt">'+avIc(ic)+rot+'</span><b>'+val+'</b><span class="dt">'+dt+'</span></div>';
+  const lista=a=>a.slice(0,3).map(d=>esc(d.nome)).join(', ')+(a.length>3?' e mais '+(a.length-3):'');
+  const noCampo=ehHoje?devs.filter(emAtiv):[],fora=ehHoje?devs.filter(d=>!emAtiv(d)):[];
+  /* a maior parada: o maior intervalo, de 1 hora ou mais, entre dois registros do mesmo desenvolvedor (o mesmo critério da trilha) */
+  let parada=null;
+  (sel?[sel]:devs).forEach(d=>{let ant=null;l.filter(e=>e.dev===d.login&&e.j).sort((a,b)=>a.j[0]-b.j[0]).forEach(e=>{
+    const v=ant==null?0:Math.round(e.j[0]-ant);if(v>=60&&(!parada||v>parada.min))parada={min:v,de:Math.round(ant),ate:Math.round(e.j[0]),dev:d};
+    ant=Math.max(ant||0,e.j[1])})});
+  const pqOk=l.filter(e=>e.fr==='pesq'&&e.sit===AV_PQ_NOME.ok).length,pqVoltar=l.filter(e=>e.fr==='pesq'&&e.sit===AV_PQ_NOME.voltar).length,pqNao=nPesq-pqOk-pqVoltar;
+  /* longe do endereço: mais de 300 m, o mesmo corte do módulo Desempenho */
+  const longe=l.filter(e=>isFinite(e.km)&&e.km>0.3&&e.km<500).length,semGps=l.filter(e=>!e.gps).length;
+  const quando=ehHoje?'hoje':'neste dia';
+  const nInf=FA.fr?6:7;
+  const infos='<div class="avks'+(nInf%2?' impar':'')+'" style="--n:'+nInf+';--m:'+Math.ceil(nInf/2)+'">'+
+    kc('',IC.visitas,'Registros '+(ehHoje?'hoje':'no dia')+(sel?' · '+esc(sel.nome):''),fmt(l.length),
+      (FA.fr?'':'<strong>'+fmt(nPros)+'</strong> de prospecção · <strong>'+fmt(nPesq)+'</strong> de pesquisa<br>')+
+      (pG?'primeiro às '+hmTxt(pG[0])+' · último às '+hmTxt(pG[1]):'nenhum registro '+quando))+
+    (!ehHoje?kc('',IC.conc,'Jornada do dia',pG?hmTxt(pG[0])+' – '+hmTxt(pG[1]):'—',pG?ha(pG[1]-pG[0])+' entre o primeiro e o último registro':'sem registro neste dia'):
+     sel?kc(emAtiv(sel)?'g':'m',IC.devs,'Situação agora',emAtiv(sel)?'Em campo':'Parado',pG?'último registro às '+hmTxt(pG[1])+' · há '+ha(agoraM-pG[1]):'sem registro hoje'):
+     kc('g',IC.devs,'Em campo agora',emCampo+'<small>de '+devs.length+'</small>',
+       (noCampo.length?'<strong>Em campo:</strong> '+lista(noCampo)+'<br>':'')+(fora.length?'<strong>Sem registro na última hora:</strong> '+lista(fora):'todos com registro na última hora')))+
+    kc(parada?'m':'','<circle cx="12" cy="12" r="9"/><path d="M10 9v6M14 9v6"/>','Maior parada',parada?ha(parada.min):'—',
+      parada?(sel?'':'<strong>'+esc(parada.dev.nome)+'</strong> · ')+'das '+hmTxt(parada.de)+' às '+hmTxt(parada.ate)+', sem registro':'nenhum intervalo de 1 hora ou mais entre registros')+
+    (FA.fr==='pesq'?'':kc('v','<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>','Querem se cadastrar',fmt(quer),
+      nPros?'de <strong>'+fmt(nPros)+'</strong> '+(nPros===1?'visita':'visitas')+' de prospecção ('+Math.round(quer/nPros*100)+'%)':'nenhuma visita de prospecção '+quando))+
+    (FA.fr==='pros'?'':kc('a',IC.pesquisa,'Pesquisa: conversas',fmt(pqOk),
+      nPesq?'de <strong>'+fmt(nPesq)+'</strong> '+(nPesq===1?'registro':'registros')+' de pesquisa<br>'+fmt(pqVoltar)+' para voltar depois · '+fmt(pqNao)+' sem contato':'nenhum registro de pesquisa '+quando))+
+    kc('','<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/>','Duração mediana',durs.length?Math.round(med(durs))+'<small>min</small>':'—',
+      durs.length?'da mais curta ('+Math.min(...durs)+' min) à mais longa ('+Math.max(...durs)+' min)<br>'+durs.length+' de '+l.length+' registros com duração':'nenhum registro com duração')+
+    kc('a','<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4"/>','Distância do endereço',dists.length?fmtKm(med(dists)):'—',
+      dists.length?'mediana de '+dists.length+(dists.length===1?' registro':' registros')+' com distância<br>'+(longe?'<strong style="color:var(--verm-esc)">'+longe+' a mais de 300 m</strong>':'nenhum a mais de 300 m')+' · '+(semGps?semGps+' sem GPS':'todos com GPS'):'nenhum registro com distância')+
+   '</div>';
   const marcas=[];for(let m=h0;m<=h1;m+=60)marcas.push('<span style="left:'+pos(m)+'%">'+(m/60)+'h</span>');
-  const faixas=devs.map(d=>{
+  const faixas=(sel?[sel]:devs).map(d=>{
     const vs=l.filter(e=>e.dev===d.login&&e.j).sort((a,b)=>a.j[0]-b.j[0]);
     let blocos='',ant=null;
     vs.forEach((e,i)=>{
@@ -1294,18 +1372,13 @@ function mAoVivo(){
      '<div class="avfr" role="group" aria-label="Frente">'+chip('','Todas as frentes')+chip('pros','Prospecção')+chip('pesq','Pesquisa')+'</div>'+
      '<div class="diasel"><button class="bt peq" id="avant" aria-label="Dia anterior">←</button><b style="min-width:92px;text-align:center">'+(ehHoje?'Hoje':esc(dia))+'</b>'+
      '<button class="bt peq" id="avprox" aria-label="Próximo dia"'+(ehHoje?' disabled':'')+'>→</button></div>')+
-   '<div class="corpo"><div class="kpis">'+
-    '<div class="kpi"><b>'+fmt(l.length)+'</b><span>registros '+(ehHoje?'hoje':'no dia')+(FA.fr?'':' · '+fmt(nPros)+' de prospecção e '+fmt(nPesq)+' de pesquisa')+'</span></div>'+
-    (ehHoje?'<div class="kpi g"><b>'+emCampo+' de '+devs.length+'</b><span>em campo agora (registro na última hora)</span></div>':'')+
-    (FA.fr==='pesq'?'':'<div class="kpi v"><b>'+fmt(quer)+'</b><span>querem se cadastrar agora</span></div>')+
-    '<div class="kpi"><b>'+(durs.length?Math.round(med(durs))+' min':'—')+'</b><span>duração mediana</span></div>'+
-    '<div class="kpi a"><b>'+(dists.length?fmtKm(med(dists)):'—')+'</b><span>distância mediana do endereço</span></div></div>'+
+   '<div class="corpo">'+cartoes+infos+
    '<div class="av"><div class="trilha"><div class="eixo">'+marcas.join('')+'</div>'+(faixas||'<div class="vazio" style="color:#8E8E96">Nenhum desenvolvedor ativo.</div>')+
     '<div class="legav">'+(FA.fr==='pesq'?'':'<b>Prospecção</b>'+Object.keys(COR_SIT).map(k=>'<span><i style="background:'+COR_SIT[k]+'"></i>'+k+'</span>').join(''))+'</div>'+
     '<div class="legav">'+(FA.fr==='pros'?'':'<b>Pesquisa</b>'+Object.keys(COR_PQ).map(k=>'<span><i class="pq" style="background:'+COR_PQ[k]+'"></i>'+AV_PQ_NOME[k].replace(/^Pesquisa:? /,'')+'</span>').join(''))+
      '<span style="color:#FBBF24">▭ intervalo de 1 hora ou mais sem registro</span></div></div>'+
    '<div id="avmapa"></div></div>'+
-   (l.length?'':'<div class="info">Sem registros '+(ehHoje?'hoje ainda':'neste dia')+(FA.fr?' nesta frente':'')+'. A trilha se preenche sozinha a cada minuto conforme o app envia.</div>')+'</div>';
+   (l.length?'':'<div class="info">Sem registros '+(ehHoje?'hoje ainda':'neste dia')+(FA.fr?' nesta frente':'')+(sel?' para '+esc(sel.nome):'')+'. A trilha se preenche sozinha a cada minuto conforme o app envia.</div>')+'</div>';
 }
 liga.aovivo=()=>{
   if(!$('avant'))return;
@@ -1313,6 +1386,8 @@ liga.aovivo=()=>{
     FA.dia=String(dt.getDate()).padStart(2,'0')+'/'+String(dt.getMonth()+1).padStart(2,'0')+'/'+dt.getFullYear();if(FA.dia===hojeBR())FA.dia=null;pintaMain()};
   $('avant').onclick=()=>muda(-1);$('avprox').onclick=()=>muda(1);
   document.querySelectorAll('[data-avfr]').forEach(b=>b.onclick=()=>{FA.fr=b.dataset.avfr;pintaMain()});
+  /* clicar de novo no cartão do desenvolvedor escolhido volta para todos */
+  document.querySelectorAll('[data-avdev]').forEach(b=>b.onclick=()=>{FA.dev=FA.dev===b.dataset.avdev?'':b.dataset.avdev;pintaMain()});
   document.querySelectorAll('.pista .bl').forEach(b=>b.onclick=()=>b.dataset.fr==='pesq'?avAbrePq(b.dataset.pid,b.dataset.id):abreFicha(b.dataset.id));
   desenhaAvMapa();
 };
@@ -1326,6 +1401,7 @@ function desenhaAvMapa(){
   L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',{maxZoom:18,attribution:'Esri, HERE, Garmin'}).addTo(avMapa);
   const dia=FA.dia||hojeBR(),ehHoje=dia===hojeBR(),ev=avEventos(dia),pts=[],leg=[];
   D.devs.forEach(d=>{
+    if(FA.dev&&d.login!==FA.dev)return;
     const vs=ev.filter(e=>e.dev===d.login&&e.gps).sort((a,b)=>(hm(a.hora)||0)-(hm(b.hora)||0));
     if(!vs.length)return;const cor=corDev(d.login);
     leg.push('<span><i style="background:'+cor+'"></i>'+esc(d.nome)+' · '+vs.length+(vs.length===1?' parada':' paradas')+'</span>');
