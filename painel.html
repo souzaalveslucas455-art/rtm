@@ -204,6 +204,11 @@ main{overflow-y:auto;min-width:0}
 .avdev .st i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;background:var(--ink3)}
 .avdev .st i.on{background:#16A34A}
 .avdev[aria-pressed="true"] .qt small,.avdev[aria-pressed="true"] .st{color:#C9CBD1}
+/* Ao vivo: o selo que diz de quando são os dados da tela */
+.avselo{display:inline-flex;align-items:center;gap:7px;align-self:center;font-size:12.5px;font-weight:600;color:var(--verde);background:var(--verde-bg);border-radius:20px;padding:5px 12px;white-space:nowrap;font-variant-numeric:tabular-nums;margin-right:4px}
+.avselo i{width:8px;height:8px;border-radius:50%;background:currentColor;animation:avpisca 2s ease-in-out infinite}
+.avselo.velho{color:var(--amb);background:var(--amb-bg)} .avselo.velho i{animation:none}
+@keyframes avpisca{50%{opacity:.3}}
 /* Ao vivo: os cartões de informação. Em cima o que é, no meio o número, embaixo de onde ele vem. */
 .avks{display:grid;grid-template-columns:repeat(var(--m,4),minmax(0,1fr));gap:12px}
 /* em duas fileiras sem buraco: com número ímpar de cartões, o primeiro ocupa dois lugares; em tela larga cabem todos numa fileira só */
@@ -497,7 +502,7 @@ body.teste .cab{top:0}
    o que protege os dados é o login do coordenador e as regras do banco.
    Tudo o que este painel guarda no navegador usa chaves com o prefixo rtm_painel_.
    ============================================================================ */
-const VERSAO='1.5.0';
+const VERSAO='1.6.0';
 const SUPA={url:'https://kqpdledhaghuzuwjkvrf.supabase.co',chave:'sb_publishable_dMdB5b_G5X5TnXemexGIXQ_GWXS6cid'};
 const K_SESSAO='rtm_painel_sessao',K_EMAIL='rtm_painel_email';
 /* Portal de teste: o mesmo painel aberto com "?teste" no endereço. Lê e grava na pasta "rtm_teste"
@@ -654,6 +659,8 @@ async function carregaVisitas(){
     if(!j.temMais)break;
   }
   D.carregou.visitas=true;
+  /* a hora da última busca que deu certo: é o que o selo "Atualizado às…" do Ao vivo mostra */
+  D.quando=Date.now();D.falha=false;
 }
 async function atualizaTudo(silencioso){
   try{
@@ -1225,6 +1232,16 @@ const durMin=v=>v.duracaoMin||(v.duracaoSeg?Math.round(v.duracaoSeg/60):null);
 /* ---------------- módulo: Ao vivo ---------------- */
 const FA={dia:null,fr:'',dev:''};
 let avMapa=null;
+/* o pedaço do mapa que o coordenador escolheu (aproximou ou arrastou), para a atualização automática não tirar do lugar */
+const AVV={chave:'',mexeu:false,n:-1};
+/* O selo do Ao vivo: de quando são os dados que estão na tela. Verde e piscando enquanto as buscas dão
+   certo; amarelo se a última busca falhou ou se já passou tempo demais sem uma busca nova. */
+const horaSeg=t=>{const d=new Date(t);return [d.getHours(),d.getMinutes(),d.getSeconds()].map(x=>String(x).padStart(2,'0')).join(':')};
+function avSelo(){
+  const velho=D.falha||!D.quando||Date.now()-D.quando>100000;
+  return '<span class="avselo'+(velho?' velho':'')+'" id="avselo" title="'+(velho?'A última busca não deu certo. O painel tenta de novo sozinho; confira a internet.':'O Ao vivo busca os registros novos sozinho, a cada 30 segundos.')+'"><i></i>'+
+    (D.quando?(velho?'Sem atualizar desde ':'Atualizado às ')+horaSeg(D.quando):'Carregando…')+'</span>';
+}
 /* Tudo o que o desenvolvedor registrou no dia, de QUALQUER frente: as visitas de prospecção e as
    respostas das pesquisas. Cada registro vira um "evento" com hora, lugar e cor; é com os eventos
    que a trilha do dia e o trajeto no mapa são desenhados. Frente nova que guardar hora e GPS entra aqui. */
@@ -1289,7 +1306,7 @@ async function avAbrePq(pid,cod){
 function mAoVivo(){
   if(!D.carregou.visitas)return cab('Ao vivo','Carregando…')+'<div class="corpo"><div class="carregando">Buscando as visitas</div></div>';
   const dia=FA.dia||hojeBR(),ehHoje=dia===hojeBR();
-  if(AVD.estado!=='sembanco'&&!AVD.lendo&&(AVD.pedido!==dia||Date.now()-AVD.quando>50000))carregaAoVivo(dia);
+  if(AVD.estado!=='sembanco'&&!AVD.lendo&&(AVD.pedido!==dia||Date.now()-AVD.quando>25000))carregaAoVivo(dia);
   const todos=avEventos(dia);
   const devs=D.devs.filter(d=>d.ativo||todos.some(e=>e.dev===d.login));
   /* desenvolvedor escolhido no cartão: os números, a trilha e o mapa passam a ser só dele */
@@ -1369,7 +1386,7 @@ function mAoVivo(){
   }).join('');
   const chip=(k,t)=>'<button class="bt peq" data-avfr="'+k+'" aria-pressed="'+(FA.fr===k)+'">'+t+'</button>';
   return cab('Ao vivo','A trilha do dia, de todas as frentes: cada registro no horário e no lugar em que aconteceu',
-     '<div class="avfr" role="group" aria-label="Frente">'+chip('','Todas as frentes')+chip('pros','Prospecção')+chip('pesq','Pesquisa')+'</div>'+
+     avSelo()+'<div class="avfr" role="group" aria-label="Frente">'+chip('','Todas as frentes')+chip('pros','Prospecção')+chip('pesq','Pesquisa')+'</div>'+
      '<div class="diasel"><button class="bt peq" id="avant" aria-label="Dia anterior">←</button><b style="min-width:92px;text-align:center">'+(ehHoje?'Hoje':esc(dia))+'</b>'+
      '<button class="bt peq" id="avprox" aria-label="Próximo dia"'+(ehHoje?' disabled':'')+'>→</button></div>')+
    '<div class="corpo">'+cartoes+infos+
@@ -1378,7 +1395,7 @@ function mAoVivo(){
     '<div class="legav">'+(FA.fr==='pros'?'':'<b>Pesquisa</b>'+Object.keys(COR_PQ).map(k=>'<span><i class="pq" style="background:'+COR_PQ[k]+'"></i>'+AV_PQ_NOME[k].replace(/^Pesquisa:? /,'')+'</span>').join(''))+
      '<span style="color:#FBBF24">▭ intervalo de 1 hora ou mais sem registro</span></div></div>'+
    '<div id="avmapa"></div></div>'+
-   (l.length?'':'<div class="info">Sem registros '+(ehHoje?'hoje ainda':'neste dia')+(FA.fr?' nesta frente':'')+(sel?' para '+esc(sel.nome):'')+'. A trilha se preenche sozinha a cada minuto conforme o app envia.</div>')+'</div>';
+   (l.length?'':'<div class="info">Sem registros '+(ehHoje?'hoje ainda':'neste dia')+(FA.fr?' nesta frente':'')+(sel?' para '+esc(sel.nome):'')+'. A trilha se preenche sozinha a cada 30 segundos conforme o app envia.</div>')+'</div>';
 }
 liga.aovivo=()=>{
   if(!$('avant'))return;
@@ -1396,7 +1413,12 @@ liga.aovivo=()=>{
 function desenhaAvMapa(){
   const el=$('avmapa');if(!el)return;
   if(typeof L==='undefined'){el.innerHTML='<div class="vazio">O mapa não carregou (sem internet?).</div>';return}
-  if(avMapa){try{avMapa.remove()}catch(e){}avMapa=null}
+  /* Quem aproximou ou arrastou o mapa continua vendo o mesmo pedaço depois da atualização automática.
+     O mapa só volta a enquadrar tudo quando muda o dia, a frente ou o desenvolvedor, ou quando chega parada nova. */
+  const chave=(FA.dia||hojeBR())+'|'+FA.dev+'|'+FA.fr;
+  let guarda=null;
+  if(avMapa){try{if(AVV.mexeu&&AVV.chave===chave)guarda=[avMapa.getCenter(),avMapa.getZoom()]}catch(e){}
+    try{avMapa.remove()}catch(e){}avMapa=null}
   avMapa=L.map(el,{zoomControl:true,attributionControl:true});
   L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',{maxZoom:18,attribution:'Esri, HERE, Garmin'}).addTo(avMapa);
   const dia=FA.dia||hojeBR(),ehHoje=dia===hojeBR(),ev=avEventos(dia),pts=[],leg=[];
@@ -1414,7 +1436,11 @@ function desenhaAvMapa(){
   });
   if(leg.length){const C=L.control({position:'bottomleft'});
     C.onAdd=()=>{const dv=L.DomUtil.create('div','avleg');dv.innerHTML=leg.join('')+'<span class="f"><b class="bo"></b>prospecção <b class="qd"></b>pesquisa</span>';return dv};C.addTo(avMapa)}
-  if(pts.length)avMapa.fitBounds(pts,{padding:[34,34],maxZoom:15});else avMapa.setView([-16.68,-49.26],10);
+  if(guarda&&AVV.n===pts.length)avMapa.setView(guarda[0],guarda[1],{animate:false});
+  else{AVV.mexeu=false;if(pts.length)avMapa.fitBounds(pts,{padding:[34,34],maxZoom:15});else avMapa.setView([-16.68,-49.26],10)}
+  AVV.chave=chave;AVV.n=pts.length;
+  /* ligado só depois do enquadramento acima: daqui em diante, arrastar ou aproximar é escolha de quem está olhando */
+  avMapa.on('dragend zoomend',()=>{AVV.mexeu=true});
 }
 
 /* ---------------- módulo: Desempenho ---------------- */
@@ -2736,7 +2762,19 @@ async function abreApp(){
   carregaBase();
 }
 window.addEventListener('hashchange',()=>{const k=location.hash.slice(1);if(k&&k!==MOD)ir(k)});
-setInterval(()=>{if(SESSAO&&!document.hidden&&EU)carregaVisitas().then(()=>{pintaLado();if(['visitas','aovivo','desemp','funil','conc'].includes(MOD)&&!$('dlg').classList.contains('on')&&!['INPUT','SELECT'].includes(document.activeElement.tagName))pintaMain()}).catch(()=>{})},60000);
+/* O painel se atualiza sozinho: a cada 30 segundos quando a tela é o Ao vivo, a cada 1 minuto nas outras.
+   Ao voltar para a aba do navegador, busca na hora em vez de esperar a vez. A tela não é refeita com
+   uma ficha aberta nem enquanto alguém digita num filtro. */
+let RENOVA=null,RENOVA_N=0;
+function renova(){
+  if(!SESSAO||document.hidden||!EU||RENOVA)return;
+  RENOVA=carregaVisitas().then(()=>{pintaLado();
+      if(['visitas','aovivo','desemp','funil','conc'].includes(MOD)&&!$('dlg').classList.contains('on')&&!['INPUT','SELECT'].includes(document.activeElement.tagName))pintaMain()})
+    .catch(()=>{D.falha=true;const s=$('avselo');if(s)s.outerHTML=avSelo()})
+    .then(()=>{RENOVA=null});
+}
+setInterval(()=>{RENOVA_N++;if(MOD==='aovivo'||RENOVA_N%2===0)renova()},30000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now()-(D.quando||0)>10000)renova()});
 /* a pesquisa também se atualiza sozinha; a tela só é refeita se chegou coisa nova e ninguém está mexendo nela */
 setInterval(()=>{if(SESSAO&&!document.hidden&&EU&&PQD.estado==='ok')carregaPesquisa().then(()=>{if(!PQD.mudou)return;pintaLado();
   if(MOD==='pesquisa'&&FPQ.aba!=='camp'&&!$('dlg').classList.contains('on')&&!['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName))pintaMain()}).catch(()=>{})},60000);
