@@ -502,7 +502,7 @@ body.teste .cab{top:0}
    o que protege os dados é o login do coordenador e as regras do banco.
    Tudo o que este painel guarda no navegador usa chaves com o prefixo rtm_painel_.
    ============================================================================ */
-const VERSAO='1.6.0';
+const VERSAO='1.6.1';
 const SUPA={url:'https://kqpdledhaghuzuwjkvrf.supabase.co',chave:'sb_publishable_dMdB5b_G5X5TnXemexGIXQ_GWXS6cid'};
 const K_SESSAO='rtm_painel_sessao',K_EMAIL='rtm_painel_email';
 /* Portal de teste: o mesmo painel aberto com "?teste" no endereço. Lê e grava na pasta "rtm_teste"
@@ -2765,16 +2765,20 @@ window.addEventListener('hashchange',()=>{const k=location.hash.slice(1);if(k&&k
 /* O painel se atualiza sozinho: a cada 30 segundos quando a tela é o Ao vivo, a cada 1 minuto nas outras.
    Ao voltar para a aba do navegador, busca na hora em vez de esperar a vez. A tela não é refeita com
    uma ficha aberta nem enquanto alguém digita num filtro. */
-let RENOVA=null,RENOVA_N=0;
-function renova(){
-  if(!SESSAO||document.hidden||!EU||RENOVA)return;
-  RENOVA=carregaVisitas().then(()=>{pintaLado();
+/* ATENÇÃO ao nome: "renova" já existe lá em cima e é a função que renova a SESSÃO (o acesso de 1 hora).
+   Na 1.6.0 esta função aqui também se chamava "renova" e tomou o lugar da outra: 1 hora depois de entrar,
+   o painel parava de atualizar e ficava se chamando em círculo. Por isso o nome próprio. */
+let BUSCANDO=false,BUSCA_N=0;
+function buscaSozinho(){
+  if(!SESSAO||document.hidden||!EU||BUSCANDO)return;
+  BUSCANDO=true;
+  carregaVisitas().then(()=>{pintaLado();
       if(['visitas','aovivo','desemp','funil','conc'].includes(MOD)&&!$('dlg').classList.contains('on')&&!['INPUT','SELECT'].includes(document.activeElement.tagName))pintaMain()})
-    .catch(()=>{D.falha=true;const s=$('avselo');if(s)s.outerHTML=avSelo()})
-    .then(()=>{RENOVA=null});
+    .catch(e=>{if(e&&e.semSessao)return sessaoCaiu();D.falha=true;const s=$('avselo');if(s)s.outerHTML=avSelo()})
+    .then(()=>{BUSCANDO=false});
 }
-setInterval(()=>{RENOVA_N++;if(MOD==='aovivo'||RENOVA_N%2===0)renova()},30000);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now()-(D.quando||0)>10000)renova()});
+setInterval(()=>{BUSCA_N++;if(MOD==='aovivo'||BUSCA_N%2===0)buscaSozinho()},30000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now()-(D.quando||0)>10000)buscaSozinho()});
 /* a pesquisa também se atualiza sozinha; a tela só é refeita se chegou coisa nova e ninguém está mexendo nela */
 setInterval(()=>{if(SESSAO&&!document.hidden&&EU&&PQD.estado==='ok')carregaPesquisa().then(()=>{if(!PQD.mudou)return;pintaLado();
   if(MOD==='pesquisa'&&FPQ.aba!=='camp'&&!$('dlg').classList.contains('on')&&!['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName))pintaMain()}).catch(()=>{})},60000);
