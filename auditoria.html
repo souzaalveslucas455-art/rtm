@@ -344,7 +344,7 @@ code{color:var(--ink2)}
    o que protege os dados e o login de administrador e as regras do banco.
    Tudo o que esta pagina guarda no navegador usa chaves com o prefixo aud_.
    ============================================================================ */
-const VERSAO='2.0.0';
+const VERSAO='2.0.1';
 const SUPA={url:'https://kqpdledhaghuzuwjkvrf.supabase.co',chave:'sb_publishable_dMdB5b_G5X5TnXemexGIXQ_GWXS6cid'};
 const K_SESSAO='aud_sessao',K_EMAIL='aud_email',K_DIAS='aud_dias',K_TEMA='aud_tema',K_MENU='aud_menu';
 const $=id=>document.getElementById(id);
@@ -1124,7 +1124,10 @@ async function carregaBacklog(){
   if(ABA==='bkl'||ABA==='err'||ABA==='geral')desenha();
 }
 const bkAberto=x=>x.etapa==='ideia'||x.etapa==='planejado'||x.etapa==='fazendo';
-const bkErroAtivo=x=>!!x.erro&&(x.etapa==='publicado'?(+x.erro.vezes_depois||0)>0:(+x.erro.vezes_7d||0)>0);
+/* O erro ligado ainda acontece? Em item publicado, só conta se apareceu depois da publicação E nos
+   últimos 7 dias. Antes bastava ter aparecido uma vez depois da publicação, e o item ficava vermelho
+   para sempre (item 23: a última recusa do banco é justamente a hora em que o app faz o conserto). */
+const bkErroAtivo=x=>!!x.erro&&(+x.erro.vezes_7d||0)>0&&(x.etapa!=='publicado'||(+x.erro.vezes_depois||0)>0);
 /* pontos: impacto vale 3 cada, esforço tira 1 cada; +2 se o erro ligado ainda acontece; +1 se o item é um erro */
 const bkPontos=x=>(+x.impacto||2)*3-(+x.esforco||2)+(bkErroAtivo(x)?2:0)+(x.tipo==='erro'?1:0);
 const bkAcha=id=>((BKL&&BKL.itens)||[]).find(x=>String(x.id)===String(id));
@@ -1144,8 +1147,10 @@ const sinal=(c,i,t)=>'<div class="est '+c+'"><i aria-hidden="true">'+i+'</i><spa
 function bkSinais(x){
   let h='';const e=x.erro,en=x.entrega;
   if(e){
-    if(x.etapa==='publicado'){const n=+e.vezes_depois||0;
-      h+=n?sinal('critico','✕','O erro voltou depois da publicação: '+vezesTxt(n)):sinal('bom','✓','O erro não voltou depois da publicação')}
+    if(x.etapa==='publicado'){const n=+e.vezes_depois||0,rec=+e.vezes_7d||0;
+      h+=n&&rec?sinal('critico','✕','O erro voltou depois da publicação: '+vezesTxt(n)):
+         n?sinal('bom','✓','Sem ocorrência nos últimos 7 dias (apareceu '+vezesTxt(n)+' depois da publicação)'):
+           sinal('bom','✓','O erro não voltou depois da publicação')}
     else{const n=+e.vezes_7d||0;
       h+=n?sinal('critico','✕','O erro ainda acontece: '+vezesTxt(n)+' em 7 dias'):sinal('bom','✓','Erro sem ocorrência nos últimos 7 dias')}
   }
@@ -1249,7 +1254,17 @@ function telaBacklog(){
     'O botão "Importar do Claude" cria e atualiza vários itens de uma vez, a partir do bloco que o Claude manda no fim de cada pedido.</div>';
 }
 /* a coluna "Backlog" da lista de erros agrupados */
-function bkDoErro(x){return ((BKL&&BKL.itens)||[]).find(i=>i.erro&&i.etapa!=='descartado'&&i.erro.app===x.app&&i.erro.tipo===x.tipo&&i.erro.mensagem===x.mensagem)}
+/* O item do backlog ligado a um erro da lista. Primeiro o item que está valendo (não descartado).
+   Sem ele, vale o item DESCARTADO, enquanto o erro não aparecer de novo depois do descarte: antes o
+   descartado era ignorado, o botão "Mandar para o backlog" voltava e o mesmo aviso virava item de
+   novo (itens 44 e 46, em 27/11/2026). As datas vêm do banco como "AAAA-MM-DD HH:MM", no horário de
+   Brasília, então comparam como texto. */
+function bkDoErro(x){
+  const mesmos=((BKL&&BKL.itens)||[]).filter(i=>i.erro&&i.erro.app===x.app&&i.erro.tipo===x.tipo&&i.erro.mensagem===x.mensagem);
+  return mesmos.find(i=>i.etapa!=='descartado')||
+    mesmos.filter(i=>i.etapa==='descartado'&&i.etapa_desde&&!(x.ultima&&String(x.ultima)>String(i.etapa_desde)))
+      .sort((a,b)=>String(b.etapa_desde).localeCompare(String(a.etapa_desde)))[0];
+}
 function bkCelulaErro(x){
   if(!BKL)return '';
   const i=bkDoErro(x),n=((DADOS.err&&DADOS.err.grupos&&DADOS.err.grupos.linhas)||[]).indexOf(x);
