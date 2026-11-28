@@ -643,7 +643,7 @@ textarea.pqou{min-height:58px;margin:-1px 0 9px;border-color:var(--blue)}
    A base vem embutida e funciona sem internet. As respostas ficam no aparelho
    e sobem para a planilha assim que houver sinal.
    =========================================================================== */
-const VERSAO='2.8.0';
+const VERSAO='2.8.1';
 
 /* ---------------- auditoria: erros do app e "estou vivo" ----------------
    Guarda no aparelho os erros que acontecem e manda para o painel de auditoria,
@@ -2446,7 +2446,10 @@ function aplicaReagendados(){
     c.dia=novo;
     if(dataDoDia[novo])c.dataPlan=dataDoDia[novo];
   });
-  _amostraDia={};          /* a amostra por dia precisa ser recalculada */
+  /* A amostra por dia precisa ser recalculada. A lista é fixa (const): esvazia em vez de trocar por
+     outra. Até a 2.8.0 aqui estava "_amostraDia={}", que dá erro numa lista fixa: cancelar uma visita
+     com volta em outro dia parava antes de salvar, e o app não abria enquanto houvesse cliente remarcado. */
+  for(const k in _amostraDia)delete _amostraDia[k];
 }
 function vPlanoVisita(){
   const c=cur;
@@ -4425,7 +4428,8 @@ $('folhaf').onclick=fecharFolha;
 if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))
   navigator.serviceWorker.register('sw.js').catch(()=>{});
 window.addEventListener('resize',()=>{if(mapa)mapa.invalidateSize()});
-if(S.reagendados)aplicaReagendados();
+/* um problema ao reaplicar os remarcados nunca pode impedir o app de abrir: registra e segue */
+try{if(S.reagendados)aplicaReagendados()}catch(e){audita('erro','codigo','Remarcados nao foram reaplicados na abertura: '+(e&&e.message||e))}
 abreEntrada();
 empilha();empilha();
 </script>
